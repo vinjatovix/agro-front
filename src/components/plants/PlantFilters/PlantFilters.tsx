@@ -16,8 +16,8 @@ import './PlantFilters.css';
 import FamilySelect from './components/FamilySelect/FamilySelect';
 
 interface Props {
-  search: string;
-  onSearchChange: (value: string) => void;
+  readonly search: string;
+  readonly onSearchChange: (value: string) => void;
 }
 
 export default function PlantFilters({ search, onSearchChange }: Props) {

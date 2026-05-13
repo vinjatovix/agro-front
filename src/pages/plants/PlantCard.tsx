@@ -4,7 +4,7 @@ import { capitalizeFirstLetter } from '../../shared/utils/capitalizeFirstLetter'
 import { findPlantImage } from './utils/findPlantImage';
 
 export interface PlantCardProps {
-  plant: Plant;
+  readonly plant: Plant;
 }
 
 export default function PlantCard({ plant }: PlantCardProps) {

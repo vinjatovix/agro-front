@@ -7,7 +7,7 @@ import LimitSelector from '../../shared/components/LimitSelector';
 import Pagination from '../../shared/components/Pagination';
 
 interface Props {
-  search: string;
+  readonly search: string;
 }
 
 export default function PlantList({ search }: Props) {
