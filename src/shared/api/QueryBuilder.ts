@@ -12,11 +12,15 @@ export class QueryBuilder {
   }
 
   add(key: string, value?: Primitive | null) {
-    if (value === undefined || value === null) {
+    if (
+      value === undefined ||
+      value === null ||
+      (typeof value === 'string' && value.trim() === '')
+    ) {
       return this;
     }
 
-    const next = new URLSearchParams(this.params.toString());
+    const next = new URLSearchParams(this.params);
     next.append(key, String(value));
 
     return new QueryBuilder(next);

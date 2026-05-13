@@ -46,7 +46,7 @@ export async function getPlants(
     .add('limit', pagination?.limit)
     .build();
 
-  return apiFetch(`/api/v1/plants?${query.toString()}`) as Promise<
+  return apiFetch(`/api/v1/plants?${query}`) as Promise<
     PaginatedResponse<Plant>
   >;
 }
