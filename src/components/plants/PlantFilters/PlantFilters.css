@@ -1,0 +1,70 @@
+.plant-filters {
+  display: grid;
+  gap: 5px;
+}
+
+.plant-filters__group {
+  display: grid;
+}
+
+.plant-filters__input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.plant-filters__buttons {
+  display: flex;
+}
+
+.plant-filters__buttons--wrap {
+  flex-wrap: wrap;
+}
+
+.plant-filters__toggle {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: white;
+  color: black;
+  cursor: pointer;
+}
+
+.plant-filters__toggle--active {
+  background: #222;
+  color: white;
+}
+
+.plant-filters__clear {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f3f3f3;
+  cursor: pointer;
+}
+
+.plant-filters__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.plant-filters__label {
+  font-weight: 500;
+}
+
+.plant-filters__slider-clear {
+  border: none;
+  background: transparent;
+  color: #777;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+}
+
+.plant-filters__slider-clear:hover {
+  color: #111;
+}
