@@ -1,7 +1,7 @@
 interface Props {
-  pages: (number | '...')[];
-  currentPage: number;
-  onPageChange: (page: number) => void;
+  readonly pages: (number | '...')[];
+  readonly currentPage: number;
+  readonly onPageChange: (page: number) => void;
 }
 
 export default function Pagination({
@@ -9,14 +9,22 @@ export default function Pagination({
   currentPage,
   onPageChange
 }: Props) {
+  let ellipsisCount = 0;
+
   return (
     <div className="pagination">
-      {pages.map((p, idx) =>
-        p === '...' ? (
-          <span key={`ellipsis-${idx}`} style={{ padding: '0 8px' }}>
-            ...
-          </span>
-        ) : (
+      {pages.map((p) => {
+        if (p === '...') {
+          const key = `ellipsis-${ellipsisCount++}`;
+
+          return (
+            <span key={key} style={{ padding: '0 8px' }}>
+              ...
+            </span>
+          );
+        }
+
+        return (
           <button
             key={p}
             type="button"
@@ -29,8 +37,8 @@ export default function Pagination({
           >
             {p}
           </button>
-        )
-      )}
+        );
+      })}
     </div>
   );
 }

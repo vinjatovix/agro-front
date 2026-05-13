@@ -1,8 +1,8 @@
 import { SUPPORTED_LIMITS } from './constants';
 
 interface Props {
-  value: number;
-  onChange: (value: number) => void;
+  readonly value: number;
+  readonly onChange: (value: number) => void;
 }
 
 export default function LimitSelector({ value, onChange }: Props) {

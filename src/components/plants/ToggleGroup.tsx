@@ -1,9 +1,9 @@
 interface Props {
-  label: string;
-  options: readonly string[];
-  value: string;
-  onChange: (value: string) => void;
-  renderLabel?: (value: string) => string;
+  readonly label: string;
+  readonly options: readonly string[];
+  readonly value: string;
+  readonly onChange: (value: string) => void;
+  readonly renderLabel?: (value: string) => string;
 }
 
 export default function ToggleGroup({
@@ -13,12 +13,6 @@ export default function ToggleGroup({
   onChange,
   renderLabel
 }: Props) {
-  function getToggleClass(active: boolean) {
-    return active
-      ? 'plant-filters__toggle plant-filters__toggle--active'
-      : 'plant-filters__toggle';
-  }
-
   return (
     <div className="plant-filters__group">
       <label>{label}</label>
@@ -37,4 +31,10 @@ export default function ToggleGroup({
       </div>
     </div>
   );
+}
+
+function getToggleClass(active: boolean) {
+  return active
+    ? 'plant-filters__toggle plant-filters__toggle--active'
+    : 'plant-filters__toggle';
 }

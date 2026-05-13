@@ -48,6 +48,7 @@ describe('PlantDetail', () => {
   });
 
   it('renders plant data when loaded', async () => {
+    const scientificName = plant.identity.scientificName;
     mockedGetPlantById.mockResolvedValue(plant);
 
     render(<PlantDetail />);
@@ -55,10 +56,8 @@ describe('PlantDetail', () => {
     await waitFor(() => {
       expect(screen.getByText(plant.identity.name.primary)).toBeInTheDocument();
     });
-
-    expect(
-      screen.getByText(plant.identity.scientificName!)
-    ).toBeInTheDocument();
+    expect(scientificName).toBeDefined();
+    expect(screen.getByText(scientificName!)).toBeInTheDocument();
     expect(screen.getByText(plant.identity.family)).toBeInTheDocument();
   });
 

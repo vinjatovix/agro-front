@@ -1,7 +1,7 @@
 interface Props {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
+  readonly label: string;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
 }
 
 export default function TextFilter({ label, value, onChange }: Props) {

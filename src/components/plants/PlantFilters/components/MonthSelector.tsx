@@ -2,15 +2,15 @@ import { MONTHS } from '../constants';
 import { mapMonth } from '../utils/month.utils';
 
 interface Props {
-  hemisphere: 'north' | 'south';
-  value: string;
-  onChange: (value: string) => void;
+  readonly hemisphere: 'north' | 'south';
+  readonly value: string;
+  readonly onChange: (value: string) => void;
 }
 
 export default function MonthSelector({ hemisphere, value, onChange }: Props) {
   return (
-    <div className="plant-filters__group">
-      <label>Sowing months</label>
+    <fieldset className="plant-filters__group">
+      <legend className="plant-filters__label">Sowing months</legend>
 
       <div className="plant-filters__buttons plant-filters__buttons--wrap">
         {MONTHS.map((monthName, index) => {
@@ -36,6 +36,6 @@ export default function MonthSelector({ hemisphere, value, onChange }: Props) {
           );
         })}
       </div>
-    </div>
+    </fieldset>
   );
 }

@@ -2,8 +2,8 @@ import { useId } from 'react';
 import { useFamilies } from '../../../../../pages/families/hooks/useFamilies';
 
 interface Props {
-  value: string;
-  onChange: (id: string) => void;
+  readonly value: string;
+  readonly onChange: (id: string) => void;
 }
 
 export default function FamilySelect({ value, onChange }: Props) {

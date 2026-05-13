@@ -1,13 +1,13 @@
 import { useId } from 'react';
 
 interface Props {
-  label: string;
-  value: number | null;
-  min: number;
-  max: number;
-  step: number;
-  onChange: (value: number | null) => void;
-  onCommit: (value: number | null) => void;
+  readonly label: string;
+  readonly value: number | null;
+  readonly min: number;
+  readonly max: number;
+  readonly step: number;
+  readonly onChange: (value: number | null) => void;
+  readonly onCommit: (value: number | null) => void;
 }
 
 export default function SliderFilter({

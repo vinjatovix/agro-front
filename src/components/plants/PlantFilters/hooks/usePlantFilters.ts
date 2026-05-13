@@ -17,10 +17,10 @@ export function usePlantFilters({ onSearchChange }: Props) {
     setParams((prev) => {
       const next = new URLSearchParams(prev);
 
-      if (!value) {
-        next.delete(key);
-      } else {
+      if (value) {
         next.set(key, value);
+      } else {
+        next.delete(key);
       }
 
       return next;
