@@ -1,3 +1,4 @@
+import { QueryBuilder } from '../shared/api/QueryBuilder';
 import type { PaginatedResponse } from '../types/api';
 import type { PaginationParams } from '../types/Pagination';
 import type { Plant } from '../types/Plant';
@@ -27,75 +28,23 @@ export async function getPlants(
   filters?: PlantFilterParams,
   pagination?: PaginationParams
 ) {
-  const query = new URLSearchParams();
-
-  if (filters?.name) {
-    query.append('filter[name][eq]', filters.name);
-  }
-  if (filters?.aliases) {
-    query.append('filter[aliases][hasAny]', filters.aliases);
-  }
-
-  if (filters?.family) {
-    query.append('filter[family][eq]', filters.family);
-  }
-
-  if (filters?.lifeCycle) {
-    query.append('filter[lifeCycle][eq]', filters.lifeCycle);
-  }
-
-  if (filters?.sowingMethod) {
-    query.append('filter[sowingMethod][eq]', filters.sowingMethod);
-  }
-
-  if (filters?.sowingMonths !== undefined) {
-    const months = Array.isArray(filters.sowingMonths)
-      ? filters.sowingMonths
-      : [filters.sowingMonths];
-    if (months.length) {
-      query.append('filter[sowingMonths][hasAny]', months.join(','));
-    }
-  }
-
-  if (filters?.soilPh !== undefined) {
-    query.append('filter[soilPh][eq]', String(filters.soilPh));
-  }
-
-  if (filters?.soilAvailableDepthCm !== undefined) {
-    query.append(
-      'filter[soilAvailableDepthCm][eq]',
-      String(filters.soilAvailableDepthCm)
-    );
-  }
-  if (filters?.spacingCm !== undefined) {
-    query.append('filter[spacingCm][eq]', String(filters.spacingCm));
-  }
-
-  if (filters?.lightType) {
-    query.append('filter[lightType][eq]', filters.lightType);
-  }
-
-  if (filters?.lightHoursMin !== undefined) {
-    query.append('filter[lightHoursMin][eq]', String(filters.lightHoursMin));
-  }
-
-  if (filters?.strategicBenefits) {
-    query.append(
-      'filter[strategicBenefits][contains]',
-      filters.strategicBenefits
-    );
-  }
-
-  if (filters?.rootSystem) {
-    query.append('filter[rootSystem][eq]', filters.rootSystem);
-  }
-
-  if (pagination?.page) {
-    query.append('page', String(pagination.page));
-  }
-  if (pagination?.limit) {
-    query.append('limit', String(pagination.limit));
-  }
+  const query = QueryBuilder.create()
+    .add('filter[name][eq]', filters?.name)
+    .add('filter[aliases][hasAny]', filters?.aliases)
+    .add('filter[family][eq]', filters?.family)
+    .add('filter[lifeCycle][eq]', filters?.lifeCycle)
+    .add('filter[sowingMethod][eq]', filters?.sowingMethod)
+    .addArray('filter[sowingMonths][hasAny]', filters?.sowingMonths)
+    .add('filter[soilPh][eq]', filters?.soilPh)
+    .add('filter[soilAvailableDepthCm][eq]', filters?.soilAvailableDepthCm)
+    .add('filter[spacingCm][eq]', filters?.spacingCm)
+    .add('filter[lightType][eq]', filters?.lightType)
+    .add('filter[lightHoursMin][eq]', filters?.lightHoursMin)
+    .add('filter[strategicBenefits][contains]', filters?.strategicBenefits)
+    .add('filter[rootSystem][eq]', filters?.rootSystem)
+    .add('page', pagination?.page)
+    .add('limit', pagination?.limit)
+    .build();
 
   return apiFetch(`/api/v1/plants?${query.toString()}`) as Promise<
     PaginatedResponse<Plant>
