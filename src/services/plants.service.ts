@@ -42,8 +42,8 @@ export async function getPlants(
     .add('filter[lightHoursMin][eq]', filters?.lightHoursMin)
     .add('filter[strategicBenefits][contains]', filters?.strategicBenefits)
     .add('filter[rootSystem][eq]', filters?.rootSystem)
-    .add('page', pagination?.page)
-    .add('limit', pagination?.limit)
+    .add('pagination[page]', pagination?.page)
+    .add('pagination[limit]', pagination?.limit)
     .build();
 
   return apiFetch(`/api/v1/plants?${query}`) as Promise<
