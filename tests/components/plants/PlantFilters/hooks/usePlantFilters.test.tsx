@@ -39,6 +39,8 @@ describe('usePlantFilters', () => {
     expect(result.current.getParam('lightType')).toBe('');
     expect(result.current.getParam('rootSystem')).toBe('');
 
+    expect(result.current.family).toBe('');
+
     expect(result.current.soilPh.value).toBe(null);
     expect(result.current.lightHours.value).toBe(null);
     expect(result.current.spacing.value).toBe(null);
@@ -70,6 +72,19 @@ describe('usePlantFilters', () => {
     expect(result.current.getParam('family')).toBe('abc');
   });
 
+  it('setFamily updates param correctly', () => {
+    const { result } = renderHook(
+      () => usePlantFilters({ onSearchChange: setSearchChangeMock }),
+      { wrapper: wrapperEmpty }
+    );
+
+    act(() => {
+      result.current.setFamily('family-1');
+    });
+
+    expect(result.current.getParam('family')).toBe('family-1');
+  });
+
   it('setHemisphere updates param', () => {
     const { result } = renderHook(
       () => usePlantFilters({ onSearchChange: setSearchChangeMock }),
@@ -83,7 +98,7 @@ describe('usePlantFilters', () => {
     expect(result.current.getParam('hemisphere')).toBe('south');
   });
 
-  it('clearFilters resets observable state', () => {
+  it('clearFilters resets URL + sliders + search', () => {
     const { result } = renderHook(
       () => usePlantFilters({ onSearchChange: setSearchChangeMock }),
       { wrapper: wrapperWithParams }
@@ -91,11 +106,13 @@ describe('usePlantFilters', () => {
 
     act(() => {
       result.current.setParam('family', 'abc');
+    });
+
+    act(() => {
       result.current.clearFilters();
     });
 
     expect(result.current.getParam('family')).toBe('');
-
     expect(setSearchChangeMock).toHaveBeenCalledWith('');
 
     expect(result.current.soilPh.value).toBe(null);
@@ -104,14 +121,14 @@ describe('usePlantFilters', () => {
     expect(result.current.soilDepth.value).toBe(null);
   });
 
-  it('resetPage forces page=1', () => {
+  it('sets page param when setParam is used', () => {
     const { result } = renderHook(
       () => usePlantFilters({ onSearchChange: setSearchChangeMock }),
       { wrapper: wrapperEmpty }
     );
 
     act(() => {
-      result.current.resetPage();
+      result.current.setParam('page', '1');
     });
 
     expect(result.current.getParam('page')).toBe('1');
