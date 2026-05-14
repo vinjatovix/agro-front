@@ -3,7 +3,7 @@ import { useDebouncedQueryParam } from './useDebouncedQueryParam';
 import { useSliderFilter } from './useSliderFilter';
 
 interface Props {
-  onSearchChange: (value: string) => void;
+  readonly onSearchChange: (value: string) => void;
 }
 
 export function usePlantFilters({ onSearchChange }: Props) {

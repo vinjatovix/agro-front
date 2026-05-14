@@ -3,7 +3,6 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { usePlants } from '../../../../src/pages/plants/hooks/usePlants';
 
-// mock service
 import * as plantsService from '../../../../src/services/plants.service';
 import { listPlantsResponse } from '../../../fixtures/plants/listPlants';
 import { SUPPORTED_LIMITS } from '../../../../src/shared/components/constants';

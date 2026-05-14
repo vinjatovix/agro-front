@@ -1,36 +1,40 @@
 import { useState } from 'react';
 
+import useMediaQuery from '../../shared/hooks/useMediaQuery';
+import useDrawer from '../../shared/hooks/useDrawer';
+import Drawer from '../../shared/components/Drawer/Drawer';
 import PlantFilters from '../../components/plants/PlantFilters/PlantFilters';
 import PlantList from './PlantList';
+
+import './plantsPage.css';
 
 export default function PlantsPage() {
   const [search, setSearch] = useState('');
 
-  return (
-    <div
-      style={{
-        display: 'flex',
-        height: 'calc(100vh - 60px)'
-      }}
-    >
-      <aside
-        style={{
-          width: 320,
-          borderRight: '1px solid #ddd',
-          padding: 16,
-          overflowY: 'auto'
-        }}
-      >
-        <PlantFilters search={search} onSearchChange={setSearch} />
-      </aside>
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const drawer = useDrawer(false);
 
-      <main
-        style={{
-          flex: 1,
-          padding: 16,
-          overflowY: 'auto'
-        }}
-      >
+  return (
+    <div className="plants-layout">
+      {!isMobile && (
+        <aside className="plants-sidebar">
+          <PlantFilters search={search} onSearchChange={setSearch} />
+        </aside>
+      )}
+
+      {isMobile && !drawer.isOpen && (
+        <button type="button" onClick={drawer.open} className="plants-fab">
+          Filters
+        </button>
+      )}
+
+      {isMobile && (
+        <Drawer isOpen={drawer.isOpen} onClose={drawer.close}>
+          <PlantFilters search={search} onSearchChange={setSearch} />
+        </Drawer>
+      )}
+
+      <main className="plants-main">
         <PlantList search={search} />
       </main>
     </div>
