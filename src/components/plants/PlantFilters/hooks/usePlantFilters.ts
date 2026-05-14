@@ -1,98 +1,180 @@
 import { useSearchParams } from 'react-router-dom';
-import { useDebouncedQueryParam } from './useDebouncedQueryParam';
+import { useCallback, useState, useMemo } from 'react';
 import { useSliderFilter } from './useSliderFilter';
+import { useDebouncedCallback } from './useDebouncedCallback';
 
 interface Props {
   readonly onSearchChange: (value: string) => void;
 }
 
-export function usePlantFilters({ onSearchChange }: Props) {
-  const [params, setParams] = useSearchParams();
+type TextFilterKey = 'aliases' | 'strategicBenefits';
 
-  function getParam(key: string) {
-    return params.get(key) ?? '';
-  }
+function useTextFilters(
+  setParam: (key: string, value?: string) => void,
+  getParam: (key: string) => string
+) {
+  const [textState, setTextState] = useState<Record<TextFilterKey, string>>({
+    aliases: getParam('aliases'),
+    strategicBenefits: getParam('strategicBenefits')
+  });
 
-  function setParam(key: string, value?: string) {
-    setParams((prev) => {
-      const next = new URLSearchParams(prev);
+  const setTextValue = useCallback((key: TextFilterKey, value: string) => {
+    setTextState((prev) => ({
+      ...prev,
+      [key]: value
+    }));
+  }, []);
 
-      if (value) {
-        next.set(key, value);
-      } else {
-        next.delete(key);
-      }
+  const debouncedAliases = useDebouncedCallback((value: string) => {
+    setParam('aliases', value);
+  }, 300);
 
-      return next;
-    });
-  }
+  const debouncedStrategicBenefits = useDebouncedCallback((value: string) => {
+    setParam('strategicBenefits', value);
+  }, 300);
 
-  function clearParams() {
-    setParams({});
-  }
-
-  function resetPage() {
-    setParam('page', '1');
-  }
-
-  const lifeCycle = getParam('lifeCycle');
-  const sowingMethod = getParam('sowingMethod');
-  const lightType = getParam('lightType');
-  const rootSystem = getParam('rootSystem');
-
-  const hemisphere = (getParam('hemisphere') as 'north' | 'south') || 'north';
-
-  const sowingMonth = getParam('sowingMonth');
-
-  const [aliasesValue, setAliasesValue] = useDebouncedQueryParam(
-    getParam('aliases'),
-    (value) => setParam('aliases', value)
+  const debounceMap = useMemo(
+    () => ({
+      aliases: debouncedAliases,
+      strategicBenefits: debouncedStrategicBenefits
+    }),
+    [debouncedAliases, debouncedStrategicBenefits]
   );
 
-  const [strategicBenefitsValue, setStrategicBenefitsValue] =
-    useDebouncedQueryParam(getParam('strategicBenefits'), (value) =>
-      setParam('strategicBenefits', value)
-    );
+  const handleTextChange = useCallback(
+    (key: TextFilterKey, value: string) => {
+      setTextValue(key, value);
+      debounceMap[key].call(value);
+    },
+    [setTextValue, debounceMap]
+  );
 
+  const clearText = useCallback(() => {
+    setTextState({
+      aliases: '',
+      strategicBenefits: ''
+    });
+
+    Object.values(debounceMap).forEach((debounce) => debounce.cancel());
+  }, [debounceMap]);
+
+  return { textState, handleTextChange, clearText };
+}
+
+function useSliderFilters(getParam: (key: string) => string) {
   const soilPh = useSliderFilter(getParam('soilPh'));
   const lightHours = useSliderFilter(getParam('lightHoursMin'));
   const spacing = useSliderFilter(getParam('spacingCm'));
   const soilDepth = useSliderFilter(getParam('soilAvailableDepthCm'));
 
-  function clearFilters() {
-    clearParams();
+  return { soilPh, lightHours, spacing, soilDepth };
+}
 
+function useSelectFilters(getParam: (key: string) => string) {
+  const lifeCycle = getParam('lifeCycle');
+  const sowingMethod = getParam('sowingMethod');
+  const lightType = getParam('lightType');
+  const rootSystem = getParam('rootSystem');
+  const sowingMonth = getParam('sowingMonth');
+  const hemisphere = (getParam('hemisphere') as 'north' | 'south') || 'north';
+
+  return {
+    lifeCycle,
+    sowingMethod,
+    lightType,
+    rootSystem,
+    sowingMonth,
+    hemisphere
+  };
+}
+
+export function usePlantFilters({ onSearchChange }: Props) {
+  const [params, setParams] = useSearchParams();
+
+  const setParam = useCallback(
+    (key: string, value?: string) => {
+      setParams((prev) => {
+        const next = new URLSearchParams(prev);
+
+        if (value && value.length > 0) next.set(key, value);
+        else next.delete(key);
+
+        return next;
+      });
+    },
+    [setParams]
+  );
+
+  const getParam = useCallback(
+    (key: string) => params.get(key) ?? '',
+    [params]
+  );
+
+  const family = getParam('family');
+
+  const setFamily = useCallback(
+    (value: string) => {
+      setParam('family', value);
+    },
+    [setParam]
+  );
+
+  const { textState, handleTextChange, clearText } = useTextFilters(
+    setParam,
+    getParam
+  );
+  const { soilPh, lightHours, spacing, soilDepth } = useSliderFilters(getParam);
+  const {
+    lifeCycle,
+    sowingMethod,
+    lightType,
+    rootSystem,
+    sowingMonth,
+    hemisphere
+  } = useSelectFilters(getParam);
+
+  const clearFilters = useCallback(() => {
+    setParams({});
     onSearchChange('');
-
-    setAliasesValue('');
-    setStrategicBenefitsValue('');
-
+    clearText();
     soilPh.clear();
     lightHours.clear();
     spacing.clear();
     soilDepth.clear();
-  }
+  }, [
+    setParams,
+    onSearchChange,
+    clearText,
+    soilPh,
+    lightHours,
+    spacing,
+    soilDepth
+  ]);
 
-  function setHemisphere(value: 'north' | 'south') {
-    setParam('hemisphere', value);
-  }
+  const setHemisphere = useCallback(
+    (value: 'north' | 'south') => {
+      setParam('hemisphere', value);
+    },
+    [setParam]
+  );
 
   return {
-    getParam,
     setParam,
+    getParam,
+
+    family,
+    setFamily,
+
+    textState,
+    handleTextChange,
 
     lifeCycle,
     sowingMethod,
     lightType,
     rootSystem,
+
     hemisphere,
     sowingMonth,
-
-    aliasesValue,
-    setAliasesValue,
-
-    strategicBenefitsValue,
-    setStrategicBenefitsValue,
 
     soilPh,
     lightHours,
@@ -100,8 +182,6 @@ export function usePlantFilters({ onSearchChange }: Props) {
     soilDepth,
 
     clearFilters,
-    setHemisphere,
-
-    resetPage
+    setHemisphere
   };
 }

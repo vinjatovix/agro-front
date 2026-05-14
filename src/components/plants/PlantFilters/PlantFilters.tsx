@@ -1,8 +1,8 @@
 import SliderFilter from '../SliderFilter';
 import ToggleGroup from '../ToggleGroup';
-
 import TextFilter from './components/TextFilter';
 import MonthSelector from './components/MonthSelector';
+import FamilySelect from './components/FamilySelect/FamilySelect';
 
 import { usePlantFilters } from './hooks/usePlantFilters';
 
@@ -13,7 +13,6 @@ import {
 } from './config/filters.config';
 
 import './PlantFilters.css';
-import FamilySelect from './components/FamilySelect/FamilySelect';
 
 interface Props {
   readonly search: string;
@@ -23,7 +22,12 @@ interface Props {
 export default function PlantFilters({ search, onSearchChange }: Props) {
   const {
     setParam,
-    getParam,
+
+    family,
+    setFamily,
+
+    textState,
+    handleTextChange,
 
     lifeCycle,
     sowingMethod,
@@ -33,12 +37,6 @@ export default function PlantFilters({ search, onSearchChange }: Props) {
     hemisphere,
     sowingMonth,
 
-    aliasesValue,
-    setAliasesValue,
-
-    strategicBenefitsValue,
-    setStrategicBenefitsValue,
-
     soilPh,
     lightHours,
     spacing,
@@ -46,27 +44,13 @@ export default function PlantFilters({ search, onSearchChange }: Props) {
 
     clearFilters,
     setHemisphere
-  } = usePlantFilters({
-    onSearchChange
-  });
+  } = usePlantFilters({ onSearchChange });
 
   const toggleValues = {
     lifeCycle,
     sowingMethod,
     lightType,
     rootSystem
-  };
-
-  const textValues = {
-    aliases: {
-      value: aliasesValue,
-      setValue: setAliasesValue
-    },
-
-    strategicBenefits: {
-      value: strategicBenefitsValue,
-      setValue: setStrategicBenefitsValue
-    }
   };
 
   const sliderValues = {
@@ -86,27 +70,21 @@ export default function PlantFilters({ search, onSearchChange }: Props) {
         Clear filters
       </button>
 
-      <div className="plant-filters__group">
-        <input
-          className="plant-filters__input"
-          type="text"
-          placeholder="Search plants..."
-          value={search}
-          onChange={(e) => onSearchChange(e.target.value)}
-        />
-      </div>
-
-      <FamilySelect
-        value={getParam('family')}
-        onChange={(id) => setParam('family', id)}
+      <TextFilter
+        value={search}
+        onChange={onSearchChange}
+        label="Search plants"
+        placeholder="Search plants"
       />
+
+      <FamilySelect value={family} onChange={setFamily} />
 
       {TEXT_FILTERS.map((filter) => (
         <TextFilter
           key={filter.key}
           label={filter.label}
-          value={textValues[filter.key].value}
-          onChange={textValues[filter.key].setValue}
+          value={textState[filter.key] ?? ''}
+          onChange={(value) => handleTextChange(filter.key, value)}
         />
       ))}
 
