@@ -1,7 +1,7 @@
 .plant-detail {
   max-width: 900px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 0.2rem;
 }
 .plant-list {
   list-style: none;
@@ -12,14 +12,14 @@
 .plant-list li {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
 
-  padding: 8px 10px;
-  border-radius: 10px;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.625rem;
   background: #f7fbf7;
   border: 1px solid #e3eee3;
 
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 
 .plant-list li:last-child {

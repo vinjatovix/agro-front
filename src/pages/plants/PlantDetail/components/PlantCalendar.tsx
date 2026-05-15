@@ -4,7 +4,7 @@ import CalendarRow from './CalendarRow';
 import HemisphereToggle from './HemisphereToggle';
 import InfoRow from './InfoRow';
 import MonthChips from './MonthChips';
-import PlantSection from './PlantSection';
+import BodySection from '../../../../shared/components/BodySection/BodySection';
 
 import './plantCalendar.css';
 
@@ -20,7 +20,7 @@ export default function PlantCalendar({
   onHemisphereChange
 }: Props) {
   return (
-    <PlantSection title="Calendario">
+    <BodySection title="Calendario">
       <div className="plant-calendar__controls">
         {onHemisphereChange && (
           <HemisphereToggle value={hemisphere} onChange={onHemisphereChange} />
@@ -57,6 +57,6 @@ export default function PlantCalendar({
           hemisphere={hemisphere}
         />
       </CalendarRow>
-    </PlantSection>
+    </BodySection>
   );
 }

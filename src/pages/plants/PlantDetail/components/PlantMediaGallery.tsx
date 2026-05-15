@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { Plant } from '../../../../types/Plant';
 import { getYoutubeEmbedUrl } from '../../utils/getYoutubeEmbedUrl';
-import PlantSection from './PlantSection';
+import BodySection from '../../../../shared/components/BodySection/BodySection';
 
 interface Props {
   readonly plant: Plant;
@@ -30,7 +30,7 @@ export default function PlantMediaGallery({ plant }: Props) {
   if (!resources.length) return null;
 
   return (
-    <PlantSection title="Media">
+    <BodySection title="Media">
       <div className="media-tabs">
         <button
           className={tab === 'images' ? 'active' : ''}
@@ -73,6 +73,6 @@ export default function PlantMediaGallery({ plant }: Props) {
           })}
         </div>
       )}
-    </PlantSection>
+    </BodySection>
   );
 }

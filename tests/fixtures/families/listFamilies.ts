@@ -34,12 +34,45 @@ export const listFamiliesResponse: PaginatedResponse<Family> = {
         updatedAt: new Date('2026-05-11T21:05:48.475Z'),
         updatedBy: 'register1'
       }
+    },
+    {
+      id: 'a1d5f8e2-b3c7-4e1a-9f2a-5c9b8d7e1f3a',
+      slug: 'Apiaceae',
+      name: 'apiáceas',
+      aliases: [
+        'umbelíferas',
+        'familia del apio',
+        'familia de la zanahoria',
+        'familia del perejil'
+      ],
+      scientificName: 'Apiaceae',
+      shortDescription:
+        'Son plantas herbáceas, anuales, bienales o perennes, muchas veces aromáticas. Tienen tallos generalmente huecos (fístulos) y hojas alternas, profundamente divididas (pinnadas o bipinnadas), con vainas abrazadoras. Sus flores pequeñas se agrupan en umbelas compuestas. El fruto es un esquizocarpo que se divide en dos mericarpos.',
+      highlights: [
+        'Incluye hortalizas fundamentales: zanahoria (Daucus carota), apio (Apium graveolens), perejil (Petroselinum crispum), hinojo (Foeniculum vulgare).',
+        'Fuente de especias: comino (Cuminum cyminum), anís (Pimpinella anisum), cilantro (Coriandrum sativum), eneldo (Anethum graveolens).',
+        'Contienen aceites esenciales responsables de sus aromas y propiedades.',
+        'Algunas especies son altamente tóxicas, como la cicuta (Conium maculatum) y la hierba del diablo (Oenanthe crocata).'
+      ],
+      extra: {
+        order: 'Apiales',
+        subfamilies: ['Apioideae', 'Saniculoideae', 'Hydrocotyloideae'],
+        distribution:
+          'Distribuida por todo el mundo, con mayor diversidad en las regiones templadas del hemisferio norte. Presente en hábitats variados, desde prados y bordes de caminos hasta zonas húmedas y montañas.',
+        speciesCount: 3800
+      },
+      metadata: {
+        createdAt: new Date('2026-05-11T21:30:35.425Z'),
+        createdBy: 'register1',
+        updatedAt: new Date('2026-05-11T21:30:35.425Z'),
+        updatedBy: 'register1'
+      }
     }
   ],
   pagination: {
     page: 1,
     limit: 20,
-    totalPages: 2,
-    totalItems: 32
+    totalPages: 1,
+    totalItems: 2
   }
 };

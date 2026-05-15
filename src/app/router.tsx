@@ -10,7 +10,7 @@ import Register from '../pages/auth/Register';
 
 import PlantDetail from '../pages/plants/PlantDetail/PlantDetail';
 import FamilyList from '../pages/families/FamilyList';
-import FamilyDetail from '../pages/families/FamilyDetail';
+import FamilyDetail from '../pages/families/FamilyDetail/FamilyDetail';
 
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import PlantsPage from '../pages/plants/PlantsPage';

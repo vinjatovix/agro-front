@@ -1,6 +1,6 @@
 import type { Plant } from '../../../../types/Plant';
 
-import PlantSection from './PlantSection';
+import BodySection from '../../../../shared/components/BodySection/BodySection';
 import InfoRow from './InfoRow';
 import PropagationMethodCard from './PropagationMethodCard';
 import PruningCard from './PruningCard';
@@ -23,7 +23,7 @@ export default function PlantCultivation({ plant }: Props) {
   const propagationMethods = plant.knowledge.propagation?.methods ?? {};
 
   return (
-    <PlantSection title="Cultivo">
+    <BodySection title="Cultivo">
       <div className="cultivation-basic">
         <InfoRow
           label="⚗️ pH del suelo"
@@ -82,6 +82,6 @@ export default function PlantCultivation({ plant }: Props) {
           </div>
         </div>
       )}
-    </PlantSection>
+    </BodySection>
   );
 }

@@ -27,7 +27,7 @@ export function getYoutubeEmbedUrl(url: string): string | null {
     }
 
     if (isYoutuBe) {
-      const videoId = parsed.pathname.split('/').filter(Boolean)[0];
+      const videoId = parsed.pathname.split('/').find(Boolean);
       if (!videoId) return null;
 
       return `https://www.youtube.com/embed/${videoId}`;
