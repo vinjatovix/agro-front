@@ -122,4 +122,25 @@ describe('Drawer', () => {
 
     expect(aside?.className).toContain('drawer-closed');
   });
+
+  it.each(['Enter', ' '])(
+    'should call onClose when pressing %s on overlay',
+    (key) => {
+      const onClose = vi.fn();
+
+      render(
+        <Drawer isOpen={true} onClose={onClose}>
+          <div>Content</div>
+        </Drawer>
+      );
+
+      const overlay = document.querySelector('.drawer-overlay') as HTMLElement;
+
+      overlay.focus();
+
+      fireEvent.keyDown(overlay, { key });
+
+      expect(onClose).toHaveBeenCalledTimes(1);
+    }
+  );
 });

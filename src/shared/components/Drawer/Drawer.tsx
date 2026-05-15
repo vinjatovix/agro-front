@@ -22,13 +22,30 @@ export default function Drawer({
       if (e.key === 'Escape') onClose();
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    globalThis.addEventListener('keydown', handleKeyDown);
+    return () => globalThis.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
   return (
     <>
-      {isOpen && <div className="drawer-overlay" onClick={onClose} />}
+      {isOpen && (
+        <div
+          className="drawer-overlay"
+          onClick={onClose}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              onClose();
+            }
+            if (e.key === ' ') {
+              e.preventDefault();
+              onClose();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label="Close drawer"
+        />
+      )}
 
       <aside
         className={[
