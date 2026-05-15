@@ -1,0 +1,18 @@
+.calendar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.calendar-row__label {
+  font-weight: 600;
+  color: #444;
+}
+
+.calendar-row__value {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}

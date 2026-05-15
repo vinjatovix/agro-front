@@ -1,0 +1,35 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 4px 10px;
+  border-radius: 999px;
+
+  font-size: 16px;
+  line-height: 1;
+
+  border: 1px solid #e5e5e5;
+  background: #fafafa;
+  color: #333;
+}
+.badge__icon {
+  font-size: 16px;
+  line-height: 1;
+}
+.badge--family {
+  background: #eef7ee;
+  border-color: #cfe8cf;
+}
+.badge--scientific {
+  background: #f3f6ff;
+  border-color: #d8e2ff;
+  font-style: italic;
+}
+.badge--alias {
+  background: #fff;
+  border-color: #eee;
+}
+.badge--default {
+  background: #fafafa;
+}

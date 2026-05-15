@@ -1,0 +1,27 @@
+.plant-detail {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.plant-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.plant-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #f7fbf7;
+  border: 1px solid #e3eee3;
+
+  font-size: 13px;
+}
+
+.plant-list li:last-child {
+  margin-bottom: 0;
+}

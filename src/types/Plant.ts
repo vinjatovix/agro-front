@@ -8,7 +8,7 @@ export interface Plant {
   identity: {
     name: {
       primary: string;
-      aliases?: string[];
+      aliases: string[];
     };
     scientificName?: string;
     family: string;
@@ -60,7 +60,7 @@ export interface Plant {
   };
 
   knowledge: {
-    soil?: {
+    soil: {
       ph: Range;
       availableDepthCm: Range;
     };
@@ -69,7 +69,7 @@ export interface Plant {
       depthCm: Range;
       spreadCm: Range;
     };
-    watering?: {
+    watering: {
       frequency: 'daily' | 'weekly';
       amountMm?: number;
       conditions?: string[];
@@ -86,7 +86,7 @@ export interface Plant {
       frequencyPerYear: number;
       bestPractices?: string[];
     }>;
-    propagation?: {
+    propagation: {
       methods: Record<
         string,
         {
@@ -96,8 +96,8 @@ export interface Plant {
         }
       >;
     };
-    ecology?: {
-      strategicBenefits?: string[];
+    ecology: {
+      strategicBenefits: string[];
     };
     resources?: Array<{
       type: 'image' | 'article' | 'video';
