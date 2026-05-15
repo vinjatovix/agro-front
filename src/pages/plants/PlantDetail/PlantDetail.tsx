@@ -1,5 +1,3 @@
-// PlantDetail.tsx
-
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -22,6 +20,7 @@ export default function PlantDetail() {
 
   const [plant, setPlant] = useState<Plant | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [hemisphere, setHemisphere] = useState<'north' | 'south'>('north');
 
@@ -29,15 +28,24 @@ export default function PlantDetail() {
     async function loadPlant() {
       if (!id) {
         setPlant(null);
+        setError(null);
         setLoading(false);
+
         return;
       }
 
       try {
+        setLoading(true);
+        setError(null);
+        setPlant(null);
+
         const response = await getPlantById(id);
+
         setPlant(response);
       } catch (error) {
-        console.error(error);
+        setPlant(null);
+
+        setError(error instanceof Error ? error.message : 'Unknown error');
       } finally {
         setLoading(false);
       }
@@ -49,7 +57,9 @@ export default function PlantDetail() {
   if (loading) {
     return <div>Loading plant...</div>;
   }
-
+  if (error) {
+    return <div role="alert">{error}</div>;
+  }
   if (!plant) {
     return <div>Plant not found</div>;
   }

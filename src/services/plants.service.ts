@@ -27,7 +27,7 @@ export type PlantFilterParams = {
 export async function getPlants(
   filters?: PlantFilterParams,
   pagination?: PaginationParams
-) {
+): Promise<PaginatedResponse<Plant>> {
   const query = QueryBuilder.create()
     .add('filter[name][eq]', filters?.name)
     .add('filter[aliases][hasAny]', filters?.aliases)
@@ -51,6 +51,6 @@ export async function getPlants(
   >;
 }
 
-export async function getPlantById(id: string) {
-  return apiFetch(`/api/v1/plants/${id}`) as Promise<Plant>;
+export async function getPlantById(id: string): Promise<Plant> {
+  return apiFetch(`/api/v1/plants/${id}`);
 }

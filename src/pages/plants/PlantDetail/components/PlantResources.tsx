@@ -31,6 +31,7 @@ export default function PlantResources({ plant }: Props) {
           return (
             <iframe
               key={video.url}
+              data-testid="resource-video"
               className="plant-video"
               src={embedUrl}
               title="Plant video"
