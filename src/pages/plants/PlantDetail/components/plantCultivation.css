@@ -1,0 +1,24 @@
+.cultivation-basic {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.cultivation-section {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.cultivation-section__title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.propagation-grid,
+.pruning-grid {
+  display: grid;
+  gap: 12px;
+}

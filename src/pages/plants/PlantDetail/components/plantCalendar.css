@@ -1,0 +1,17 @@
+.plant-calendar__controls {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.plant-calendar__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .plant-calendar__grid {
+    grid-template-columns: 1fr;
+  }
+}

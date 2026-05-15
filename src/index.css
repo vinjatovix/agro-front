@@ -2,6 +2,14 @@
   box-sizing: border-box;
 }
 
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+}
+
 html,
 body,
 #root {

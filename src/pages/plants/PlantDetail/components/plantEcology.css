@@ -1,0 +1,3 @@
+.plant-list--ecology li::before {
+  content: '🌿';
+}

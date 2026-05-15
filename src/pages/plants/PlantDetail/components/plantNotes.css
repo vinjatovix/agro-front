@@ -1,0 +1,3 @@
+.plant-list--notes li::before {
+  content: '📝';
+}

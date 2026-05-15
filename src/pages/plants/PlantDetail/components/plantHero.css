@@ -1,0 +1,48 @@
+.plant-hero {
+  display: grid;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.plant-hero h1 {
+  margin: 0;
+}
+
+.plant-hero p {
+  margin: 0;
+}
+
+.plant-hero__image {
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.plant-hero__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.plant-hero__scientific {
+  font-style: italic;
+  color: #666;
+  margin: 0;
+}
+
+.plant-hero__aliases {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin-top: 4px;
+}
+
+.plant-hero__label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #666;
+  margin-right: 4px;
+}

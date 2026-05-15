@@ -8,7 +8,7 @@ import Home from '../pages/Home';
 import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
 
-import PlantDetail from '../pages/plants/PlantDetail';
+import PlantDetail from '../pages/plants/PlantDetail/PlantDetail';
 import FamilyList from '../pages/families/FamilyList';
 import FamilyDetail from '../pages/families/FamilyDetail';
 
