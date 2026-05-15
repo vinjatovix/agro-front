@@ -9,7 +9,10 @@ interface Props {
 
 export default function PlantSection({ title, children }: Props) {
   return (
-    <section className="plant-section">
+    <section
+      className="plant-section"
+      data-testid={`section-${title.toLowerCase()}`}
+    >
       <h2 className="plant-section__title">{title}</h2>
 
       <div className="plant-section__content">{children}</div>

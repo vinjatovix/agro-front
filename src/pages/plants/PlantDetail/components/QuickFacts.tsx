@@ -8,21 +8,21 @@ interface Props {
 }
 
 const LIFE_CYCLE_LABELS: Record<string, string> = {
-  annual: 'Annual',
-  biennial: 'Biennial',
-  perennial: 'Perennial'
+  annual: 'Anual',
+  biennial: 'Bienal',
+  perennial: 'Perenne'
 };
 
 const LIGHT_TYPE_LABELS: Record<string, string> = {
-  full_sun: 'Full sun',
-  partial_shade: 'Partial shade',
-  shade: 'Shade'
+  full_sun: 'Pleno sol',
+  partial_shade: 'Sombra parcial',
+  full_shade: 'Sombra total'
 };
 
 const WATERING_LABELS: Record<string, string> = {
-  daily: 'Daily',
-  weekly: 'Weekly',
-  biweekly: 'Every 2 weeks'
+  daily: 'Diario',
+  weekly: 'Semanal',
+  biweekly: 'Cada 2 semanas'
 };
 
 export default function QuickFacts({ plant }: Props) {

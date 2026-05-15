@@ -4,8 +4,8 @@ export default function CalendarRow({
   label,
   children
 }: {
-  label: string;
-  children: React.ReactNode;
+  readonly label: string;
+  readonly children: React.ReactNode;
 }) {
   return (
     <div className="calendar-row">

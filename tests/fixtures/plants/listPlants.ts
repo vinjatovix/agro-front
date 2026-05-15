@@ -151,12 +151,165 @@ export const listPlantsResponse: PaginatedResponse<Plant> = {
       },
       status: 'ACTIVE',
       deletedAt: null
+    },
+    {
+      id: 'ba109916-f032-45d0-8781-34f8482e53ac',
+      identity: {
+        name: {
+          primary: 'cola de caballo',
+          aliases: ['equiseto', 'pinillo', 'Equisetum arvense']
+        },
+        scientificName: 'equisetum arvense',
+        family: 'ecfe4e91-1da9-4eb6-9d1d-d0a315e765f4'
+      },
+      traits: {
+        lifecycle: 'perennial',
+        size: {
+          height: {
+            min: 30,
+            max: 70
+          },
+          spread: {
+            min: 30,
+            max: 40
+          }
+        },
+        spacingCm: {
+          min: 30,
+          max: 40
+        }
+      },
+      phenology: {
+        sowing: {
+          seedsPerHole: {
+            min: 1,
+            max: 1
+          },
+          germinationDays: {
+            min: 1,
+            max: 12
+          },
+          months: [3, 4, 5, 6, 9, 10, 11],
+          methods: {
+            direct: {
+              depthCm: {
+                min: 0,
+                max: 5
+              }
+            }
+          }
+        },
+        flowering: {
+          months: [3, 4],
+          pollination: {
+            type: 'self',
+            agents: []
+          }
+        },
+        harvest: {
+          months: [6, 7],
+          description:
+            'Cosecha de tallos estériles verdes en junio-julio, antes de que se oscurezcan completamente, preferiblemente al mediodía.'
+        }
+      },
+      knowledge: {
+        watering: {
+          frequency: 'weekly',
+          conditions: [
+            'Riego demandante sin encharcar',
+            'Prefiere suelos húmedos, bien drenados'
+          ]
+        },
+        light: {
+          hoursMin: 4,
+          type: 'full_sun',
+          preference: 'morning'
+        },
+        pruning: [
+          {
+            type: 'maintenance',
+            intensity: 'light',
+            season: 'summer',
+            frequencyPerYear: 1,
+            bestPractices: ['Controlar la expansión por rizomas']
+          }
+        ],
+        propagation: {
+          methods: {
+            division: {
+              season: 'spring',
+              bestPractices: [
+                'División de rizomas en primavera u otoño',
+                'Cultivar preferiblemente en maceta o con barreras físicas'
+              ]
+            }
+          }
+        },
+        ecology: {
+          strategicBenefits: [
+            'Repelente natural de plagas',
+            'Estimula las defensas de otras plantas',
+            'Usada como fungicida natural (purín fermentado)'
+          ]
+        },
+        resources: [
+          {
+            type: 'image',
+            url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Equisetum_arvense_stems.jpg/300px-Equisetum_arvense_stems.jpg'
+          },
+          {
+            type: 'video',
+            url: 'https://www.youtube.com/watch?v=nhtp2y49Hoo'
+          },
+          {
+            type: 'video',
+            url: 'https://www.youtube.com/watch?v=g2yQYIRQV7k'
+          }
+        ],
+        notes: [
+          'Muy invasiva por su sistema rizomatoso extenso',
+          'Ideal en suelos húmedos, arenosos o arcillosos',
+          'Usada en agricultura biodinámica como preparado 508',
+          'Compatible con plantas que necesiten protección contra hongos',
+          'Incompatible con plantas que requieran suelos secos',
+          'Evitar replantar en el mismo lugar antes de 3 años'
+        ],
+        soil: {
+          ph: {
+            min: 6.5,
+            max: 7.5
+          },
+          availableDepthCm: {
+            min: 30,
+            max: 50
+          }
+        },
+        rootSystem: {
+          type: 'rhizome',
+          depthCm: {
+            min: 10,
+            max: 15
+          },
+          spreadCm: {
+            min: 30,
+            max: 40
+          }
+        }
+      },
+      metadata: {
+        createdAt: new Date('2026-05-15T02:43:14.809Z'),
+        createdBy: 'register1',
+        updatedAt: new Date('2026-05-15T02:43:14.809Z'),
+        updatedBy: 'register1'
+      },
+      status: 'ACTIVE',
+      deletedAt: null
     }
   ],
   pagination: {
     page: 1,
     limit: 25,
     totalPages: 1,
-    totalItems: 1
+    totalItems: 2
   }
 };

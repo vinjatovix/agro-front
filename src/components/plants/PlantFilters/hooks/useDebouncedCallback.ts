@@ -12,7 +12,7 @@ export function useDebouncedCallback<T>(
         clearTimeout(timeoutRef.current);
       }
 
-      timeoutRef.current = window.setTimeout(() => {
+      timeoutRef.current = globalThis.setTimeout(() => {
         callback(value);
       }, delay);
     },

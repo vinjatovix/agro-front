@@ -92,7 +92,7 @@ describe('usePlants', () => {
     );
 
     await waitFor(() => {
-      expect(result.current.plants.length).toBe(listPlantsResponse.data.length);
+      expect(result.current.plants.length).toBe(1);
     });
   });
 

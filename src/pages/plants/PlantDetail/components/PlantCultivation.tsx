@@ -7,8 +7,16 @@ import PruningCard from './PruningCard';
 
 import './plantCultivation.css';
 
+const ROOT_SYSTEMS_LABELS: Record<string, string> = {
+  fibrous: 'Fibroso',
+  taproot: 'Pivotante',
+  adventitious: 'Adventicio',
+  tuberous: 'Tubérculo',
+  rhizome: 'Rizoma'
+};
+
 interface Props {
-  plant: Plant;
+  readonly plant: Plant;
 }
 
 export default function PlantCultivation({ plant }: Props) {
@@ -16,7 +24,6 @@ export default function PlantCultivation({ plant }: Props) {
 
   return (
     <PlantSection title="Cultivo">
-      {/* SOIL / ROOT BASIC FACTS */}
       <div className="cultivation-basic">
         <InfoRow
           label="⚗️ pH del suelo"
@@ -30,7 +37,10 @@ export default function PlantCultivation({ plant }: Props) {
 
         <InfoRow
           label="🫚 Sistema radicular"
-          value={plant.knowledge.rootSystem.type}
+          value={
+            ROOT_SYSTEMS_LABELS[plant.knowledge.rootSystem.type] ??
+            plant.knowledge.rootSystem.type
+          }
         />
 
         <InfoRow
@@ -39,7 +49,6 @@ export default function PlantCultivation({ plant }: Props) {
         />
       </div>
 
-      {/* PROPAGATION SECTION */}
       <div className="cultivation-section">
         <h3 className="cultivation-section__title">🌱 Propagación</h3>
 
@@ -55,15 +64,14 @@ export default function PlantCultivation({ plant }: Props) {
         </div>
       </div>
 
-      {/* PRUNING SECTION */}
       {plant.knowledge.pruning && plant.knowledge.pruning.length > 0 && (
         <div className="cultivation-section">
           <h3 className="cultivation-section__title">✂️ Poda</h3>
 
           <div className="pruning-grid">
-            {plant.knowledge.pruning.map((p, index) => (
+            {plant.knowledge.pruning.map((p) => (
               <PruningCard
-                key={index}
+                key={`${p.type}-${p.season}`}
                 type={p.type}
                 intensity={p.intensity}
                 season={p.season}

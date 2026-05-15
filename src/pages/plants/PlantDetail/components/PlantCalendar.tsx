@@ -9,9 +9,9 @@ import PlantSection from './PlantSection';
 import './plantCalendar.css';
 
 interface Props {
-  plant: Plant;
-  hemisphere: 'north' | 'south';
-  onHemisphereChange?: (value: 'north' | 'south') => void;
+  readonly plant: Plant;
+  readonly hemisphere: 'north' | 'south';
+  readonly onHemisphereChange?: (value: 'north' | 'south') => void;
 }
 
 export default function PlantCalendar({
@@ -51,14 +51,12 @@ export default function PlantCalendar({
         />
       </CalendarRow>
 
-      {plant.phenology.harvest && (
-        <CalendarRow label="🌾 Cosecha">
-          <MonthChips
-            months={plant.phenology.harvest.months}
-            hemisphere={hemisphere}
-          />
-        </CalendarRow>
-      )}
+      <CalendarRow label="🌾 Cosecha">
+        <MonthChips
+          months={plant.phenology.harvest.months}
+          hemisphere={hemisphere}
+        />
+      </CalendarRow>
     </PlantSection>
   );
 }

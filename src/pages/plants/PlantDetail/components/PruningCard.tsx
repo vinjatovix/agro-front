@@ -1,11 +1,11 @@
 import InfoRow from './InfoRow';
 
 interface Props {
-  type: string;
-  intensity: string;
-  season: string;
-  frequencyPerYear: number;
-  bestPractices?: string[];
+  readonly type: string;
+  readonly intensity: string;
+  readonly season: string;
+  readonly frequencyPerYear: number;
+  readonly bestPractices?: string[];
 }
 
 export default function PruningCard({
@@ -16,7 +16,7 @@ export default function PruningCard({
   bestPractices
 }: Props) {
   return (
-    <div className="pruning-card">
+    <div className="pruning-card" data-testid={`pruning-${type}`}>
       <InfoRow label="🧩 Tipo" value={type} />
 
       <InfoRow label="⚡ Intensidad" value={intensity} />

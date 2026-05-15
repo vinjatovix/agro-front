@@ -14,26 +14,36 @@ export default function FamilyDetail() {
   const [plants, setPlants] = useState<Plant[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     if (!id) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setFamily(null);
       setPlants([]);
+      setError(null);
       setLoading(false);
+
       return;
     }
-    setLoading(true);
-    async function load() {
-      if (!id) return;
 
+    async function load() {
       try {
+        setLoading(true);
+        setError(null);
+
         const [familyRes, plantsRes] = await Promise.all([
-          getFamilyById(id),
-          getPlants({ family: id })
+          getFamilyById(id as string),
+          getPlants({ family: id as string })
         ]);
 
         setFamily(familyRes);
         setPlants(plantsRes.data);
+      } catch (error) {
+        setFamily(null);
+        setPlants([]);
+
+        setError(error instanceof Error ? error.message : 'Unknown error');
       } finally {
         setLoading(false);
       }
@@ -41,8 +51,10 @@ export default function FamilyDetail() {
 
     load();
   }, [id]);
-
   if (loading) return <div>Loading family...</div>;
+  if (error) {
+    return <div role="alert">{error}</div>;
+  }
   if (!family) return <div>Family not found</div>;
 
   return (
