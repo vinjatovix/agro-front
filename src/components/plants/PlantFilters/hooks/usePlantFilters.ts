@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSliderFilter } from './useSliderFilter';
 import { useDebouncedCallback } from './useDebouncedCallback';
 
@@ -18,6 +18,14 @@ function useTextFilters(
     aliases,
     strategicBenefits
   });
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTextState({
+      aliases,
+      strategicBenefits
+    });
+  }, [aliases, strategicBenefits]);
 
   const setTextValue = useCallback((key: string, value: string) => {
     setTextState((prev) => ({

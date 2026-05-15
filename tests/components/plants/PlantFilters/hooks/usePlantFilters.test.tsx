@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { usePlantFilters } from '../../../../../src/components/plants/PlantFilters/hooks/usePlantFilters';
 
@@ -96,6 +96,32 @@ describe('usePlantFilters', () => {
     });
 
     expect(result.current.getParam('hemisphere')).toBe('south');
+  });
+
+  it('syncs textState when text params change after mount', async () => {
+    const { result } = renderHook(
+      () => usePlantFilters({ onSearchChange: setSearchChangeMock }),
+      { wrapper: wrapperEmpty }
+    );
+
+    expect(result.current.textState.aliases).toBe('');
+    expect(result.current.textState.strategicBenefits).toBe('');
+
+    act(() => {
+      result.current.setParam('aliases', 'mint');
+    });
+
+    await waitFor(() => {
+      expect(result.current.textState.aliases).toBe('mint');
+    });
+
+    act(() => {
+      result.current.setParam('strategicBenefits', 'high-vitamin');
+    });
+
+    await waitFor(() => {
+      expect(result.current.textState.strategicBenefits).toBe('high-vitamin');
+    });
   });
 
   it('clearFilters resets URL + sliders + search', () => {
