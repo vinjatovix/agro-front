@@ -10,6 +10,11 @@ export default defineVitestConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './tests/setup.ts'
+    setupFiles: './tests/setup.ts',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      reportsDirectory: './coverage'
+    }
   }
 });
