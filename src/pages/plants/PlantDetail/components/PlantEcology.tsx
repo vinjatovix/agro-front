@@ -1,6 +1,6 @@
 import type { Plant } from '../../../../types/Plant';
 
-import PlantSection from './PlantSection';
+import BodySection from '../../../../shared/components/BodySection/BodySection';
 
 import './plantEcology.css';
 
@@ -16,12 +16,12 @@ export default function PlantEcology({ plant }: Props) {
   }
 
   return (
-    <PlantSection title="Ecología">
+    <BodySection title="Ecología">
       <ul className="plant-list plant-list--ecology">
         {benefits.map((benefit) => (
           <li key={benefit}>{benefit}</li>
         ))}
       </ul>
-    </PlantSection>
+    </BodySection>
   );
 }

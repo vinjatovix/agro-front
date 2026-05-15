@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
-import { getFamilyById } from '../../services/families.service';
-import { getPlants } from '../../services/plants.service';
+import { FamilyHero } from './components/FamilyHero';
+import type { Family } from '../../../types/Family';
+import type { Plant } from '../../../types/Plant';
+import { getFamilyById } from '../../../services/families.service';
+import { getPlants } from '../../../services/plants.service';
 
-import type { Family } from '../../types/Family';
-import type { Plant } from '../../types/Plant';
+import './familyDetail.css';
+import FamilyPlants from './components/FamilyPlants';
+import FamilyInfo from './components/FamilyInfo';
 
 export default function FamilyDetail() {
   const { id } = useParams();
@@ -52,40 +56,16 @@ export default function FamilyDetail() {
     load();
   }, [id]);
   if (loading) return <div>Loading family...</div>;
-  if (error) {
-    return <div role="alert">{error}</div>;
-  }
+  if (error) return <div role="alert">{error}</div>;
   if (!family) return <div>Family not found</div>;
 
   return (
-    <div>
-      <h1>{family.scientificName}</h1>
-      <p>{family.name}</p>
+    <div className="family-detail">
+      <FamilyHero family={family} />
 
-      <p>{family.shortDescription}</p>
+      <FamilyInfo family={family} />
 
-      <h2>Highlights</h2>
-      <ul>
-        {family.highlights.map((h) => (
-          <li key={h}>{h}</li>
-        ))}
-      </ul>
-
-      <section>
-        <h2>Explorar</h2>
-
-        <Link to={`/plants?family=${family.id}`}>
-          Ver plantas de esta familia
-        </Link>
-      </section>
-
-      <div className="plant-grid">
-        {plants.map((plant) => (
-          <Link key={plant.id} to={`/plants/${plant.id}`}>
-            {plant.identity.name.primary}
-          </Link>
-        ))}
-      </div>
+      <FamilyPlants family={family} plants={plants} />
     </div>
   );
 }

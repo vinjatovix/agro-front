@@ -1,0 +1,36 @@
+.family-hero {
+  display: grid;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #1f7515;
+}
+.family-hero h1 {
+  margin: 0;
+}
+.family-hero p {
+  margin: 0;
+}
+.family-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: start;
+}
+.family-hero__scientific {
+  font-style: italic;
+  color: #666;
+  margin: 0;
+}
+
+.family-hero__aliases {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin-top: 0.25rem;
+}
+.family-hero__label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #666;
+  margin-right: 4px;
+}

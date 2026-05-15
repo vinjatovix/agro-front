@@ -1,7 +1,7 @@
 import type { Plant } from '../../../../types/Plant';
 
 import InfoRow from './InfoRow';
-import PlantSection from './PlantSection';
+import BodySection from '../../../../shared/components/BodySection/BodySection';
 
 interface Props {
   readonly plant: Plant;
@@ -27,7 +27,7 @@ const WATERING_LABELS: Record<string, string> = {
 
 export default function QuickFacts({ plant }: Props) {
   return (
-    <PlantSection title="Datos rápidos">
+    <BodySection title="Datos rápidos">
       <InfoRow
         label="♻️ Ciclo de vida"
         value={
@@ -75,6 +75,6 @@ export default function QuickFacts({ plant }: Props) {
         label="📏 Espaciado"
         value={`${plant.traits.spacingCm.min}-${plant.traits.spacingCm.max} cm`}
       />
-    </PlantSection>
+    </BodySection>
   );
 }

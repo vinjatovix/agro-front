@@ -1,7 +1,7 @@
 import type { Plant } from '../../../../types/Plant';
 import { getYoutubeEmbedUrl } from '../../utils/getYoutubeEmbedUrl';
 
-import PlantSection from './PlantSection';
+import BodySection from '../../../../shared/components/BodySection/BodySection';
 
 import './plantResources.css';
 
@@ -19,7 +19,7 @@ export default function PlantResources({ plant }: Props) {
   const videos = resources.filter((resource) => resource.type === 'video');
 
   return (
-    <PlantSection title="Recursos">
+    <BodySection title="Recursos">
       <div className="plant-resources">
         {videos.map((video) => {
           const embedUrl = getYoutubeEmbedUrl(video.url);
@@ -40,6 +40,6 @@ export default function PlantResources({ plant }: Props) {
           );
         })}
       </div>
-    </PlantSection>
+    </BodySection>
   );
 }
