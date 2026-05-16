@@ -1,5 +1,6 @@
 import { t } from '../../../../i18n/core/t';
 import InfoRow from './InfoRow';
+import { tValue } from '../../../../i18n/core/tValue';
 
 interface Props {
   readonly type: string;
@@ -18,20 +19,32 @@ export default function PruningCard({
 }: Props) {
   return (
     <div className="pruning-card" data-testid={`pruning-${type}`}>
-      <InfoRow label={`🧩 ${t('plant.pruning.type')}`} value={type} />
-
-      <InfoRow label={`⚡ ${t('plant.pruning.intensity')}`} value={intensity} />
-
-      <InfoRow label={`📅 ${t('plant.pruning.season')}`} value={season} />
+      <InfoRow
+        label={`🧩 ${t('plant.cultivation.pruning.type')}`}
+        value={tValue('plant.cultivation.pruning.pruningTypeValues', type)}
+      />
 
       <InfoRow
-        label={`🔁 ${t('plant.pruning.frequency')}`}
-        value={`${frequencyPerYear} ${t('plant.pruning.times_per_year')}`}
+        label={`⚡ ${t('plant.cultivation.pruning.intensity')}`}
+        value={tValue(
+          'plant.cultivation.pruning.pruningIntensityValues',
+          intensity
+        )}
+      />
+
+      <InfoRow
+        label={`📅 ${t('plant.calendar.season')}`}
+        value={tValue('plant.calendar.seasonValues', season)}
+      />
+
+      <InfoRow
+        label={`🔁 ${t('plant.cultivation.pruning.frequency')}`}
+        value={`${frequencyPerYear} ${t('plant.cultivation.pruning.times_per_year')}`}
       />
 
       {bestPractices && bestPractices.length > 0 && (
         <InfoRow
-          label={`📌 ${t('plant.pruning.best_practices')}`}
+          label={`📌 ${t('plant.cultivation.pruning.best_practices')}`}
           value={
             <ul className="pruning-card__list">
               {bestPractices.map((bp) => (

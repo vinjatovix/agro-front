@@ -52,7 +52,7 @@ export default function PlantCultivation({ plant }: Props) {
 
       <div className="cultivation-section">
         <h3 className="cultivation-section__title">
-          🌱 {t('plant.cultivation.propagation')}
+          🌱 {t('plant.cultivation.propagation.propagation')}
         </h3>
 
         <div className="propagation-grid">
@@ -70,7 +70,7 @@ export default function PlantCultivation({ plant }: Props) {
       {plant.knowledge.pruning && plant.knowledge.pruning.length > 0 && (
         <div className="cultivation-section">
           <h3 className="cultivation-section__title">
-            ✂️ {t('plant.cultivation.pruning')}
+            ✂️ {t('plant.cultivation.pruning.pruning')}
           </h3>
 
           <div className="pruning-grid">
