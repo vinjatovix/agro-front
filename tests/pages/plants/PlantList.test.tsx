@@ -6,7 +6,7 @@ import { usePlants } from '../../../src/pages/plants/hooks/usePlants';
 import { buildPaginationPages } from '../../../src/shared/utils/pagination/buildPaginationPages';
 import { PaginationResult } from '../../../src/types/Pagination';
 import PlantList from '../../../src/pages/plants/PlantList';
-import { PlantCardProps } from '../../../src/pages/plants/PlantCard';
+import { PlantCardProps } from '../../../src/pages/plants/PlantCard/PlantCard';
 import { listPlantsResponse } from '../../fixtures/plants/listPlants';
 import { t } from '../../../src/i18n/core/t';
 
@@ -16,7 +16,7 @@ vi.mock('../../../src/shared/utils/pagination/buildPaginationPages', () => ({
   buildPaginationPages: vi.fn()
 }));
 
-vi.mock('../../../src/pages/plants/PlantCard', () => ({
+vi.mock('../../../src/pages/plants/PlantCard/PlantCard', () => ({
   default: ({ plant }: PlantCardProps) => (
     <div>{plant.identity.name.primary}</div>
   )

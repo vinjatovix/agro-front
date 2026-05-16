@@ -1,6 +1,6 @@
 import { usePlants } from './hooks/usePlants';
 
-import PlantCard from './PlantCard';
+import PlantCard from './PlantCard/PlantCard';
 
 import { buildPaginationPages } from '../../shared/utils/pagination';
 import LimitSelector from '../../shared/components/LimitSelector';
