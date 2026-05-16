@@ -14,7 +14,8 @@ export const dictionary = {
     loading: 'Cargando...',
     not_found: 'No encontrado',
     unknown_error: 'Error desconocido',
-    results_per_page: 'Resultados por página'
+    results_per_page: 'Resultados por página',
+    filters: 'Filtros'
   },
 
   family: {

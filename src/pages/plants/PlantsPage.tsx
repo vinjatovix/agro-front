@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { t } from '../../i18n/core/t';
 import useMediaQuery from '../../shared/hooks/useMediaQuery';
 import useDrawer from '../../shared/hooks/useDrawer';
 import Drawer from '../../shared/components/Drawer/Drawer';
@@ -24,7 +25,7 @@ export default function PlantsPage() {
 
       {isMobile && !drawer.isOpen && (
         <button type="button" onClick={drawer.open} className="plants-fab">
-          Filters
+          {t('common.filters')}
         </button>
       )}
 
