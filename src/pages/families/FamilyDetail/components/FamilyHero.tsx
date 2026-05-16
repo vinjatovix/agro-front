@@ -5,7 +5,11 @@ import Badge from '../../../../shared/components/Badge/Bagde';
 
 import './familyHero.css';
 
-export function FamilyHero({ family }: { family: Family }) {
+interface Props {
+  readonly family: Family;
+}
+
+export function FamilyHero({ family }: Props) {
   return (
     <header className="family-hero">
       <h1>{capitalizeFirstLetter(family.name)}</h1>
