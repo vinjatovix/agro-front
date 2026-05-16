@@ -29,20 +29,10 @@ export default function Drawer({
   return (
     <>
       {isOpen && (
-        <div
+        <button
+          type="button"
           className="drawer-overlay"
           onClick={onClose}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              onClose();
-            }
-            if (e.key === ' ') {
-              e.preventDefault();
-              onClose();
-            }
-          }}
-          role="button"
-          tabIndex={0}
           aria-label="Close drawer"
         />
       )}
