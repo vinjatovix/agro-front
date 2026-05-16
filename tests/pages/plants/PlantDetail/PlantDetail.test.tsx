@@ -106,15 +106,36 @@ describe('PlantDetail', () => {
     });
   });
 
-  it('should render resources section with youtube videos', async () => {
+  it('should render resources section with youtube videos and articles', async () => {
     vi.mocked(getPlantById).mockResolvedValue(mockPlantWithVideos);
 
     renderPlantDetail();
 
     const section = await screen.findByTestId('section-📚 recursos');
+    const articlesTab = document.getElementById(
+      'tab-articles'
+    ) as HTMLButtonElement;
+    const articleLinks = await screen.findAllByRole('link');
 
     expect(section).toBeInTheDocument();
+    expect(articleLinks.length).toBeGreaterThan(0);
+    expect(articlesTab).toBeInTheDocument();
+    expect(articlesTab).toHaveAttribute('aria-selected', 'true');
+  });
 
+  it('should switch to videos tab and render videos', async () => {
+    vi.mocked(getPlantById).mockResolvedValue(mockPlantWithVideos);
+
+    renderPlantDetail();
+
+    await screen.findByTestId('section-📚 recursos');
+
+    const videosTab = document.getElementById(
+      'tab-videos'
+    ) as HTMLButtonElement;
+    await userEvent.click(videosTab);
+
+    expect(videosTab).toHaveAttribute('aria-selected', 'true');
     expect(screen.getAllByTestId('resource-video')).toHaveLength(2);
   });
 });

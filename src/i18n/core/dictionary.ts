@@ -196,7 +196,9 @@ export const dictionary = {
     },
     resources: {
       title: 'Recursos',
-      video_title: 'Video sobre la planta'
+      video_title: 'Video sobre la planta',
+      videos: 'Vídeos',
+      articles: 'Artículos'
     },
     hemisphere: {
       title: 'Hemisferio',

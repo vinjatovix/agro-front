@@ -264,6 +264,10 @@ export const listPlantsResponse: PaginatedResponse<Plant> = {
           {
             type: 'video',
             url: 'https://www.youtube.com/watch?v=g2yQYIRQV7k'
+          },
+          {
+            type: 'article',
+            url: 'https://www.example.com/cola-de-caballo-beneficios-propiedades-usos'
           }
         ],
         notes: [
