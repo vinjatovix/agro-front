@@ -1,3 +1,4 @@
+import '@testing-library/jest-dom';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -35,7 +36,7 @@ describe('PlantsPage', () => {
   it('should show filters button in mobile', () => {
     renderWithRouter(<PlantsPage />);
     expect(
-      screen.getByRole('button', { name: /^filters$/i })
+      screen.getByRole('button', { name: /^filtros$/i })
     ).toBeInTheDocument();
   });
 
@@ -44,7 +45,7 @@ describe('PlantsPage', () => {
     renderWithRouter(<PlantsPage />);
 
     expect(
-      screen.queryByRole('button', { name: /^filters$/i })
+      screen.queryByRole('button', { name: /^filtros$/i })
     ).not.toBeInTheDocument();
   });
 
@@ -59,7 +60,7 @@ describe('PlantsPage', () => {
     const user = userEvent.setup();
     renderWithRouter(<PlantsPage />);
 
-    await user.click(screen.getByRole('button', { name: /^filters$/i }));
+    await user.click(screen.getByRole('button', { name: /^filtros$/i }));
 
     const overlay = document.querySelector('.drawer-overlay');
     expect(overlay).toBeInTheDocument();
