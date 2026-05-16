@@ -13,6 +13,8 @@ import {
 } from './config/filters.config';
 
 import './PlantFilters.css';
+import { t } from '../../../i18n/core/t';
+import { tValue } from '../../../i18n/core/tValue';
 
 interface Props {
   readonly search: string;
@@ -63,18 +65,20 @@ export default function PlantFilters({ search, onSearchChange }: Props) {
   return (
     <div className="plant-filters">
       <button
+        data-testid="clear-filters"
         type="button"
         className="plant-filters__clear"
         onClick={clearFilters}
       >
-        Clear filters
+        🆑 {t('plant.filters.clear')}
       </button>
 
       <TextFilter
+        data-testid="search-filter-input"
         value={search}
         onChange={onSearchChange}
-        label="Search plants"
-        placeholder="Search plants"
+        label={t('plant.filters.search_label')}
+        placeholder={t('plant.filters.search_placeholder')}
       />
 
       <FamilySelect value={family} onChange={setFamily} />
@@ -82,18 +86,22 @@ export default function PlantFilters({ search, onSearchChange }: Props) {
       {TEXT_FILTERS.map((filter) => (
         <TextFilter
           key={filter.key}
-          label={filter.label}
+          label={t(filter.labelKey)}
           value={textState[filter.key] ?? ''}
           onChange={(value) => handleTextChange(filter.key, value)}
         />
       ))}
 
       <ToggleGroup
-        label="Hemisphere"
+        label={t('plant.hemisphere.title')}
         options={['north', 'south']}
         value={hemisphere}
         onChange={(value) => setHemisphere(value as 'north' | 'south')}
-        renderLabel={(value) => (value === 'north' ? 'North' : 'South')}
+        renderLabel={(value) =>
+          value === 'north'
+            ? t('plant.hemisphere.north')
+            : t('plant.hemisphere.south')
+        }
       />
 
       <MonthSelector
@@ -105,7 +113,7 @@ export default function PlantFilters({ search, onSearchChange }: Props) {
       {TOGGLE_FILTERS.map((filter) => (
         <ToggleGroup
           key={filter.key}
-          label={filter.label}
+          label={t(filter.labelKey)}
           options={[...filter.options]}
           value={toggleValues[filter.key]}
           onChange={(value) =>
@@ -114,13 +122,27 @@ export default function PlantFilters({ search, onSearchChange }: Props) {
               toggleValues[filter.key] === value ? '' : value
             )
           }
+          renderLabel={(value) => {
+            switch (filter.key) {
+              case 'lifeCycle':
+                return tValue('plant.filters.lifeCycleValues', value);
+              case 'sowingMethod':
+                return tValue('plant.filters.sowingMethodValues', value);
+              case 'lightType':
+                return tValue('plant.filters.lightTypeValues', value);
+              case 'rootSystem':
+                return tValue('plant.filters.rootSystemValues', value);
+              default:
+                return value;
+            }
+          }}
         />
       ))}
 
       {SLIDER_FILTERS.map((filter) => (
         <SliderFilter
           key={filter.key}
-          label={filter.label}
+          label={t(filter.labelKey)}
           value={sliderValues[filter.key].value}
           min={filter.min}
           max={filter.max}

@@ -42,7 +42,7 @@ describe('FamilyDetail', () => {
 
     renderFamilyDetail();
 
-    expect(screen.getByText(/loading family/i)).toBeInTheDocument();
+    expect(screen.getByText(/Cargando/i)).toBeInTheDocument();
   });
 
   it('should render family information and plants', async () => {

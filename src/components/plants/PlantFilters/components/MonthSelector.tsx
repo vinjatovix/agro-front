@@ -1,3 +1,4 @@
+import { t } from '../../../../i18n/core/t';
 import { MONTHS } from '../constants';
 import { mapMonth } from '../utils/month.utils';
 
@@ -10,7 +11,9 @@ interface Props {
 export default function MonthSelector({ hemisphere, value, onChange }: Props) {
   return (
     <fieldset className="plant-filters__group">
-      <legend className="plant-filters__label">Sowing months</legend>
+      <legend className="plant-filters__label">
+        {t('plant.filters.sowingMonths')}
+      </legend>
 
       <div className="plant-filters__buttons plant-filters__buttons--wrap">
         {MONTHS.map((monthName, index) => {

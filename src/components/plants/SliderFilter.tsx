@@ -37,7 +37,7 @@ export default function SliderFilter({
               onCommit(null);
             }}
           >
-            Clear
+            ❌
           </button>
         )}
       </div>

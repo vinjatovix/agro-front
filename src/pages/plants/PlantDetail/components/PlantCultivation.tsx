@@ -6,6 +6,7 @@ import PropagationMethodCard from './PropagationMethodCard';
 import PruningCard from './PruningCard';
 
 import './plantCultivation.css';
+import { t } from '../../../../i18n/core/t';
 
 const ROOT_SYSTEMS_LABELS: Record<string, string> = {
   fibrous: 'Fibroso',
@@ -23,20 +24,20 @@ export default function PlantCultivation({ plant }: Props) {
   const propagationMethods = plant.knowledge.propagation?.methods ?? {};
 
   return (
-    <BodySection title="Cultivo">
+    <BodySection title={`🌱 ${t('plant.cultivation.title')}`}>
       <div className="cultivation-basic">
         <InfoRow
-          label="⚗️ pH del suelo"
+          label={`⚗️ ${t('plant.cultivation.soil_ph')}`}
           value={`${plant.knowledge.soil.ph.min}-${plant.knowledge.soil.ph.max}`}
         />
 
         <InfoRow
-          label="🪴 Profundidad del suelo"
+          label={`🪴 ${t('plant.cultivation.soil_depth')}`}
           value={`${plant.knowledge.soil.availableDepthCm.min}-${plant.knowledge.soil.availableDepthCm.max} cm`}
         />
 
         <InfoRow
-          label="🫚 Sistema radicular"
+          label={`🫚 ${t('plant.cultivation.root_system')}`}
           value={
             ROOT_SYSTEMS_LABELS[plant.knowledge.rootSystem.type] ??
             plant.knowledge.rootSystem.type
@@ -44,13 +45,15 @@ export default function PlantCultivation({ plant }: Props) {
         />
 
         <InfoRow
-          label="📏 Profundidad de la raíz"
+          label={`📏 ${t('plant.cultivation.root_depth')}`}
           value={`${plant.knowledge.rootSystem.depthCm.min}-${plant.knowledge.rootSystem.depthCm.max} cm`}
         />
       </div>
 
       <div className="cultivation-section">
-        <h3 className="cultivation-section__title">🌱 Propagación</h3>
+        <h3 className="cultivation-section__title">
+          🌱 {t('plant.cultivation.propagation')}
+        </h3>
 
         <div className="propagation-grid">
           {Object.entries(propagationMethods).map(([method, data]) => (
@@ -66,7 +69,9 @@ export default function PlantCultivation({ plant }: Props) {
 
       {plant.knowledge.pruning && plant.knowledge.pruning.length > 0 && (
         <div className="cultivation-section">
-          <h3 className="cultivation-section__title">✂️ Poda</h3>
+          <h3 className="cultivation-section__title">
+            ✂️ {t('plant.cultivation.pruning')}
+          </h3>
 
           <div className="pruning-grid">
             {plant.knowledge.pruning.map((p) => (

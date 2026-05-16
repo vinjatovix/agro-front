@@ -3,6 +3,7 @@ import type { Plant } from '../../../../types/Plant';
 import BodySection from '../../../../shared/components/BodySection/BodySection';
 
 import './plantNotes.css';
+import { t } from '../../../../i18n/core/t';
 
 interface Props {
   readonly plant: Plant;
@@ -16,7 +17,7 @@ export default function PlantNotes({ plant }: Props) {
   }
 
   return (
-    <BodySection title="Notas">
+    <BodySection title={`📝 ${t('plant.notes.title')}`}>
       <ul className="plant-list plant-list--notes">
         {notes.map((note) => (
           <li key={note}>{note}</li>

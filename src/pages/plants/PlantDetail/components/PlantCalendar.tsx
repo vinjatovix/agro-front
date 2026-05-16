@@ -7,6 +7,7 @@ import MonthChips from './MonthChips';
 import BodySection from '../../../../shared/components/BodySection/BodySection';
 
 import './plantCalendar.css';
+import { t } from '../../../../i18n/core/t';
 
 interface Props {
   readonly plant: Plant;
@@ -20,7 +21,7 @@ export default function PlantCalendar({
   onHemisphereChange
 }: Props) {
   return (
-    <BodySection title="Calendario">
+    <BodySection title={`📅 ${t('plant.calendar.title')}`}>
       <div className="plant-calendar__controls">
         {onHemisphereChange && (
           <HemisphereToggle value={hemisphere} onChange={onHemisphereChange} />
@@ -28,30 +29,30 @@ export default function PlantCalendar({
       </div>
       <div className="plant-calendar__grid">
         <InfoRow
-          label="🫘 Semillas por golpe"
+          label={`🫘 ${t('plant.calendar.seeds_per_hole')}`}
           value={`${plant.phenology.sowing.seedsPerHole.min}-${plant.phenology.sowing.seedsPerHole.max}`}
         />
 
         <InfoRow
-          label="⏳ Germinación"
-          value={`${plant.phenology.sowing.germinationDays.min}-${plant.phenology.sowing.germinationDays.max} días`}
+          label={`⏳ ${t('plant.calendar.germination')}`}
+          value={`${plant.phenology.sowing.germinationDays.min}-${plant.phenology.sowing.germinationDays.max} ${t('plant.calendar.days')}`}
         />
       </div>
-      <CalendarRow label="🌱 Siembra">
+      <CalendarRow label={`🌱 ${t('plant.calendar.sowing')}`}>
         <MonthChips
           months={plant.phenology.sowing.months}
           hemisphere={hemisphere}
         />
       </CalendarRow>
 
-      <CalendarRow label="🌼 Floración">
+      <CalendarRow label={`🌼 ${t('plant.calendar.flowering')}`}>
         <MonthChips
           months={plant.phenology.flowering.months}
           hemisphere={hemisphere}
         />
       </CalendarRow>
 
-      <CalendarRow label="🌾 Cosecha">
+      <CalendarRow label={`🌾 ${t('plant.calendar.harvest')}`}>
         <MonthChips
           months={plant.phenology.harvest.months}
           hemisphere={hemisphere}

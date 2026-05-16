@@ -35,7 +35,7 @@ describe('PlantDetail', () => {
 
     renderPlantDetail();
 
-    expect(screen.getByText(/loading plant/i)).toBeInTheDocument();
+    expect(screen.getByText(/Cargando planta/i)).toBeInTheDocument();
   });
 
   it('should render plant information', async () => {
@@ -51,11 +51,11 @@ describe('PlantDetail', () => {
 
     expect(screen.getByText(/petroselinum crispum/i)).toBeInTheDocument();
 
-    expect(screen.getByTestId('section-calendario')).toBeInTheDocument();
-    expect(screen.getByTestId('section-datos rápidos')).toBeInTheDocument();
-    expect(screen.getByTestId('section-cultivo')).toBeInTheDocument();
-    expect(screen.getByTestId('section-ecología')).toBeInTheDocument();
-    expect(screen.getByTestId('section-notas')).toBeInTheDocument();
+    expect(screen.getByTestId('section-📅 calendario')).toBeInTheDocument();
+    expect(screen.getByTestId('section-⚡ datos rápidos')).toBeInTheDocument();
+    expect(screen.getByTestId('section-🌱 cultivo')).toBeInTheDocument();
+    expect(screen.getByTestId('section-🌿 ecología')).toBeInTheDocument();
+    expect(screen.getByTestId('section-📝 notas')).toBeInTheDocument();
   });
 
   it('should change hemisphere', async () => {
@@ -66,7 +66,7 @@ describe('PlantDetail', () => {
 
     await screen.findByRole('heading', { name: /perejil/i });
 
-    const southBtn = screen.getByRole('button', { name: /south/i });
+    const southBtn = screen.getByRole('button', { name: /sur/i });
     await user.click(southBtn);
 
     expect(southBtn).toHaveClass('hemisphere-toggle__btn--active');
@@ -111,7 +111,7 @@ describe('PlantDetail', () => {
 
     renderPlantDetail();
 
-    const section = await screen.findByTestId('section-recursos');
+    const section = await screen.findByTestId('section-📚 recursos');
 
     expect(section).toBeInTheDocument();
 

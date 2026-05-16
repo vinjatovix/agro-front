@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { FamilyHero } from './components/FamilyHero';
+import { t } from '../../../i18n/core/t';
 import type { Family } from '../../../types/Family';
 import type { Plant } from '../../../types/Plant';
 import { getFamilyById } from '../../../services/families.service';
 import { getPlants } from '../../../services/plants.service';
 
 import './familyDetail.css';
+import { FamilyHero } from './components/FamilyHero';
 import FamilyPlants from './components/FamilyPlants';
 import FamilyInfo from './components/FamilyInfo';
 
@@ -47,7 +48,9 @@ export default function FamilyDetail() {
         setFamily(null);
         setPlants([]);
 
-        setError(error instanceof Error ? error.message : 'Unknown error');
+        setError(
+          error instanceof Error ? error.message : t('common.unknown_error')
+        );
       } finally {
         setLoading(false);
       }
@@ -55,9 +58,9 @@ export default function FamilyDetail() {
 
     load();
   }, [id]);
-  if (loading) return <div>Loading family...</div>;
+  if (loading) return <div>{t('family.detail.loading')}</div>;
   if (error) return <div role="alert">{error}</div>;
-  if (!family) return <div>Family not found</div>;
+  if (!family) return <div>{t('family.detail.not_found')}</div>;
 
   return (
     <div className="family-detail">
