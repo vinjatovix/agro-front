@@ -92,9 +92,9 @@ describe('PlantDetail', () => {
 
     expect(pruningCard).toBeInTheDocument();
 
-    expect(pruningCard).toHaveTextContent(/maintenance/i);
-    expect(pruningCard).toHaveTextContent(/moderate|light/i);
-    expect(pruningCard).toHaveTextContent(/spring|summer/i);
+    expect(pruningCard).toHaveTextContent(/Mantenimiento/i);
+    expect(pruningCard).toHaveTextContent(/Moderada/i);
+    expect(pruningCard).toHaveTextContent(/Primavera/i);
   });
 
   it('should render error when service fails', async () => {

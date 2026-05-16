@@ -98,7 +98,14 @@ export const dictionary = {
       flowering: 'Floración',
       harvest: 'Cosecha',
 
-      days: 'días'
+      days: 'días',
+      season: 'Estación',
+      seasonValues: {
+        spring: 'Primavera',
+        summer: 'Verano',
+        autumn: 'Otoño',
+        winter: 'Invierno'
+      }
     },
     quick_facts: {
       title: 'Datos rápidos',
@@ -120,22 +127,40 @@ export const dictionary = {
       root_system: 'Sistema radicular',
       root_depth: 'Profundidad de la raíz',
 
-      propagation: 'Propagación',
-      pruning: 'Poda'
+      propagation: {
+        propagation: 'Propagación',
+        method: 'Método',
+        season: 'Estación',
+        best_practices: 'Buenas prácticas',
+
+        methodValues: {
+          cutting: 'Esqueje',
+          grafting: 'Injerto',
+          layering: 'Acodo',
+          division: 'División',
+          seed: 'Semilla'
+        }
+      },
+      pruning: {
+        pruning: 'Poda',
+        type: 'Tipo',
+        pruningTypeValues: {
+          maintenance: 'Mantenimiento',
+          rejuvenation: 'Rejuvenecimiento',
+          shaping: 'Formación'
+        },
+        intensity: 'Intensidad',
+        pruningIntensityValues: {
+          light: 'Ligera',
+          moderate: 'Moderada',
+          hard: 'Fuerte'
+        },
+        frequency: 'Frecuencia',
+        times_per_year: 'veces/año',
+        best_practices: 'Buenas prácticas'
+      }
     },
-    propagation: {
-      method: 'Método',
-      season: 'Estación',
-      best_practices: 'Buenas prácticas'
-    },
-    pruning: {
-      type: 'Tipo',
-      intensity: 'Intensidad',
-      season: 'Estación',
-      frequency: 'Frecuencia',
-      times_per_year: 'veces/año',
-      best_practices: 'Buenas prácticas'
-    },
+
     ecology: {
       title: 'Ecología'
     },

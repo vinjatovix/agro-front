@@ -1,20 +1,6 @@
 import { t } from '../../../../i18n/core/t';
+import { tValue } from '../../../../i18n/core/tValue';
 import InfoRow from './InfoRow';
-
-const PROPAGATION_METHODS_LABELS: Record<string, string> = {
-  cutting: 'Esqueje',
-  grafting: 'Injerto',
-  layering: 'Acodo',
-  division: 'División',
-  seed: 'Semilla'
-};
-
-const SEASON_LABELS: Record<string, string> = {
-  spring: 'Primavera',
-  summer: 'Verano',
-  autumn: 'Otoño',
-  winter: 'Invierno'
-};
 
 interface Props {
   readonly method: string;
@@ -30,18 +16,18 @@ export default function PropagationMethodCard({
   return (
     <div className="propagation-card" data-testid={`propagation-${method}`}>
       <InfoRow
-        label={`🧪 ${t('plant.propagation.method')}`}
-        value={PROPAGATION_METHODS_LABELS[method] ?? method}
+        label={`🧪 ${t('plant.cultivation.propagation.method')}`}
+        value={tValue('plant.cultivation.propagation.methodValues', method)}
       />
 
       <InfoRow
-        label={`📅 ${t('plant.propagation.season')}`}
-        value={SEASON_LABELS[season] ?? season}
+        label={`📅 ${t('plant.calendar.season')}`}
+        value={tValue('plant.calendar.seasonValues', season)}
       />
 
       {bestPractices && bestPractices.length > 0 && (
         <InfoRow
-          label={`📌 ${t('plant.propagation.best_practices')}`}
+          label={`📌 ${t('plant.cultivation.propagation.best_practices')}`}
           value={
             <ul className="propagation-card__list">
               {bestPractices.map((bp) => (
