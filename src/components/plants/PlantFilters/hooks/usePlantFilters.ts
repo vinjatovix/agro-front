@@ -99,6 +99,10 @@ export function usePlantFilters({ onSearchChange }: Props) {
         if (value && value.length > 0) next.set(key, value);
         else next.delete(key);
 
+        if (key !== 'page') {
+          next.delete('page');
+        }
+
         return next;
       });
     },

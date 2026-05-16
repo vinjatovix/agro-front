@@ -13,7 +13,7 @@ function wrapperWithParams({ children }: { children: React.ReactNode }) {
   return (
     <MemoryRouter
       initialEntries={[
-        '/plants?soilPh=6&lightHoursMin=8&spacingCm=20&soilAvailableDepthCm=30'
+        '/plants?page=3&soilPh=6&lightHoursMin=8&spacingCm=20&soilAvailableDepthCm=30'
       ]}
     >
       {children}
@@ -132,5 +132,20 @@ describe('usePlantFilters', () => {
     });
 
     expect(result.current.getParam('page')).toBe('1');
+  });
+
+  it('resets page when any filter changes (bug regression test)', () => {
+    const { result } = renderHook(
+      () => usePlantFilters({ onSearchChange: setSearchChangeMock }),
+      { wrapper: wrapperWithParams }
+    );
+
+    act(() => {
+      result.current.setParam('family', 'abc');
+    });
+
+    expect(result.current.getParam('family')).toBe('abc');
+
+    expect(result.current.getParam('page')).toBe('');
   });
 });
