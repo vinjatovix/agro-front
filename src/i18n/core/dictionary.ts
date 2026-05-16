@@ -13,10 +13,12 @@ export const dictionary = {
 
     loading: 'Cargando...',
     not_found: 'No encontrado',
-    unknown_error: 'Error desconocido'
+    unknown_error: 'Error desconocido',
+    results_per_page: 'Resultados por página'
   },
 
   family: {
+    families: 'Familias',
     detail: {
       loading: 'Cargando familia...',
       not_found: 'Familia no encontrada'
@@ -38,6 +40,7 @@ export const dictionary = {
     }
   },
   plant: {
+    plants: 'Plantas',
     filters: {
       clear: 'Borrar filtros',
       search_label: 'Buscar plantas',

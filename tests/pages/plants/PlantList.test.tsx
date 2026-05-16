@@ -1,3 +1,4 @@
+import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Plant } from '../../../src/types/Plant';
@@ -7,6 +8,7 @@ import { PaginationResult } from '../../../src/types/Pagination';
 import PlantList from '../../../src/pages/plants/PlantList';
 import { PlantCardProps } from '../../../src/pages/plants/PlantCard';
 import { listPlantsResponse } from '../../fixtures/plants/listPlants';
+import { t } from '../../../src/i18n/core/t';
 
 vi.mock('../../../src/pages/plants/hooks/usePlants');
 
@@ -94,13 +96,13 @@ describe('PlantList', () => {
 
     render(<PlantList search="" />);
 
-    expect(screen.getByText('Loading plants...')).toBeInTheDocument();
+    expect(screen.getByText(/Cargando/i)).toBeInTheDocument();
   });
 
   it('renders title', () => {
     render(<PlantList search="" />);
 
-    expect(screen.getByText('Plants')).toBeInTheDocument();
+    expect(screen.getByText(t('plant.plants'))).toBeInTheDocument();
   });
 
   it('renders plants', () => {
@@ -121,9 +123,8 @@ describe('PlantList', () => {
   it('renders pagination twice', () => {
     render(<PlantList search="" />);
 
-    expect(screen.getAllByText(`Pagination-${pagination.page}`)).toHaveLength(
-      2
-    );
+    const paginationButtons = screen.getAllByTestId('pagination-button-1');
+    expect(paginationButtons).toHaveLength(2);
   });
 
   it('passes limit changes to setLimit', () => {
@@ -137,7 +138,8 @@ describe('PlantList', () => {
   it('passes page changes to setPage', () => {
     render(<PlantList search="" />);
 
-    fireEvent.click(screen.getAllByText('Pagination-1')[0]);
+    const paginationButtons = screen.getAllByTestId('pagination-button-3');
+    fireEvent.click(paginationButtons[0]);
 
     expect(setPage).toHaveBeenCalledWith(3);
   });

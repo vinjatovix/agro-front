@@ -1,3 +1,4 @@
+import { t } from '../../i18n/core/t';
 import { SUPPORTED_LIMITS } from './constants';
 
 interface Props {
@@ -8,7 +9,7 @@ interface Props {
 export default function LimitSelector({ value, onChange }: Props) {
   return (
     <div style={{ marginBottom: 16, marginTop: 16 }}>
-      <label htmlFor="limit-select">Results per page:</label>
+      <label htmlFor="limit-select">{t('common.results_per_page')}: </label>
 
       <select
         id="limit-select"
