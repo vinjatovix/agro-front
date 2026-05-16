@@ -1,0 +1,30 @@
+.plant-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+
+  padding: 0.5rem 1rem 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+}
+
+.plant-card:hover {
+  border-color: #999;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.279);
+}
+
+.plant-card h3 {
+  margin: 0;
+}
+
+.plant-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: var(--space-2);
+  display: block;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.434);
+}

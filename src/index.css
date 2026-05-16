@@ -78,22 +78,6 @@ a {
   margin-top: 24px;
 }
 
-.plant-card {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-
-  padding: 16px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.plant-card h3 {
-  margin: 0;
-}
-
 .plant-scientific-name {
   font-style: italic;
   color: #666;

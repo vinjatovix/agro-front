@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
-import type { Plant } from '../../types/Plant';
-import { capitalizeFirstLetter } from '../../shared/utils/capitalizeFirstLetter';
-import { findPlantImage } from './utils/findPlantImage';
+import type { Plant } from '../../../types/Plant';
+import { capitalizeFirstLetter } from '../../../shared/utils/capitalizeFirstLetter';
+import { findPlantImage } from '../utils/findPlantImage';
+
+import './plantCard.css';
 
 export interface PlantCardProps {
   readonly plant: Plant;
@@ -12,7 +14,7 @@ export default function PlantCard({ plant }: PlantCardProps) {
   return (
     <Link to={`/plants/${plant.id}`}>
       <article className="plant-card">
-        <h3>{capitalizeFirstLetter(plant.identity.name.primary)}</h3>
+        <h3> {capitalizeFirstLetter(plant.identity.name.primary)}</h3>
         {imageUrl && <img src={imageUrl} alt={plant.identity.name.primary} />}
 
         {plant.identity.scientificName && (
