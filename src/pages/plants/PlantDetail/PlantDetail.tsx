@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
+import { t } from '../../../i18n/core/t';
 import { getPlantById } from '../../../services/plants.service';
-
 import type { Plant } from '../../../types/Plant';
 
+import { PlantDetailStickyHeader } from './components/PlantDetailStickyHeader';
 import PlantHero from './components/PlantHero';
 import QuickFacts from './components/QuickFacts';
 import PlantCalendar from './components/PlantCalendar';
@@ -14,7 +15,6 @@ import PlantNotes from './components/PlantNotes';
 import PlantResources from './components/PlantResources';
 
 import './plantDetail.css';
-import { t } from '../../../i18n/core/t';
 
 export default function PlantDetail() {
   const { id } = useParams();
@@ -69,20 +69,18 @@ export default function PlantDetail() {
 
   return (
     <div className="plant-detail">
+      <PlantDetailStickyHeader plant={plant} />
+
       <PlantHero plant={plant} />
       <PlantCalendar
         plant={plant}
         hemisphere={hemisphere}
         onHemisphereChange={setHemisphere}
       />
-
       <QuickFacts plant={plant} />
       <PlantCultivation plant={plant} />
-
       <PlantEcology plant={plant} />
-
       <PlantNotes plant={plant} />
-
       <PlantResources plant={plant} />
     </div>
   );

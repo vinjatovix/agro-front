@@ -1,0 +1,26 @@
+.plant-detail__sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+
+  background: rgba(245, 245, 245, 0.553);
+  backdrop-filter: blur(8px);
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.plant-detail__sticky-title {
+  margin: 0;
+}
+
+.plant-detail__sticky-aliases {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin-top: 4px;
+}
