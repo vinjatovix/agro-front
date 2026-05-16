@@ -12,7 +12,7 @@ import PlantCalendar from './components/PlantCalendar';
 import PlantCultivation from './components/PlantCultivation';
 import PlantEcology from './components/PlantEcology';
 import PlantNotes from './components/PlantNotes';
-import PlantResources from './components/PlantResources';
+import PlantResources from './components/PlantResources/PlantResources';
 
 import './plantDetail.css';
 

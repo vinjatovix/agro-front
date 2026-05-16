@@ -1,0 +1,74 @@
+.plant-resources__tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.plant-resources__content {
+  overflow: hidden;
+  transition: height 200ms ease;
+}
+
+.plant-resources__videos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.plant-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.plant-resources__tabs button {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.plant-resources__tabs button:hover {
+  background: #f5f5f5;
+}
+
+.plant-resources__tabs button.active {
+  background: #eaf5ea;
+  border-color: #9ccc9c;
+  font-weight: 600;
+}
+
+.plant-resources__articles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.plant-article {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 10px 12px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+
+  text-decoration: none;
+  color: inherit;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.plant-article:hover {
+  background: #f7f7f7;
+  border-color: #ddd;
+}
