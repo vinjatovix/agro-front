@@ -2,6 +2,32 @@ export const dictionary = {
   app: {
     brand: 'AgroApp',
     welcome_message: 'Bienvenido a AgroApp, tu guía de cultivo de plantas.',
+
+    info: {
+      title: 'Información del proyecto',
+      nonprofit: 'Este proyecto es open source y no tiene ánimo de lucro.',
+
+      images:
+        'Las imágenes provienen de Wikimedia Commons o son de elaboración propia.',
+
+      videos:
+        'Algunos vídeos están incrustados desde YouTube. Se reconoce y agradece el trabajo de sus creadores.',
+
+      youtube_notice:
+        'Si algún creador no desea que su contenido sea mostrado aquí, puede solicitar su retirada o desactivar la incrustación desde YouTube.',
+
+      disclaimer:
+        'La información ha sido recopilada de distintas fuentes en internet y organizada de forma accesible. No se garantiza su exactitud y no nos hacemos responsables del uso o de posibles daños derivados.',
+
+      feedback:
+        'Si falta información o encuentras errores, puedes contribuir. Se aceptan sugerencias y feedback para mejorar el contenido.',
+      contact: 'Contacto',
+      contact_text: 'Si quieres sugerir cambios o reportar contenido:',
+      email: 'Escríbeme a',
+      github: 'O abre un issue en',
+      github_back: 'https://github.com/vinjatovix/agro-back/issues',
+      github_front: 'https://github.com/vinjatovix/agro-front/issues'
+    },
     nav: {
       plants: 'Plantas',
       families: 'Familias'
