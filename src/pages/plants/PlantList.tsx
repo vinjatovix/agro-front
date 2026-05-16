@@ -4,7 +4,8 @@ import PlantCard from './PlantCard';
 
 import { buildPaginationPages } from '../../shared/utils/pagination';
 import LimitSelector from '../../shared/components/LimitSelector';
-import Pagination from '../../shared/components/Pagination';
+import Pagination from '../../shared/components/Pagination/Pagination';
+import { t } from '../../i18n/core/t';
 
 interface Props {
   readonly search: string;
@@ -15,7 +16,7 @@ export default function PlantList({ search }: Props) {
     usePlants(search);
 
   if (loading) {
-    return <div>Loading plants...</div>;
+    return <div>{t('common.loading')}</div>;
   }
 
   const pages = pagination
@@ -24,7 +25,7 @@ export default function PlantList({ search }: Props) {
 
   return (
     <div>
-      <h1>Plants</h1>
+      <h1>{t('plant.plants')}</h1>
 
       <LimitSelector value={limit} onChange={setLimit} />
       <Pagination pages={pages} currentPage={page} onPageChange={setPage} />

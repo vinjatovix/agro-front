@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom';
 
 import { useFamilies } from './hooks/useFamilies';
+import { t } from '../../i18n/core/t';
 
 export default function FamilyList() {
   const { families, loading } = useFamilies();
 
-  if (loading) return <div>Loading families...</div>;
+  if (loading) return <div>{t('common.loading')}</div>;
 
   return (
     <div>
-      <h1>Families</h1>
+      <h1>{t('family.families')}</h1>
 
       <div className="family-grid">
         {families.map((family) => (
