@@ -32,13 +32,13 @@
   border-radius: 8px;
   border: 1px solid #ccc;
   background: white;
-  color: black;
+  color: rgb(0, 0, 0);
   cursor: pointer;
 }
 
 .plant-filters__toggle--active {
-  background: #222;
-  color: white;
+  background: #0e7528;
+  color: rgb(237, 229, 229);
 }
 
 .plant-filters__clear {

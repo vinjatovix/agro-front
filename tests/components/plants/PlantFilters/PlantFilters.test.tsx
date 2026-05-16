@@ -52,7 +52,10 @@ vi.mock(
   '../../../../src/components/plants/PlantFilters/components/FamilySelect/FamilySelect',
   () => ({
     default: ({ onChange }: { onChange: (v: string) => void }) => (
-      <button onClick={() => onChange('family-id')}>FamilySelect</button>
+      <button
+        data-testid="family-select"
+        onClick={() => onChange('family-id')}
+      ></button>
     )
   })
 );
@@ -61,7 +64,10 @@ vi.mock(
   '../../../../src/components/plants/PlantFilters/components/MonthSelector',
   () => ({
     default: ({ onChange }: { onChange: (v: string) => void }) => (
-      <button onClick={() => onChange('5')}>MonthSelector</button>
+      <button
+        data-testid="month-selector"
+        onClick={() => onChange('5')}
+      ></button>
     )
   })
 );
@@ -75,7 +81,14 @@ vi.mock(
     }: {
       label: string;
       onChange: (v: string) => void;
-    }) => <button onClick={() => onChange('updated')}>{label}</button>
+    }) => (
+      <button
+        data-testid={`text-filter-${label}`}
+        onClick={() => onChange('updated')}
+      >
+        {label}
+      </button>
+    )
   })
 );
 
@@ -86,17 +99,36 @@ vi.mock('../../../../src/components/plants/SliderFilter', () => ({
   }: {
     label: string;
     onCommit: (v: number | null) => void;
-  }) => <button onClick={() => onCommit(10)}>{label}</button>
+  }) => (
+    <button data-testid={`slider-${label}`} onClick={() => onCommit(10)}>
+      {label}
+    </button>
+  )
 }));
 
 vi.mock('../../../../src/components/plants/ToggleGroup', () => ({
   default: ({
     label,
-    onChange
+    renderLabel,
+    onChange,
+    options
   }: {
     label: string;
+    renderLabel?: (v: string) => string;
     onChange: (v: string) => void;
-  }) => <button onClick={() => onChange('south')}>{label}</button>
+    options: string[];
+    value: string;
+  }) => (
+    <div>
+      <div>{label}</div>
+
+      {options.map((opt) => (
+        <button key={opt} onClick={() => onChange(opt)}>
+          {renderLabel ? renderLabel(opt) : opt}
+        </button>
+      ))}
+    </div>
+  )
 }));
 
 describe('PlantFilters', () => {
@@ -115,15 +147,15 @@ describe('PlantFilters', () => {
     );
   }
 
-  it('renders search control (mocked)', () => {
+  it('renders search control', () => {
     renderComponent();
-    expect(screen.getByText('Search plants')).toBeInTheDocument();
+    expect(screen.getByText('Buscar plantas')).toBeInTheDocument();
   });
 
   it('calls onSearchChange when search changes', () => {
     renderComponent();
 
-    fireEvent.click(screen.getByText('Search plants'));
+    fireEvent.click(screen.getByText('Buscar plantas'));
 
     expect(onSearchChange).toHaveBeenCalledWith('updated');
   });
@@ -131,7 +163,7 @@ describe('PlantFilters', () => {
   it('calls clearFilters', () => {
     renderComponent();
 
-    fireEvent.click(screen.getByText('Clear filters'));
+    fireEvent.click(screen.getByTestId('clear-filters'));
 
     expect(mockClearFilters).toHaveBeenCalled();
   });
@@ -139,7 +171,7 @@ describe('PlantFilters', () => {
   it('calls setFamily from FamilySelect', () => {
     renderComponent();
 
-    fireEvent.click(screen.getByText('FamilySelect'));
+    fireEvent.click(screen.getByTestId('family-select'));
 
     expect(mockSetFamily).toHaveBeenCalledWith('family-id');
   });
@@ -147,7 +179,7 @@ describe('PlantFilters', () => {
   it('calls setHemisphere', () => {
     renderComponent();
 
-    fireEvent.click(screen.getByText('Hemisphere'));
+    fireEvent.click(screen.getByText('Sur'));
 
     expect(mockSetHemisphere).toHaveBeenCalledWith('south');
   });
@@ -155,7 +187,7 @@ describe('PlantFilters', () => {
   it('calls setParam from MonthSelector', () => {
     renderComponent();
 
-    fireEvent.click(screen.getByText('MonthSelector'));
+    fireEvent.click(screen.getByTestId('month-selector'));
 
     expect(mockSetParam).toHaveBeenCalledWith('sowingMonth', '5');
   });
@@ -163,8 +195,8 @@ describe('PlantFilters', () => {
   it('calls text filter handlers', () => {
     renderComponent();
 
-    fireEvent.click(screen.getByText('Alias'));
-    fireEvent.click(screen.getByText('Strategic benefits'));
+    fireEvent.click(screen.getByTestId('text-filter-Alias'));
+    fireEvent.click(screen.getByTestId('text-filter-Ecología'));
 
     expect(mockHandleTextChange).toHaveBeenCalledWith('aliases', 'updated');
     expect(mockHandleTextChange).toHaveBeenCalledWith(
@@ -176,7 +208,7 @@ describe('PlantFilters', () => {
   it('calls slider onCommit handlers', () => {
     renderComponent();
 
-    fireEvent.click(screen.getByText('Soil pH'));
+    fireEvent.click(screen.getByTestId('slider-pH del suelo'));
 
     expect(mockSetParam).toHaveBeenCalledWith('soilPh', '10');
   });

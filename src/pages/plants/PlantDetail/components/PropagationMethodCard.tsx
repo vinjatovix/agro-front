@@ -1,3 +1,4 @@
+import { t } from '../../../../i18n/core/t';
 import InfoRow from './InfoRow';
 
 const PROPAGATION_METHODS_LABELS: Record<string, string> = {
@@ -29,15 +30,18 @@ export default function PropagationMethodCard({
   return (
     <div className="propagation-card" data-testid={`propagation-${method}`}>
       <InfoRow
-        label="🌱 Método"
+        label={`🧪 ${t('plant.propagation.method')}`}
         value={PROPAGATION_METHODS_LABELS[method] ?? method}
       />
 
-      <InfoRow label="📅 Estación" value={SEASON_LABELS[season] ?? season} />
+      <InfoRow
+        label={`📅 ${t('plant.propagation.season')}`}
+        value={SEASON_LABELS[season] ?? season}
+      />
 
       {bestPractices && bestPractices.length > 0 && (
         <InfoRow
-          label="📌 Buenas prácticas"
+          label={`📌 ${t('plant.propagation.best_practices')}`}
           value={
             <ul className="propagation-card__list">
               {bestPractices.map((bp) => (

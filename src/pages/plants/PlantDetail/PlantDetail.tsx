@@ -14,6 +14,7 @@ import PlantNotes from './components/PlantNotes';
 import PlantResources from './components/PlantResources';
 
 import './plantDetail.css';
+import { t } from '../../../i18n/core/t';
 
 export default function PlantDetail() {
   const { id } = useParams();
@@ -45,7 +46,9 @@ export default function PlantDetail() {
       } catch (error) {
         setPlant(null);
 
-        setError(error instanceof Error ? error.message : 'Unknown error');
+        setError(
+          error instanceof Error ? error.message : t('common.unknown_error')
+        );
       } finally {
         setLoading(false);
       }
@@ -55,13 +58,13 @@ export default function PlantDetail() {
   }, [id]);
 
   if (loading) {
-    return <div>Loading plant...</div>;
+    return <div>{t('plant.detail.loading')}</div>;
   }
   if (error) {
     return <div role="alert">{error}</div>;
   }
   if (!plant) {
-    return <div>Plant not found</div>;
+    return <div>{t('plant.detail.not_found')}</div>;
   }
 
   return (

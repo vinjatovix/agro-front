@@ -1,3 +1,4 @@
+import { t } from '../../../../i18n/core/t';
 import InfoRow from './InfoRow';
 
 interface Props {
@@ -17,17 +18,20 @@ export default function PruningCard({
 }: Props) {
   return (
     <div className="pruning-card" data-testid={`pruning-${type}`}>
-      <InfoRow label="🧩 Tipo" value={type} />
+      <InfoRow label={`🧩 ${t('plant.pruning.type')}`} value={type} />
 
-      <InfoRow label="⚡ Intensidad" value={intensity} />
+      <InfoRow label={`⚡ ${t('plant.pruning.intensity')}`} value={intensity} />
 
-      <InfoRow label="📅 Estación" value={season} />
+      <InfoRow label={`📅 ${t('plant.pruning.season')}`} value={season} />
 
-      <InfoRow label="🔁 Frecuencia" value={`${frequencyPerYear} veces/año`} />
+      <InfoRow
+        label={`🔁 ${t('plant.pruning.frequency')}`}
+        value={`${frequencyPerYear} ${t('plant.pruning.times_per_year')}`}
+      />
 
       {bestPractices && bestPractices.length > 0 && (
         <InfoRow
-          label="📌 Buenas prácticas"
+          label={`📌 ${t('plant.pruning.best_practices')}`}
           value={
             <ul className="pruning-card__list">
               {bestPractices.map((bp) => (

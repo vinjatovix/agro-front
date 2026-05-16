@@ -1,3 +1,4 @@
+import { t } from '../../../../i18n/core/t';
 import './hemisphereToggle.css';
 
 interface Props {
@@ -17,7 +18,7 @@ export default function HemisphereToggle({ value, onChange }: Props) {
         }
         onClick={() => onChange('north')}
       >
-        North
+        {t('plant.hemisphere.north')}
       </button>
 
       <button
@@ -29,7 +30,7 @@ export default function HemisphereToggle({ value, onChange }: Props) {
         }
         onClick={() => onChange('south')}
       >
-        South
+        {t('plant.hemisphere.south')}
       </button>
     </div>
   );

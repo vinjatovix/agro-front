@@ -3,6 +3,7 @@ import type { Plant } from '../../../../types/Plant';
 import BodySection from '../../../../shared/components/BodySection/BodySection';
 
 import './plantEcology.css';
+import { t } from '../../../../i18n/core/t';
 
 interface Props {
   readonly plant: Plant;
@@ -16,7 +17,7 @@ export default function PlantEcology({ plant }: Props) {
   }
 
   return (
-    <BodySection title="Ecología">
+    <BodySection title={`🌿 ${t('plant.ecology.title')}`}>
       <ul className="plant-list plant-list--ecology">
         {benefits.map((benefit) => (
           <li key={benefit}>{benefit}</li>

@@ -1,3 +1,4 @@
+import { t } from '../../../../i18n/core/t';
 import Badge from '../../../../shared/components/Badge/Bagde';
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
 import type { Plant } from '../../../../types/Plant';
@@ -28,14 +29,16 @@ export default function PlantHero({ plant }: Props) {
         </Badge>
         {plant.identity.scientificName && (
           <p className="plant-hero__scientific">
-            🧬 Nombre científico:{' '}
+            <strong>🧬 {t('plant.hero.scientific_name')}: </strong>
             {capitalizeFirstLetter(plant.identity.scientificName)}
           </p>
         )}
 
         {plant.identity.name.aliases.length > 0 && (
           <div className="plant-hero__aliases">
-            <span className="plant-hero__label">Aliases:</span>
+            <span className="plant-hero__label">
+              {t('plant.hero.aliases')}:
+            </span>
 
             <span className="plant-hero__aliases-list">
               {plant.identity.name.aliases.map((alias) => (

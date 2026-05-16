@@ -1,9 +1,11 @@
+import { t } from '../i18n/core/t';
+
 export default function Home() {
   return (
     <div>
-      <h1>AgroApp</h1>
+      <h1>{t('app.brand')}</h1>
 
-      <p>Welcome to AgroApp.</p>
+      <p>{t('app.welcome_message')}</p>
     </div>
   );
 }

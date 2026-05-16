@@ -8,22 +8,22 @@ import {
 export const TOGGLE_FILTERS = [
   {
     key: 'lifeCycle',
-    label: 'Lifecycle',
+    labelKey: 'plant.filters.lifeCycle',
     options: LIFE_CYCLES
   },
   {
     key: 'sowingMethod',
-    label: 'Sowing method',
+    labelKey: 'plant.filters.sowingMethod',
     options: SOWING_METHODS
   },
   {
     key: 'lightType',
-    label: 'Light type',
+    labelKey: 'plant.filters.lightType',
     options: LIGHT_TYPES
   },
   {
     key: 'rootSystem',
-    label: 'Root system',
+    labelKey: 'plant.filters.rootSystem',
     options: ROOT_SYSTEMS
   }
 ] as const;
@@ -31,39 +31,39 @@ export const TOGGLE_FILTERS = [
 export const TEXT_FILTERS = [
   {
     key: 'aliases',
-    label: 'Alias'
+    labelKey: 'plant.filters.aliases'
   },
   {
     key: 'strategicBenefits',
-    label: 'Strategic benefits'
+    labelKey: 'plant.filters.strategicBenefits'
   }
 ] as const;
 
 export const SLIDER_FILTERS = [
   {
     key: 'soilPh',
-    label: 'Soil pH',
+    labelKey: 'plant.filters.soilPh',
     min: 4,
     max: 9,
     step: 0.1
   },
   {
     key: 'lightHoursMin',
-    label: 'Light hours min',
+    labelKey: 'plant.filters.lightHoursMin',
     min: 0,
     max: 16,
     step: 1
   },
   {
     key: 'spacingCm',
-    label: 'Spacing (cm)',
+    labelKey: 'plant.filters.spacingCm',
     min: 5,
     max: 200,
     step: 5
   },
   {
     key: 'soilAvailableDepthCm',
-    label: 'Soil depth available (cm)',
+    labelKey: 'plant.filters.soilAvailableDepthCm',
     min: 10,
     max: 200,
     step: 5
