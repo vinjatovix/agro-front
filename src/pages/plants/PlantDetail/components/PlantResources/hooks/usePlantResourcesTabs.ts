@@ -1,5 +1,5 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
-import type { Plant } from '../../../../../../types/Plant';
+import type { Plant } from '../../../../../../types/Plants/Plant';
 
 type Tab = 'videos' | 'articles';
 

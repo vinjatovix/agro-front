@@ -1,4 +1,4 @@
-import type { Plant } from '../../../types/Plant';
+import type { Plant } from '../../../types/Plants/Plant';
 
 export const findPlantImage = (plant: Plant): string | null => {
   const imageResource = plant.knowledge.resources?.find(

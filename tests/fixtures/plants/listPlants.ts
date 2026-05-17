@@ -1,5 +1,5 @@
 import { PaginatedResponse } from '../../../src/types/api';
-import { Plant } from '../../../src/types/Plant';
+import { Plant } from '../../../src/types/Plants/Plant';
 
 export const listPlantsResponse: PaginatedResponse<Plant> = {
   data: [

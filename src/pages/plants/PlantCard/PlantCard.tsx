@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import type { Plant } from '../../../types/Plant';
+import type { Plant } from '../../../types/Plants/Plant';
 import { capitalizeFirstLetter } from '../../../shared/utils/capitalizeFirstLetter';
 import { findPlantImage } from '../utils/findPlantImage';
 

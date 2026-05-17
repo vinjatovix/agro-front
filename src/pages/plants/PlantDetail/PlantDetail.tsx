@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import { t } from '../../../i18n/core/t';
 import { getPlantById } from '../../../services/plants.service';
-import type { Plant } from '../../../types/Plant';
+import type { Plant } from '../../../types/Plants/Plant';
 
 import { PlantDetailStickyHeader } from './components/PlantDetailStickyHeader';
 import PlantHero from './components/PlantHero';

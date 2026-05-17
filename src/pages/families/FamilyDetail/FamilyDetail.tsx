@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import { t } from '../../../i18n/core/t';
 import type { Family } from '../../../types/Family';
-import type { Plant } from '../../../types/Plant';
+import type { Plant } from '../../../types/Plants/Plant';
 import { getFamilyById } from '../../../services/families.service';
 import { getPlants } from '../../../services/plants.service';
 

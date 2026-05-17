@@ -41,7 +41,12 @@ export const dictionary = {
     not_found: 'No encontrado',
     unknown_error: 'Error desconocido',
     results_per_page: 'Resultados por página',
-    filters: 'Filtros'
+    filters: 'Filtros',
+    orders: {
+      order: 'Orden',
+      asc: 'Ascendente',
+      desc: 'Descendente'
+    }
   },
 
   family: {
@@ -106,6 +111,11 @@ export const dictionary = {
       soilPh: 'pH del suelo',
       spacingCm: 'Espacio disponible (cm)',
       soilAvailableDepthCm: 'Profundidad disponible (cm)'
+    },
+    orders: {
+      order: 'Orden',
+      asc: 'Az',
+      desc: 'Za'
     },
     detail: {
       loading: 'Cargando planta...',

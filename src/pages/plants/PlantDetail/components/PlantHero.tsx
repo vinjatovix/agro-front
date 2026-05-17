@@ -1,7 +1,7 @@
 import { t } from '../../../../i18n/core/t';
 import Badge from '../../../../shared/components/Badge/Bagde';
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
-import type { Plant } from '../../../../types/Plant';
+import type { Plant } from '../../../../types/Plants/Plant';
 import { findPlantImage } from '../../utils/findPlantImage';
 
 import './plantHero.css';

@@ -1,4 +1,4 @@
-import type { Plant } from '../../../../types/Plant';
+import type { Plant } from '../../../../types/Plants/Plant';
 
 import BodySection from '../../../../shared/components/BodySection/BodySection';
 

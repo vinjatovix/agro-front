@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import BodySection from '../../../../shared/components/BodySection/BodySection';
 import type { Family } from '../../../../types/Family';
-import type { Plant } from '../../../../types/Plant';
+import type { Plant } from '../../../../types/Plants/Plant';
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
 import { t } from '../../../../i18n/core/t';
 

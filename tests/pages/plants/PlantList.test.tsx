@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { Plant } from '../../../src/types/Plant';
+import { Plant } from '../../../src/types/Plants/Plant';
 import { usePlants } from '../../../src/pages/plants/hooks/usePlants';
 import { buildPaginationPages } from '../../../src/shared/utils/pagination/buildPaginationPages';
 import { PaginationResult } from '../../../src/types/Pagination';
@@ -22,35 +22,10 @@ vi.mock('../../../src/pages/plants/PlantCard/PlantCard', () => ({
   )
 }));
 
-interface LimitSelectorProps {
-  value: number;
-  onChange: (value: number) => void;
-}
-
-vi.mock('../../../src/shared/components/LimitSelector', () => ({
-  default: ({ value, onChange }: LimitSelectorProps) => (
-    <button type="button" onClick={() => onChange(50)}>
-      LimitSelector-{value}
-    </button>
-  )
-}));
-
-interface PaginationProps {
-  pages: (number | '...')[];
-  currentPage: number;
-  onPageChange: (page: number) => void;
-}
-
-vi.mock('../../../src/shared/components/Pagination', () => ({
-  default: ({ currentPage, onPageChange }: PaginationProps) => (
-    <button type="button" onClick={() => onPageChange(3)}>
-      Pagination-{currentPage}
-    </button>
-  )
-}));
-
 const setPage = vi.fn<(page: number) => void>();
 const setLimit = vi.fn<(limit: number) => void>();
+const setSortDirection = vi.fn<(direction: 'asc' | 'desc') => void>();
+const setSortField = vi.fn<(field: string) => void>();
 
 const mockedUsePlants = vi.mocked(usePlants);
 const mockedBuildPaginationPages = vi.mocked(buildPaginationPages);
@@ -72,7 +47,11 @@ const baseHookResult: UsePlantsReturn = {
   limit: 25,
 
   setPage,
-  setLimit
+  setLimit,
+  sortField: 'identity.name.primary',
+  sortDirection: 'asc',
+  setSortDirection,
+  setSortField
 };
 
 describe('PlantList', () => {
@@ -130,7 +109,9 @@ describe('PlantList', () => {
   it('passes limit changes to setLimit', () => {
     render(<PlantList search="" />);
 
-    fireEvent.click(screen.getByText('LimitSelector-25'));
+    fireEvent.change(document.getElementById('limit-select')!, {
+      target: { value: '50' }
+    });
 
     expect(setLimit).toHaveBeenCalledWith(50);
   });
@@ -155,5 +136,15 @@ describe('PlantList', () => {
     render(<PlantList search="" />);
 
     expect(mockedBuildPaginationPages).not.toHaveBeenCalled();
+  });
+
+  it('passes sort direction changes to setSortDirection', () => {
+    render(<PlantList search="" />);
+
+    fireEvent.change(document.getElementById('order-select')!, {
+      target: { value: 'desc' }
+    });
+
+    expect(setSortDirection).toHaveBeenCalledWith('desc');
   });
 });
