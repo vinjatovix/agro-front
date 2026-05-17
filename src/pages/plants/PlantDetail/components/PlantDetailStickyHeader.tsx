@@ -1,7 +1,7 @@
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
 import Badge from '../../../../shared/components/Badge/Bagde';
 
-import type { Plant } from '../../../../types/Plant';
+import type { Plant } from '../../../../types/Plants/Plant';
 
 import './plantDetailStickyHeader.css';
 

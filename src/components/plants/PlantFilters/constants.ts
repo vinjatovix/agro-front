@@ -20,3 +20,8 @@ export const SOWING_METHODS = ['direct', 'starter'] as const;
 export const LIGHT_TYPES = ['full_sun', 'partial_shade', 'full_shade'] as const;
 
 export const ROOT_SYSTEMS = ['fibrous', 'taproot', 'rhizome'] as const;
+
+export const ALLOWED_SORT_FIELDS = [
+  'identity.name.primary',
+  'identity.scientificName'
+] as const;

@@ -1,6 +1,6 @@
-import type { Metadata } from './Metadata';
-import type { Range } from './Range';
-import type { Seasons } from './Seasons';
+import type { Metadata } from '../Metadata';
+import type { Range } from '../Range';
+import type { Seasons } from '../Seasons';
 
 export interface Plant {
   id: string;

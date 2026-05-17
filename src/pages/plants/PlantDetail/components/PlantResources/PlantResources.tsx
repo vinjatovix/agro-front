@@ -1,7 +1,7 @@
 import { t } from '../../../../../i18n/core/t';
 
 import { getDomainFromUrl } from '../../../../../shared/utils/getDomainFromUrl';
-import type { Plant } from '../../../../../types/Plant';
+import type { Plant } from '../../../../../types/Plants/Plant';
 import BodySection from '../../../../../shared/components/BodySection/BodySection';
 
 import { getYoutubeEmbedUrl } from '../../../utils/getYoutubeEmbedUrl';

@@ -1,7 +1,9 @@
+import { ALLOWED_SORT_FIELDS } from '../components/plants/PlantFilters/constants';
 import { QueryBuilder } from '../shared/api/QueryBuilder';
 import type { PaginatedResponse } from '../types/api';
 import type { PaginationParams } from '../types/Pagination';
-import type { Plant } from '../types/Plant';
+import type { Plant } from '../types/Plants/Plant';
+import type { PlantsSortField } from '../types/Plants/PlantsAllowedSortFields';
 import { apiFetch } from './api';
 
 export type PlantFilterParams = {
@@ -26,8 +28,17 @@ export type PlantFilterParams = {
 
 export async function getPlants(
   filters?: PlantFilterParams,
-  pagination?: PaginationParams
+  pagination?: PaginationParams,
+  sort?: {
+    field: string;
+    direction: 'asc' | 'desc';
+  }
 ): Promise<PaginatedResponse<Plant>> {
+  // narrow sortField to allowed values to prevent invalid API queries
+  const sortField: string =
+    sort?.field && ALLOWED_SORT_FIELDS.includes(sort.field as PlantsSortField)
+      ? sort.field
+      : 'identity.name.primary';
   const query = QueryBuilder.create()
     .add('filter[name][eq]', filters?.name)
     .add('filter[aliases][hasAny]', filters?.aliases)
@@ -44,6 +55,7 @@ export async function getPlants(
     .add('filter[rootSystem][eq]', filters?.rootSystem)
     .add('pagination[page]', pagination?.page)
     .add('pagination[limit]', pagination?.limit)
+    .add(`sort[${sortField}]`, sort?.direction ?? 'asc')
     .build();
 
   return apiFetch(`/api/v1/plants?${query}`) as Promise<
