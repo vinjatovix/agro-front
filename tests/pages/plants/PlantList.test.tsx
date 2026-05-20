@@ -73,25 +73,25 @@ describe('PlantList', () => {
 
     mockedUsePlants.mockReturnValue(loadingResult);
 
-    render(<PlantList search="" />);
+    render(<PlantList />);
 
     expect(screen.getByText(/Cargando/i)).toBeInTheDocument();
   });
 
   it('renders title', () => {
-    render(<PlantList search="" />);
+    render(<PlantList />);
 
     expect(screen.getByText(t('plant.plants'))).toBeInTheDocument();
   });
 
   it('renders plants', () => {
-    render(<PlantList search="" />);
+    render(<PlantList />);
 
     expect(screen.getByText(plant.identity.name.primary)).toBeInTheDocument();
   });
 
   it('calls buildPaginationPages with current page and total pages', () => {
-    render(<PlantList search="" />);
+    render(<PlantList />);
 
     expect(mockedBuildPaginationPages).toHaveBeenCalledWith(
       pagination.page,
@@ -100,14 +100,14 @@ describe('PlantList', () => {
   });
 
   it('renders pagination twice', () => {
-    render(<PlantList search="" />);
+    render(<PlantList />);
 
     const paginationButtons = screen.getAllByTestId('pagination-button-1');
     expect(paginationButtons).toHaveLength(2);
   });
 
   it('passes limit changes to setLimit', () => {
-    render(<PlantList search="" />);
+    render(<PlantList />);
 
     fireEvent.change(document.getElementById('limit-select')!, {
       target: { value: '50' }
@@ -117,7 +117,7 @@ describe('PlantList', () => {
   });
 
   it('passes page changes to setPage', () => {
-    render(<PlantList search="" />);
+    render(<PlantList />);
 
     const paginationButtons = screen.getAllByTestId('pagination-button-3');
     fireEvent.click(paginationButtons[0]);
@@ -133,13 +133,13 @@ describe('PlantList', () => {
 
     mockedUsePlants.mockReturnValue(noPaginationResult);
 
-    render(<PlantList search="" />);
+    render(<PlantList />);
 
     expect(mockedBuildPaginationPages).not.toHaveBeenCalled();
   });
 
   it('passes sort direction changes to setSortDirection', () => {
-    render(<PlantList search="" />);
+    render(<PlantList />);
 
     fireEvent.change(document.getElementById('order-select')!, {
       target: { value: 'desc' }

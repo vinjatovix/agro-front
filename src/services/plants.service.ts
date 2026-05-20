@@ -7,7 +7,6 @@ import type { PlantsSortField } from '../types/Plants/PlantsAllowedSortFields';
 import { apiFetch } from './api';
 
 export type PlantFilterParams = {
-  name?: string;
   identity?: string;
   family?: string;
   lifeCycle?: 'annual' | 'biennial' | 'perennial';
@@ -20,7 +19,7 @@ export type PlantFilterParams = {
   soilAvailableDepthCm?: number;
 
   lightHoursMin?: number;
-  lightType?: 'full_sun' | 'partial_shade' | 'full_shade';
+  lightType?: 'full_sun' | 'partial_shade';
 
   rootSystem?:
     | 'fibrous'
@@ -45,7 +44,6 @@ export async function getPlants(
       : 'identity.name.primary';
 
   const query = QueryBuilder.create()
-    .add('filter[name][eq]', filters?.name)
     .add('filter[identity][contains]', filters?.identity)
     .add('filter[family][eq]', filters?.family)
     .add('filter[lifeCycle][eq]', filters?.lifeCycle)

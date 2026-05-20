@@ -33,8 +33,6 @@ describe('usePlants', () => {
   });
 
   it('calls backend when identity is in query params', async () => {
-    const getPlantsMock = vi.spyOn(plantsService, 'getPlants');
-
     renderHook(() => usePlants(), {
       wrapper: ({ children }) =>
         createWrapper({
