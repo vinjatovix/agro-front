@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { t } from '../../i18n/core/t';
 import useMediaQuery from '../../shared/hooks/useMediaQuery';
 import useDrawer from '../../shared/hooks/useDrawer';
@@ -10,8 +8,6 @@ import PlantList from './PlantList';
 import './plantsPage.css';
 
 export default function PlantsPage() {
-  const [search, setSearch] = useState('');
-
   const isMobile = useMediaQuery('(max-width: 768px)');
   const drawer = useDrawer(false);
 
@@ -19,7 +15,7 @@ export default function PlantsPage() {
     <div className="plants-layout">
       {!isMobile && (
         <aside className="plants-sidebar">
-          <PlantFilters search={search} onSearchChange={setSearch} />
+          <PlantFilters />
         </aside>
       )}
 
@@ -31,12 +27,12 @@ export default function PlantsPage() {
 
       {isMobile && (
         <Drawer isOpen={drawer.isOpen} onClose={drawer.close}>
-          <PlantFilters search={search} onSearchChange={setSearch} />
+          <PlantFilters />
         </Drawer>
       )}
 
       <main className="plants-main">
-        <PlantList search={search} />
+        <PlantList />
       </main>
     </div>
   );

@@ -12,6 +12,16 @@ const mockSetHemisphere = vi.fn();
 const mockHandleTextChange = vi.fn();
 const mockSetFamily = vi.fn();
 
+vi.mock('../../../../src/pages/families/hooks/useFamilies', () => ({
+  useFamilies: () => ({
+    loading: false,
+    families: [
+      { id: 'family-id', slug: 'rosaceae' },
+      { id: 'family-id2', slug: 'lamiaceae' }
+    ]
+  })
+}));
+
 vi.mock(
   '../../../../src/components/plants/PlantFilters/hooks/usePlantFilters',
   () => ({
@@ -31,8 +41,7 @@ vi.mock(
       setFamily: mockSetFamily,
 
       textState: {
-        aliases: 'alias',
-        strategicBenefits: 'benefit'
+        identity: 'identity'
       },
 
       handleTextChange: mockHandleTextChange,
@@ -48,92 +57,7 @@ vi.mock(
   })
 );
 
-vi.mock(
-  '../../../../src/components/plants/PlantFilters/components/FamilySelect/FamilySelect',
-  () => ({
-    default: ({ onChange }: { onChange: (v: string) => void }) => (
-      <button
-        data-testid="family-select"
-        onClick={() => onChange('family-id')}
-      ></button>
-    )
-  })
-);
-
-vi.mock(
-  '../../../../src/components/plants/PlantFilters/components/MonthSelector',
-  () => ({
-    default: ({ onChange }: { onChange: (v: string) => void }) => (
-      <button
-        data-testid="month-selector"
-        onClick={() => onChange('5')}
-      ></button>
-    )
-  })
-);
-
-vi.mock(
-  '../../../../src/components/plants/PlantFilters/components/TextFilter',
-  () => ({
-    default: ({
-      label,
-      onChange
-    }: {
-      label: string;
-      onChange: (v: string) => void;
-    }) => (
-      <button
-        data-testid={`text-filter-${label}`}
-        onClick={() => onChange('updated')}
-      >
-        {label}
-      </button>
-    )
-  })
-);
-
-vi.mock('../../../../src/components/plants/SliderFilter', () => ({
-  default: ({
-    label,
-    onCommit
-  }: {
-    label: string;
-    onCommit: (v: number | null) => void;
-  }) => (
-    <button data-testid={`slider-${label}`} onClick={() => onCommit(10)}>
-      {label}
-    </button>
-  )
-}));
-
-vi.mock('../../../../src/components/plants/ToggleGroup', () => ({
-  default: ({
-    label,
-    renderLabel,
-    onChange,
-    options
-  }: {
-    label: string;
-    renderLabel?: (v: string) => string;
-    onChange: (v: string) => void;
-    options: string[];
-    value: string;
-  }) => (
-    <div>
-      <div>{label}</div>
-
-      {options.map((opt) => (
-        <button key={opt} onClick={() => onChange(opt)}>
-          {renderLabel ? renderLabel(opt) : opt}
-        </button>
-      ))}
-    </div>
-  )
-}));
-
 describe('PlantFilters', () => {
-  const onSearchChange = vi.fn();
-
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetParam.mockReturnValue('');
@@ -142,22 +66,24 @@ describe('PlantFilters', () => {
   function renderComponent() {
     return render(
       <MemoryRouter>
-        <PlantFilters search="" onSearchChange={onSearchChange} />
+        <PlantFilters />
       </MemoryRouter>
     );
   }
 
-  it('renders search control', () => {
+  it('renders identity input', () => {
     renderComponent();
-    expect(screen.getByText('Buscar plantas')).toBeInTheDocument();
+    expect(screen.getByTestId('text-filter-identity')).toBeInTheDocument();
   });
 
-  it('calls onSearchChange when search changes', () => {
+  it('calls handleTextChange when identity input changes', () => {
     renderComponent();
 
-    fireEvent.click(screen.getByText('Buscar plantas'));
+    fireEvent.change(screen.getByTestId('text-filter-identity'), {
+      target: { value: 'pepper' }
+    });
 
-    expect(onSearchChange).toHaveBeenCalledWith('updated');
+    expect(mockHandleTextChange).toHaveBeenCalledWith('identity', 'pepper');
   });
 
   it('calls clearFilters', () => {
@@ -171,9 +97,13 @@ describe('PlantFilters', () => {
   it('calls setFamily from FamilySelect', () => {
     renderComponent();
 
-    fireEvent.click(screen.getByTestId('family-select'));
+    const select = screen.getByTestId('family-select');
 
-    expect(mockSetFamily).toHaveBeenCalledWith('family-id');
+    fireEvent.change(select, {
+      target: { value: 'family-id2' }
+    });
+
+    expect(mockSetFamily).toHaveBeenCalledWith('family-id2');
   });
 
   it('calls setHemisphere', () => {
@@ -187,29 +117,20 @@ describe('PlantFilters', () => {
   it('calls setParam from MonthSelector', () => {
     renderComponent();
 
-    fireEvent.click(screen.getByTestId('month-selector'));
+    fireEvent.click(screen.getByTestId('month-button-5'));
 
     expect(mockSetParam).toHaveBeenCalledWith('sowingMonth', '5');
-  });
-
-  it('calls text filter handlers', () => {
-    renderComponent();
-
-    fireEvent.click(screen.getByTestId('text-filter-Alias'));
-    fireEvent.click(screen.getByTestId('text-filter-Ecología'));
-
-    expect(mockHandleTextChange).toHaveBeenCalledWith('aliases', 'updated');
-    expect(mockHandleTextChange).toHaveBeenCalledWith(
-      'strategicBenefits',
-      'updated'
-    );
   });
 
   it('calls slider onCommit handlers', () => {
     renderComponent();
 
-    fireEvent.click(screen.getByTestId('slider-pH del suelo'));
+    const slider = screen.getByTestId('slider-filter-soilPh');
 
-    expect(mockSetParam).toHaveBeenCalledWith('soilPh', '10');
+    (slider as HTMLInputElement).value = '8';
+
+    fireEvent.pointerUp(slider);
+
+    expect(mockSetParam).toHaveBeenCalledWith('soilPh', '8');
   });
 });

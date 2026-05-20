@@ -16,12 +16,7 @@ import './PlantFilters.css';
 import { t } from '../../../i18n/core/t';
 import { tValue } from '../../../i18n/core/tValue';
 
-interface Props {
-  readonly search: string;
-  readonly onSearchChange: (value: string) => void;
-}
-
-export default function PlantFilters({ search, onSearchChange }: Props) {
+export default function PlantFilters() {
   const {
     setParam,
 
@@ -46,7 +41,7 @@ export default function PlantFilters({ search, onSearchChange }: Props) {
 
     clearFilters,
     setHemisphere
-  } = usePlantFilters({ onSearchChange });
+  } = usePlantFilters();
 
   const toggleValues = {
     lifeCycle,
@@ -73,21 +68,15 @@ export default function PlantFilters({ search, onSearchChange }: Props) {
         🆑 {t('plant.filters.clear')}
       </button>
 
-      <TextFilter
-        data-testid="search-filter-input"
-        value={search}
-        onChange={onSearchChange}
-        label={t('plant.filters.search_label')}
-        placeholder={t('plant.filters.search_placeholder')}
-      />
-
       <FamilySelect value={family} onChange={setFamily} />
 
       {TEXT_FILTERS.map((filter) => (
         <TextFilter
+          testId={`text-filter-${filter.key}`}
           key={filter.key}
           label={t(filter.labelKey)}
           value={textState[filter.key] ?? ''}
+          placeholder={t(filter.placeholder)}
           onChange={(value) => handleTextChange(filter.key, value)}
         />
       ))}
@@ -141,6 +130,7 @@ export default function PlantFilters({ search, onSearchChange }: Props) {
 
       {SLIDER_FILTERS.map((filter) => (
         <SliderFilter
+          testId={`slider-filter-${filter.key}`}
           key={filter.key}
           label={t(filter.labelKey)}
           value={sliderValues[filter.key].value}

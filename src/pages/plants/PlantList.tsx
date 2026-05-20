@@ -10,11 +10,7 @@ import { t } from '../../i18n/core/t';
 
 import './plantList.css';
 
-interface Props {
-  readonly search: string;
-}
-
-export default function PlantList({ search }: Props) {
+export default function PlantList() {
   const {
     plants,
     loading,
@@ -25,7 +21,7 @@ export default function PlantList({ search }: Props) {
     setLimit,
     sortDirection,
     setSortDirection
-  } = usePlants(search);
+  } = usePlants();
 
   if (loading) {
     return <div>{t('common.loading')}</div>;

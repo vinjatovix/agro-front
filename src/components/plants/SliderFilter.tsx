@@ -6,6 +6,7 @@ interface Props {
   readonly min: number;
   readonly max: number;
   readonly step: number;
+  readonly testId?: string;
   readonly onChange: (value: number | null) => void;
   readonly onCommit: (value: number | null) => void;
 }
@@ -16,6 +17,8 @@ export default function SliderFilter({
   min,
   max,
   step,
+  testId,
+
   onChange,
   onCommit
 }: Props) {
@@ -44,6 +47,7 @@ export default function SliderFilter({
 
       <input
         id={sliderId}
+        data-testid={testId}
         type="range"
         min={min}
         max={max}

@@ -7,6 +7,10 @@ import * as plantsService from '../../../../src/services/plants.service';
 import { listPlantsResponse } from '../../../fixtures/plants/listPlants';
 import { SUPPORTED_LIMITS } from '../../../../src/shared/components/constants';
 
+const getPlantsMock = vi
+  .spyOn(plantsService, 'getPlants')
+  .mockResolvedValue(listPlantsResponse);
+
 type WrapperProps = {
   children: React.ReactNode;
   initialEntries: string[];
@@ -24,11 +28,34 @@ function createWrapper({ initialEntries, children }: WrapperProps) {
 
 describe('usePlants', () => {
   beforeEach(() => {
-    vi.spyOn(plantsService, 'getPlants').mockResolvedValue(listPlantsResponse);
+    vi.clearAllMocks();
+    getPlantsMock.mockResolvedValue(listPlantsResponse);
+  });
+
+  it('calls backend when identity is in query params', async () => {
+    const getPlantsMock = vi.spyOn(plantsService, 'getPlants');
+
+    renderHook(() => usePlants(), {
+      wrapper: ({ children }) =>
+        createWrapper({
+          initialEntries: ['/plants?identity=pepper'],
+          children
+        })
+    });
+
+    await waitFor(() => {
+      expect(getPlantsMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          identity: 'pepper'
+        }),
+        expect.any(Object),
+        expect.any(Object)
+      );
+    });
   });
 
   it('parses default page and limit', async () => {
-    const { result } = renderHook(() => usePlants(''), {
+    const { result } = renderHook(() => usePlants(), {
       wrapper: ({ children }) =>
         createWrapper({
           initialEntries: ['/plants'],
@@ -43,7 +70,7 @@ describe('usePlants', () => {
   });
 
   it('setPage updates URL correctly', async () => {
-    const { result } = renderHook(() => usePlants(''), {
+    const { result } = renderHook(() => usePlants(), {
       wrapper: ({ children }) =>
         createWrapper({
           initialEntries: ['/plants?page=1'],
@@ -61,7 +88,7 @@ describe('usePlants', () => {
   });
 
   it('setLimit resets page to 1', async () => {
-    const { result } = renderHook(() => usePlants(''), {
+    const { result } = renderHook(() => usePlants(), {
       wrapper: ({ children }) =>
         createWrapper({
           initialEntries: ['/plants?page=5&limit=25'],
@@ -79,25 +106,8 @@ describe('usePlants', () => {
     });
   });
 
-  it('filters plants by search', async () => {
-    const { result } = renderHook(
-      () => usePlants(listPlantsResponse.data[0].identity.name.aliases![0]),
-      {
-        wrapper: ({ children }) =>
-          createWrapper({
-            initialEntries: ['/plants'],
-            children
-          })
-      }
-    );
-
-    await waitFor(() => {
-      expect(result.current.plants.length).toBe(1);
-    });
-  });
-
   it('exposes loading state', async () => {
-    const { result } = renderHook(() => usePlants(''), {
+    const { result } = renderHook(() => usePlants(), {
       wrapper: ({ children }) =>
         createWrapper({
           initialEntries: ['/plants'],

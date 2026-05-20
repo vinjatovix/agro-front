@@ -8,7 +8,7 @@ import { apiFetch } from './api';
 
 export type PlantFilterParams = {
   name?: string;
-  aliases?: string;
+  identity?: string;
   family?: string;
   lifeCycle?: 'annual' | 'biennial' | 'perennial';
   spacingCm?: number;
@@ -22,8 +22,13 @@ export type PlantFilterParams = {
   lightHoursMin?: number;
   lightType?: 'full_sun' | 'partial_shade' | 'full_shade';
 
-  strategicBenefits?: string;
-  rootSystem?: 'fibrous' | 'taproot' | 'adventitious' | 'rhizome';
+  rootSystem?:
+    | 'fibrous'
+    | 'taproot'
+    | 'adventitious'
+    | 'rhizome'
+    | 'tuber'
+    | 'fasciculate';
 };
 
 export async function getPlants(
@@ -34,14 +39,14 @@ export async function getPlants(
     direction: 'asc' | 'desc';
   }
 ): Promise<PaginatedResponse<Plant>> {
-  // narrow sortField to allowed values to prevent invalid API queries
   const sortField: string =
     sort?.field && ALLOWED_SORT_FIELDS.includes(sort.field as PlantsSortField)
       ? sort.field
       : 'identity.name.primary';
+
   const query = QueryBuilder.create()
     .add('filter[name][eq]', filters?.name)
-    .add('filter[aliases][hasAny]', filters?.aliases)
+    .add('filter[identity][contains]', filters?.identity)
     .add('filter[family][eq]', filters?.family)
     .add('filter[lifeCycle][eq]', filters?.lifeCycle)
     .add('filter[sowingMethod][eq]', filters?.sowingMethod)
@@ -51,7 +56,6 @@ export async function getPlants(
     .add('filter[spacingCm][eq]', filters?.spacingCm)
     .add('filter[lightType][eq]', filters?.lightType)
     .add('filter[lightHoursMin][eq]', filters?.lightHoursMin)
-    .add('filter[strategicBenefits][contains]', filters?.strategicBenefits)
     .add('filter[rootSystem][eq]', filters?.rootSystem)
     .add('pagination[page]', pagination?.page)
     .add('pagination[limit]', pagination?.limit)

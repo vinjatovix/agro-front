@@ -21,9 +21,6 @@
 
 .plant-filters__buttons {
   display: flex;
-}
-
-.plant-filters__buttons--wrap {
   flex-wrap: wrap;
 }
 

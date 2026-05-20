@@ -103,7 +103,10 @@ export const dictionary = {
       rootSystemValues: {
         fibrous: 'Fibroso',
         taproot: 'Pivotante',
-        rhizome: 'Rizoma'
+        rhizome: 'Rizoma',
+        tuber: 'Tuberosa',
+        adventitious: 'Adventicia',
+        fasciculate: 'Fasciculada'
       },
       light: 'Luz',
       lightHoursMin: 'Horas de luz disponibles',
