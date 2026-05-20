@@ -17,6 +17,7 @@ export default function FamilySelect({ value, onChange }: Props) {
 
       <select
         id={selectId}
+        data-testid="family-select"
         className="plant-filters__input"
         value={value}
         onChange={(e) => onChange(e.target.value)}

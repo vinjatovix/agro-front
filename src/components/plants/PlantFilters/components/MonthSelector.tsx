@@ -25,6 +25,7 @@ export default function MonthSelector({ hemisphere, value, onChange }: Props) {
 
           return (
             <button
+              data-testid={`month-button-${displayMonth}`}
               key={monthName}
               type="button"
               className={

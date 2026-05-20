@@ -3,18 +3,14 @@ import { useCallback, useState, useMemo } from 'react';
 import { useSliderFilter } from './useSliderFilter';
 import { useDebouncedCallback } from './useDebouncedCallback';
 
-interface Props {
-  readonly onSearchChange: (value: string) => void;
-}
-
-type TextFilterKey = 'aliases' | 'strategicBenefits';
+type TextFilterKey = 'identity' | 'strategicBenefits';
 
 function useTextFilters(
   setParam: (key: string, value?: string) => void,
   getParam: (key: string) => string
 ) {
   const [textState, setTextState] = useState<Record<TextFilterKey, string>>({
-    aliases: getParam('aliases'),
+    identity: getParam('identity'),
     strategicBenefits: getParam('strategicBenefits')
   });
 
@@ -24,6 +20,10 @@ function useTextFilters(
       [key]: value
     }));
   }, []);
+
+  const debouncedIdentity = useDebouncedCallback((value: string) => {
+    setParam('identity', value);
+  }, 300);
 
   const debouncedAliases = useDebouncedCallback((value: string) => {
     setParam('aliases', value);
@@ -35,10 +35,11 @@ function useTextFilters(
 
   const debounceMap = useMemo(
     () => ({
+      identity: debouncedIdentity,
       aliases: debouncedAliases,
       strategicBenefits: debouncedStrategicBenefits
     }),
-    [debouncedAliases, debouncedStrategicBenefits]
+    [debouncedIdentity, debouncedAliases, debouncedStrategicBenefits]
   );
 
   const handleTextChange = useCallback(
@@ -51,7 +52,7 @@ function useTextFilters(
 
   const clearText = useCallback(() => {
     setTextState({
-      aliases: '',
+      identity: '',
       strategicBenefits: ''
     });
 
@@ -88,7 +89,7 @@ function useSelectFilters(getParam: (key: string) => string) {
   };
 }
 
-export function usePlantFilters({ onSearchChange }: Props) {
+export function usePlantFilters() {
   const [params, setParams] = useSearchParams();
 
   const setParam = useCallback(
@@ -139,21 +140,12 @@ export function usePlantFilters({ onSearchChange }: Props) {
 
   const clearFilters = useCallback(() => {
     setParams({});
-    onSearchChange('');
     clearText();
     soilPh.clear();
     lightHours.clear();
     spacing.clear();
     soilDepth.clear();
-  }, [
-    setParams,
-    onSearchChange,
-    clearText,
-    soilPh,
-    lightHours,
-    spacing,
-    soilDepth
-  ]);
+  }, [setParams, clearText, soilPh, lightHours, spacing, soilDepth]);
 
   const setHemisphere = useCallback(
     (value: 'north' | 'south') => {

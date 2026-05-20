@@ -7,14 +7,7 @@ import PruningCard from './PruningCard';
 
 import './plantCultivation.css';
 import { t } from '../../../../i18n/core/t';
-
-const ROOT_SYSTEMS_LABELS: Record<string, string> = {
-  fibrous: 'Fibroso',
-  taproot: 'Pivotante',
-  adventitious: 'Adventicio',
-  tuberous: 'Tubérculo',
-  rhizome: 'Rizoma'
-};
+import { tValue } from '../../../../i18n/core/tValue';
 
 interface Props {
   readonly plant: Plant;
@@ -38,10 +31,10 @@ export default function PlantCultivation({ plant }: Props) {
 
         <InfoRow
           label={`🫚 ${t('plant.cultivation.root_system')}`}
-          value={
-            ROOT_SYSTEMS_LABELS[plant.knowledge.rootSystem.type] ??
+          value={tValue(
+            'plant.filters.rootSystemValues',
             plant.knowledge.rootSystem.type
-          }
+          )}
         />
 
         <InfoRow

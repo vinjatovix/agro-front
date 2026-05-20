@@ -30,12 +30,9 @@ export const TOGGLE_FILTERS = [
 
 export const TEXT_FILTERS = [
   {
-    key: 'aliases',
-    labelKey: 'plant.filters.aliases'
-  },
-  {
-    key: 'strategicBenefits',
-    labelKey: 'plant.filters.strategicBenefits'
+    key: 'identity',
+    labelKey: 'plant.filters.search_label',
+    placeholder: 'plant.filters.search_placeholder'
   }
 ] as const;
 

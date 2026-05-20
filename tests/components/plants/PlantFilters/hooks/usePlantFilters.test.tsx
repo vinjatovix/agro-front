@@ -3,8 +3,6 @@ import { renderHook, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { usePlantFilters } from '../../../../../src/components/plants/PlantFilters/hooks/usePlantFilters';
 
-const setSearchChangeMock = vi.fn();
-
 function wrapperEmpty({ children }: { children: React.ReactNode }) {
   return <MemoryRouter initialEntries={['/plants']}>{children}</MemoryRouter>;
 }
@@ -27,10 +25,9 @@ describe('usePlantFilters', () => {
   });
 
   it('exposes default params (empty URL)', () => {
-    const { result } = renderHook(
-      () => usePlantFilters({ onSearchChange: setSearchChangeMock }),
-      { wrapper: wrapperEmpty }
-    );
+    const { result } = renderHook(() => usePlantFilters(), {
+      wrapper: wrapperEmpty
+    });
 
     expect(result.current.hemisphere).toBe('north');
 
@@ -48,10 +45,9 @@ describe('usePlantFilters', () => {
   });
 
   it('initializes sliders from URL params', () => {
-    const { result } = renderHook(
-      () => usePlantFilters({ onSearchChange: setSearchChangeMock }),
-      { wrapper: wrapperWithParams }
-    );
+    const { result } = renderHook(() => usePlantFilters(), {
+      wrapper: wrapperWithParams
+    });
 
     expect(result.current.soilPh.value).toBe(6);
     expect(result.current.lightHours.value).toBe(8);
@@ -60,10 +56,9 @@ describe('usePlantFilters', () => {
   });
 
   it('setParam updates query params', () => {
-    const { result } = renderHook(
-      () => usePlantFilters({ onSearchChange: setSearchChangeMock }),
-      { wrapper: wrapperEmpty }
-    );
+    const { result } = renderHook(() => usePlantFilters(), {
+      wrapper: wrapperEmpty
+    });
 
     act(() => {
       result.current.setParam('family', 'abc');
@@ -73,10 +68,9 @@ describe('usePlantFilters', () => {
   });
 
   it('setFamily updates param correctly', () => {
-    const { result } = renderHook(
-      () => usePlantFilters({ onSearchChange: setSearchChangeMock }),
-      { wrapper: wrapperEmpty }
-    );
+    const { result } = renderHook(() => usePlantFilters(), {
+      wrapper: wrapperEmpty
+    });
 
     act(() => {
       result.current.setFamily('family-1');
@@ -86,10 +80,9 @@ describe('usePlantFilters', () => {
   });
 
   it('setHemisphere updates param', () => {
-    const { result } = renderHook(
-      () => usePlantFilters({ onSearchChange: setSearchChangeMock }),
-      { wrapper: wrapperEmpty }
-    );
+    const { result } = renderHook(() => usePlantFilters(), {
+      wrapper: wrapperEmpty
+    });
 
     act(() => {
       result.current.setHemisphere('south');
@@ -99,10 +92,9 @@ describe('usePlantFilters', () => {
   });
 
   it('clearFilters resets URL + sliders + search', () => {
-    const { result } = renderHook(
-      () => usePlantFilters({ onSearchChange: setSearchChangeMock }),
-      { wrapper: wrapperWithParams }
-    );
+    const { result } = renderHook(() => usePlantFilters(), {
+      wrapper: wrapperWithParams
+    });
 
     act(() => {
       result.current.setParam('family', 'abc');
@@ -113,7 +105,7 @@ describe('usePlantFilters', () => {
     });
 
     expect(result.current.getParam('family')).toBe('');
-    expect(setSearchChangeMock).toHaveBeenCalledWith('');
+    expect(result.current.getParam('identity')).toBe('');
 
     expect(result.current.soilPh.value).toBe(null);
     expect(result.current.lightHours.value).toBe(null);
@@ -122,10 +114,9 @@ describe('usePlantFilters', () => {
   });
 
   it('sets page param when setParam is used', () => {
-    const { result } = renderHook(
-      () => usePlantFilters({ onSearchChange: setSearchChangeMock }),
-      { wrapper: wrapperEmpty }
-    );
+    const { result } = renderHook(() => usePlantFilters(), {
+      wrapper: wrapperEmpty
+    });
 
     act(() => {
       result.current.setParam('page', '1');
@@ -135,10 +126,9 @@ describe('usePlantFilters', () => {
   });
 
   it('resets page when any filter changes (bug regression test)', () => {
-    const { result } = renderHook(
-      () => usePlantFilters({ onSearchChange: setSearchChangeMock }),
-      { wrapper: wrapperWithParams }
-    );
+    const { result } = renderHook(() => usePlantFilters(), {
+      wrapper: wrapperWithParams
+    });
 
     act(() => {
       result.current.setParam('family', 'abc');

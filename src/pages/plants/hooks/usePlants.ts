@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getPlants } from '../../../services/plants.service';
 
@@ -20,7 +20,7 @@ function isSortField(value: string): value is PlantsSortField {
   return ALLOWED_SORT_FIELDS.includes(value as PlantsSortField);
 }
 
-export function usePlants(search: string) {
+export function usePlants() {
   const [params, setParams] = useSearchParams();
 
   const page = Number(params.get('page') ?? 1);
@@ -82,6 +82,7 @@ export function usePlants(search: string) {
         const response = await getPlants(
           {
             family: params.get('family') || undefined,
+            identity: params.get('identity') || undefined,
 
             lifeCycle: params.get('lifeCycle') as PlantLifecycle | undefined,
             sowingMethod: params.get('sowingMethod') as
@@ -108,11 +109,7 @@ export function usePlants(search: string) {
 
             soilAvailableDepthCm: params.get('soilAvailableDepthCm')
               ? Number(params.get('soilAvailableDepthCm'))
-              : undefined,
-
-            aliases: params.get('aliases') || undefined,
-
-            strategicBenefits: params.get('strategicBenefits') || undefined
+              : undefined
           },
           {
             page,
@@ -134,24 +131,8 @@ export function usePlants(search: string) {
     loadPlants();
   }, [paramsString, page, limit, sortField, sortDirection]);
 
-  const filteredPlants = useMemo(() => {
-    const q = search.toLowerCase().trim();
-    if (!q) return plants;
-
-    return plants.filter((plant) => {
-      const primary = plant.identity.name.primary.toLowerCase();
-      const aliases =
-        plant.identity.name.aliases?.join(' ').toLowerCase() ?? '';
-      const scientific = plant.identity.scientificName?.toLowerCase() ?? '';
-
-      return (
-        primary.includes(q) || aliases.includes(q) || scientific.includes(q)
-      );
-    });
-  }, [plants, search]);
-
   return {
-    plants: filteredPlants,
+    plants,
     loading,
     pagination,
 

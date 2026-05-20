@@ -3,13 +3,15 @@ interface Props {
   readonly value: string;
   readonly onChange: (value: string) => void;
   readonly placeholder?: string;
+  readonly testId?: string;
 }
 
 export default function TextFilter({
   label,
   value,
   onChange,
-  placeholder
+  placeholder,
+  testId
 }: Props) {
   return (
     <div className="plant-filters__group">
@@ -18,6 +20,7 @@ export default function TextFilter({
 
         <input
           className="plant-filters__input"
+          data-testid={testId}
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
