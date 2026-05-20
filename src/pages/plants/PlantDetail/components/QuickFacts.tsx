@@ -16,8 +16,7 @@ const LIFE_CYCLE_LABELS: Record<string, string> = {
 
 const LIGHT_TYPE_LABELS: Record<string, string> = {
   full_sun: 'Pleno sol',
-  partial_shade: 'Sombra parcial',
-  full_shade: 'Sombra total'
+  partial_shade: 'Sombra parcial'
 };
 
 const WATERING_LABELS: Record<string, string> = {

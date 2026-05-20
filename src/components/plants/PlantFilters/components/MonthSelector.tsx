@@ -15,7 +15,7 @@ export default function MonthSelector({ hemisphere, value, onChange }: Props) {
         {t('plant.filters.sowingMonths')}
       </legend>
 
-      <div className="plant-filters__buttons plant-filters__buttons--wrap">
+      <div className="plant-filters__buttons">
         {MONTHS.map((monthName, index) => {
           const displayMonth = index + 1;
 

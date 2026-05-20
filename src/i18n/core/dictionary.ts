@@ -96,8 +96,7 @@ export const dictionary = {
       lightType: 'Tipo de luz',
       lightTypeValues: {
         full_sun: 'Sol pleno',
-        partial_shade: 'Sombra parcial',
-        full_shade: 'Sombra total'
+        partial_shade: 'Sombra parcial'
       },
       rootSystem: 'Sistema radicular',
       rootSystemValues: {

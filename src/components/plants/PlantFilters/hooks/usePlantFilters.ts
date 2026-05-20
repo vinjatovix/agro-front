@@ -3,15 +3,14 @@ import { useCallback, useState, useMemo } from 'react';
 import { useSliderFilter } from './useSliderFilter';
 import { useDebouncedCallback } from './useDebouncedCallback';
 
-type TextFilterKey = 'identity' | 'strategicBenefits';
+type TextFilterKey = 'identity';
 
 function useTextFilters(
   setParam: (key: string, value?: string) => void,
   getParam: (key: string) => string
 ) {
   const [textState, setTextState] = useState<Record<TextFilterKey, string>>({
-    identity: getParam('identity'),
-    strategicBenefits: getParam('strategicBenefits')
+    identity: getParam('identity')
   });
 
   const setTextValue = useCallback((key: TextFilterKey, value: string) => {
@@ -25,21 +24,11 @@ function useTextFilters(
     setParam('identity', value);
   }, 300);
 
-  const debouncedAliases = useDebouncedCallback((value: string) => {
-    setParam('aliases', value);
-  }, 300);
-
-  const debouncedStrategicBenefits = useDebouncedCallback((value: string) => {
-    setParam('strategicBenefits', value);
-  }, 300);
-
   const debounceMap = useMemo(
     () => ({
-      identity: debouncedIdentity,
-      aliases: debouncedAliases,
-      strategicBenefits: debouncedStrategicBenefits
+      identity: debouncedIdentity
     }),
-    [debouncedIdentity, debouncedAliases, debouncedStrategicBenefits]
+    [debouncedIdentity]
   );
 
   const handleTextChange = useCallback(
@@ -52,8 +41,7 @@ function useTextFilters(
 
   const clearText = useCallback(() => {
     setTextState({
-      identity: '',
-      strategicBenefits: ''
+      identity: ''
     });
 
     Object.values(debounceMap).forEach((debounce) => debounce.cancel());

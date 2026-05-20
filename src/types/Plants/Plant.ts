@@ -65,7 +65,13 @@ export interface Plant {
       availableDepthCm: Range;
     };
     rootSystem: {
-      type: 'fibrous' | 'taproot' | 'adventitious' | 'rhizome';
+      type:
+        | 'fibrous'
+        | 'taproot'
+        | 'adventitious'
+        | 'rhizome'
+        | 'tuber'
+        | 'fasciculate';
       depthCm: Range;
       spreadCm: Range;
     };
@@ -76,7 +82,7 @@ export interface Plant {
     };
     light: {
       hoursMin: number;
-      type: 'full_sun' | 'partial_shade' | 'full_shade';
+      type: 'full_sun' | 'partial_shade';
       preference?: 'morning' | 'afternoon' | 'all_day';
     };
     pruning?: Array<{
