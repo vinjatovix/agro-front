@@ -1,9 +1,13 @@
+import type { PaginatedResponse } from '../types/api';
+import type { Family } from '../types/Family';
 import { apiFetch } from './api';
 
 export async function getFamilies() {
-  return apiFetch('/api/v1/families?pagination[limit]=100&sort[name]=asc');
+  return apiFetch<PaginatedResponse<Family>>(
+    '/api/v1/families?pagination[limit]=100&sort[name]=asc'
+  );
 }
 
 export async function getFamilyById(idOrSlug: string) {
-  return apiFetch(`/api/v1/families/${idOrSlug}`);
+  return apiFetch<Family>(`/api/v1/families/${idOrSlug}`);
 }
