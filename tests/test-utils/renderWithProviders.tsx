@@ -1,17 +1,24 @@
 import { render } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { createTestQueryClient } from './createTestQueryClient';
 
 export function renderWithProviders(
   ui: React.ReactNode,
-  options?: { route?: string }
+  options?: {
+    route?: string;
+    path?: string;
+  }
 ) {
   const queryClient = createTestQueryClient();
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[options?.route ?? '/']}>{ui}</MemoryRouter>
+      <MemoryRouter initialEntries={[options?.route ?? '/']}>
+        <Routes>
+          <Route path={options?.path ?? '*'} element={ui} />
+        </Routes>
+      </MemoryRouter>
     </QueryClientProvider>
   );
 }

@@ -3,13 +3,7 @@ import { getFamilies } from '../../../services/families.service';
 import type { Family } from '../../../types/Family';
 import type { PaginatedResponse } from '../../../types/api';
 
-type FamiliesResponse = PaginatedResponse<Family> | Family[];
-
-function isPaginatedResponse(
-  data: FamiliesResponse | undefined
-): data is PaginatedResponse<Family> {
-  return !!data && !Array.isArray(data) && 'data' in data;
-}
+type FamiliesResponse = PaginatedResponse<Family>;
 
 export function useFamilies() {
   const query = useQuery<FamiliesResponse>({
@@ -20,9 +14,7 @@ export function useFamilies() {
   });
 
   return {
-    families: isPaginatedResponse(query.data)
-      ? query.data.data
-      : (query.data ?? []),
+    families: query.data?.data ?? [],
     loading: query.isLoading,
     error: query.error
   };
