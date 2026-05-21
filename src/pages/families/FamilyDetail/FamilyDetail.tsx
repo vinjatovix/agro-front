@@ -2,73 +2,91 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { t } from '../../../i18n/core/t';
-import type { Family } from '../../../types/Family';
 import type { Plant } from '../../../types/Plants/Plant';
-import { getFamilyById } from '../../../services/families.service';
 import { getPlants } from '../../../services/plants.service';
 
-import './familyDetail.css';
+import { useFamily } from '../hooks/useFamily';
+
 import { FamilyHero } from './components/FamilyHero';
 import FamilyPlants from './components/FamilyPlants';
 import FamilyInfo from './components/FamilyInfo';
 
+import './familyDetail.css';
+
 export default function FamilyDetail() {
   const { id } = useParams();
 
-  const [family, setFamily] = useState<Family | null>(null);
-  const [plants, setPlants] = useState<Plant[]>([]);
-  const [loading, setLoading] = useState(true);
+  if (!id) {
+    throw new Error('Invalid route: missing family id');
+  }
 
-  const [error, setError] = useState<string | null>(null);
+  const familyQuery = useFamily(id);
+
+  const [plants, setPlants] = useState<Plant[]>([]);
+  const [loadingPlants, setLoadingPlants] = useState(true);
+  const [plantsError, setPlantsError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setFamily(null);
-      setPlants([]);
-      setError(null);
-      setLoading(false);
+    let isActive = true;
 
-      return;
-    }
-
-    async function load() {
+    async function loadPlants() {
       try {
-        setLoading(true);
-        setError(null);
+        setLoadingPlants(true);
+        setPlantsError(null);
 
-        const [familyRes, plantsRes] = await Promise.all([
-          getFamilyById(id as string),
-          getPlants({ family: id as string })
-        ]);
+        const plantsRes = await getPlants({ family: id });
 
-        setFamily(familyRes);
+        if (!isActive) return;
+
         setPlants(plantsRes.data);
       } catch (error) {
-        setFamily(null);
-        setPlants([]);
+        if (!isActive) return;
 
-        setError(
+        setPlants([]);
+        setPlantsError(
           error instanceof Error ? error.message : t('common.unknown_error')
         );
-      } finally {
-        setLoading(false);
       }
+
+      if (!isActive) return;
+
+      setLoadingPlants(false);
     }
 
-    load();
+    loadPlants();
+
+    return () => {
+      isActive = false;
+    };
   }, [id]);
-  if (loading) return <div>{t('family.detail.loading')}</div>;
-  if (error) return <div role="alert">{error}</div>;
-  if (!family) return <div>{t('family.detail.not_found')}</div>;
+
+  if (familyQuery.isLoading || loadingPlants) {
+    return <div>{t('family.detail.loading')}</div>;
+  }
+
+  if (familyQuery.error) {
+    return (
+      <div role="alert">
+        {familyQuery.error instanceof Error
+          ? familyQuery.error.message
+          : t('common.unknown_error')}
+      </div>
+    );
+  }
+
+  if (plantsError) {
+    return <div role="alert">{plantsError}</div>;
+  }
+
+  if (!familyQuery.data) {
+    return <div role="alert">{t('family.detail.not_found')}</div>;
+  }
 
   return (
     <div className="family-detail">
-      <FamilyHero family={family} />
-
-      <FamilyInfo family={family} />
-
-      <FamilyPlants family={family} plants={plants} />
+      <FamilyHero family={familyQuery.data} />
+      <FamilyInfo family={familyQuery.data} />
+      <FamilyPlants family={familyQuery.data} plants={plants} />
     </div>
   );
 }

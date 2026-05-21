@@ -1,12 +1,13 @@
 import '@testing-library/jest-dom';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { screen, waitFor } from '@testing-library/react';
 
+import { t } from '../../../../src/i18n/core/t';
 import FamilyDetail from '../../../../src/pages/families/FamilyDetail/FamilyDetail';
-
 import { getFamilyById } from '../../../../src/services/families.service';
 import { getPlants } from '../../../../src/services/plants.service';
+
+import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import { listFamiliesResponse } from '../../../fixtures/families/listFamilies';
 import { listPlantsResponse } from '../../../fixtures/plants/listPlants';
 
@@ -18,17 +19,17 @@ vi.mock('../../../../src/services/plants.service', () => ({
   getPlants: vi.fn()
 }));
 
+const mockedGetFamilyById = vi.mocked(getFamilyById);
+const mockedGetPlants = vi.mocked(getPlants);
+
 const mockFamily = listFamiliesResponse.data[0];
 const mockPlants = listPlantsResponse;
 
 function renderFamilyDetail() {
-  return render(
-    <MemoryRouter initialEntries={[`/families/${mockFamily.id}`]}>
-      <Routes>
-        <Route path="/families/:id" element={<FamilyDetail />} />
-      </Routes>
-    </MemoryRouter>
-  );
+  return renderWithProviders(<FamilyDetail />, {
+    route: `/families/${mockFamily.id}`,
+    path: '/families/:id'
+  });
 }
 
 describe('FamilyDetail', () => {
@@ -37,23 +38,25 @@ describe('FamilyDetail', () => {
   });
 
   it('should render loading state', () => {
-    vi.mocked(getFamilyById).mockImplementation(() => new Promise(() => {}));
-    vi.mocked(getPlants).mockImplementation(() => new Promise(() => {}));
+    mockedGetFamilyById.mockImplementation(() => new Promise(() => {}));
+    mockedGetPlants.mockImplementation(() => new Promise(() => {}));
 
     renderFamilyDetail();
 
-    expect(screen.getByText(/Cargando/i)).toBeInTheDocument();
+    expect(screen.getByText(t('family.detail.loading'))).toBeInTheDocument();
   });
 
   it('should render family information and plants', async () => {
-    vi.mocked(getFamilyById).mockResolvedValue(mockFamily);
-    vi.mocked(getPlants).mockResolvedValue(mockPlants);
+    mockedGetFamilyById.mockResolvedValue(mockFamily);
+    mockedGetPlants.mockResolvedValue(mockPlants);
 
     renderFamilyDetail();
 
     await waitFor(() => {
       expect(
-        screen.getByRole('heading', { name: new RegExp(mockFamily.name, 'i') })
+        screen.getByRole('heading', {
+          name: new RegExp(mockFamily.name, 'i')
+        })
       ).toBeInTheDocument();
     });
 
@@ -67,8 +70,8 @@ describe('FamilyDetail', () => {
   });
 
   it('should render plants list links', async () => {
-    vi.mocked(getFamilyById).mockResolvedValue(mockFamily);
-    vi.mocked(getPlants).mockResolvedValue(mockPlants);
+    mockedGetFamilyById.mockResolvedValue(mockFamily);
+    mockedGetPlants.mockResolvedValue(mockPlants);
 
     renderFamilyDetail();
 
@@ -78,13 +81,42 @@ describe('FamilyDetail', () => {
   });
 
   it('should render error state', async () => {
-    vi.mocked(getFamilyById).mockRejectedValue(new Error('Family not found'));
-    vi.mocked(getPlants).mockResolvedValue({ ...mockPlants, data: [] });
+    mockedGetFamilyById.mockRejectedValue(new Error('Family not found'));
+
+    mockedGetPlants.mockResolvedValue({
+      ...mockPlants,
+      data: []
+    });
 
     renderFamilyDetail();
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent(/family not found/i);
+    });
+  });
+
+  it('should render plants error state', async () => {
+    mockedGetFamilyById.mockResolvedValue(mockFamily);
+
+    mockedGetPlants.mockRejectedValue(new Error('Plants failed'));
+
+    renderFamilyDetail();
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/plants failed/i);
+    });
+  });
+
+  it('should keep loading while plants are loading even if family is ready', async () => {
+    mockedGetFamilyById.mockResolvedValue(mockFamily);
+
+    mockedGetPlants.mockImplementation(() => new Promise(() => {}));
+
+    renderFamilyDetail();
+
+    await waitFor(() => {
+      expect(mockedGetFamilyById).toHaveBeenCalled();
+      expect(screen.getByText(t('family.detail.loading'))).toBeInTheDocument();
     });
   });
 });

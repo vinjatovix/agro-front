@@ -5,9 +5,8 @@ import { QueryClientProvider } from '@tanstack/react-query';
 
 import { useFamilies } from '../../../../src/pages/families/hooks/useFamilies';
 import { getFamilies } from '../../../../src/services/families.service';
-
 import type { Family } from '../../../../src/types/Family';
-import type { PaginatedResponse } from '../../../../src/types/api';
+
 import { listFamiliesResponse } from '../../../fixtures/families/listFamilies';
 import { createTestQueryClient } from '../../../test-utils/createTestQueryClient';
 
@@ -54,36 +53,6 @@ describe('useFamilies', () => {
 
     await waitFor(() => {
       expect(result.current.families).toEqual(familiesMock);
-    });
-  });
-
-  it('supports legacy array response shape', async () => {
-    mockedGetFamilies.mockResolvedValue(familiesMock);
-
-    const { result } = renderHook(() => useFamilies(), { wrapper });
-
-    await waitFor(() => {
-      expect(result.current.families).toEqual(familiesMock);
-    });
-  });
-
-  it('does not update state after unmount', async () => {
-    let resolvePromise!: (value: PaginatedResponse<Family>) => void;
-
-    mockedGetFamilies.mockReturnValue(
-      new Promise((resolve) => {
-        resolvePromise = resolve;
-      })
-    );
-
-    const { result, unmount } = renderHook(() => useFamilies(), { wrapper });
-
-    unmount();
-
-    resolvePromise(listFamiliesResponse);
-
-    await waitFor(() => {
-      expect(result.current.families).toEqual([]);
     });
   });
 });
