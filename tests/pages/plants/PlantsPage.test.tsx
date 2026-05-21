@@ -2,8 +2,9 @@ import '@testing-library/jest-dom';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
 import PlantsPage from '../../../src/pages/plants/PlantsPage';
-import { renderWithRouter } from '../../test-utils/renderWithRouter';
+import { renderWithProviders } from '../../test-utils/renderWithProviders';
 
 let isMobile = true;
 
@@ -23,18 +24,22 @@ vi.mock('../../../src/pages/plants/hooks/usePlants', () => ({
   })
 }));
 
+function renderPlantsPage() {
+  return renderWithProviders(<PlantsPage />);
+}
+
 describe('PlantsPage', () => {
   beforeEach(() => {
     isMobile = true;
   });
 
   it('should always render plant list', () => {
-    renderWithRouter(<PlantsPage />);
+    renderPlantsPage();
     expect(document.querySelector('.plant-grid')).toBeInTheDocument();
   });
 
   it('should show filters button in mobile', () => {
-    renderWithRouter(<PlantsPage />);
+    renderPlantsPage();
     expect(
       screen.getByRole('button', { name: /^filtros$/i })
     ).toBeInTheDocument();
@@ -42,7 +47,7 @@ describe('PlantsPage', () => {
 
   it('should NOT show filters button in desktop', () => {
     isMobile = false;
-    renderWithRouter(<PlantsPage />);
+    renderPlantsPage();
 
     expect(
       screen.queryByRole('button', { name: /^filtros$/i })
@@ -51,40 +56,38 @@ describe('PlantsPage', () => {
 
   it('should render sidebar in desktop mode', () => {
     isMobile = false;
-    renderWithRouter(<PlantsPage />);
+    renderPlantsPage();
 
     expect(document.querySelector('.plants-sidebar')).toBeInTheDocument();
   });
 
   it('should open drawer when clicking filters button', async () => {
     const user = userEvent.setup();
-    renderWithRouter(<PlantsPage />);
+    renderPlantsPage();
 
     await user.click(screen.getByRole('button', { name: /^filtros$/i }));
 
-    const overlay = document.querySelector('.drawer-overlay');
-    expect(overlay).toBeInTheDocument();
+    expect(document.querySelector('.drawer-overlay')).toBeInTheDocument();
   });
 
   it('should not show drawer initially in mobile', () => {
-    renderWithRouter(<PlantsPage />);
+    renderPlantsPage();
 
-    const overlay = document.querySelector('.drawer-overlay');
-    expect(overlay).not.toBeInTheDocument();
+    expect(document.querySelector('.drawer-overlay')).not.toBeInTheDocument();
   });
 
   it('should not render sidebar in mobile mode', () => {
-    renderWithRouter(<PlantsPage />);
+    renderPlantsPage();
 
     expect(document.querySelector('.plants-sidebar')).not.toBeInTheDocument();
   });
 
   it('should not render mobile button in desktop mode', () => {
     isMobile = false;
-    renderWithRouter(<PlantsPage />);
+    renderPlantsPage();
 
     expect(
-      screen.queryByRole('button', { name: /^filters$/i })
+      screen.queryByRole('button', { name: /^filtros$/i })
     ).not.toBeInTheDocument();
   });
 });

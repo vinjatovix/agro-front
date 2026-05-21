@@ -1,34 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { getFamilies } from '../../../services/families.service';
 import type { Family } from '../../../types/Family';
+import type { PaginatedResponse } from '../../../types/api';
+
+type FamiliesResponse = PaginatedResponse<Family> | Family[];
+
+function isPaginatedResponse(
+  data: FamiliesResponse | undefined
+): data is PaginatedResponse<Family> {
+  return !!data && !Array.isArray(data) && 'data' in data;
+}
 
 export function useFamilies() {
-  const [families, setFamilies] = useState<Family[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let mounted = true;
-
-    getFamilies()
-      .then((res) => {
-        if (!mounted) return;
-        setFamilies(res.data ?? res);
-      })
-      .catch(() => {
-        if (!mounted) return;
-      })
-      .finally(() => {
-        if (!mounted) return;
-        setLoading(false);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const query = useQuery<FamiliesResponse>({
+    queryKey: ['families'],
+    queryFn: getFamilies,
+    staleTime: 1000 * 60 * 60 * 24,
+    gcTime: 1000 * 60 * 60 * 24 * 7
+  });
 
   return {
-    families,
-    loading
+    families: isPaginatedResponse(query.data)
+      ? query.data.data
+      : (query.data ?? []),
+    loading: query.isLoading,
+    error: query.error
   };
 }
