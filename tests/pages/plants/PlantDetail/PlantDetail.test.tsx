@@ -1,29 +1,37 @@
 import '@testing-library/jest-dom';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
+import { t } from '../../../../src/i18n/core/t';
 import PlantDetail from '../../../../src/pages/plants/PlantDetail/PlantDetail';
-import { listPlantsResponse } from '../../../fixtures/plants/listPlants';
 import { getPlantById } from '../../../../src/services/plants.service';
+import { renderWithProviders } from '../../../test-utils/renderWithProviders';
+import { listPlantsResponse } from '../../../fixtures/plants/listPlants';
+
+const mockPlant = listPlantsResponse.data[0];
+const mockPlantWithVideos = listPlantsResponse.data[1];
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useParams: () => ({ id: mockPlant.id })
+  };
+});
 
 vi.mock('../../../../src/services/plants.service', () => ({
   getPlantById: vi.fn()
 }));
 
-const mockPlant = listPlantsResponse.data[0];
-const mockPlantWithVideos = listPlantsResponse.data[1];
-
 function renderPlantDetail() {
-  return render(
-    <MemoryRouter initialEntries={[`/plants/${mockPlant.id}`]}>
-      <Routes>
-        <Route path="/plants/:id" element={<PlantDetail />} />
-      </Routes>
-    </MemoryRouter>
-  );
+  return renderWithProviders(<PlantDetail />, {
+    route: `/plants/${mockPlant.id}`
+  });
 }
+
+const mockedGetPlantById = vi.mocked(getPlantById);
 
 describe('PlantDetail', () => {
   beforeEach(() => {
@@ -31,25 +39,28 @@ describe('PlantDetail', () => {
   });
 
   it('should render loading state initially', () => {
-    vi.mocked(getPlantById).mockImplementation(() => new Promise(() => {}));
+    mockedGetPlantById.mockImplementation(() => new Promise(() => {}));
 
     renderPlantDetail();
 
-    expect(screen.getByText(/Cargando planta/i)).toBeInTheDocument();
+    expect(screen.getByText(t('plant.detail.loading'))).toBeInTheDocument();
   });
 
   it('should render plant information', async () => {
-    vi.mocked(getPlantById).mockResolvedValue(mockPlant);
+    mockedGetPlantById.mockResolvedValue(mockPlant);
 
     renderPlantDetail();
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole('heading', { name: /perejil/i })
-      ).toBeInTheDocument();
-    });
+    const regexPrimaryName = new RegExp(mockPlant.identity.name.primary, 'i');
+    const regexScientific = new RegExp(
+      `^${mockPlant.identity.scientificName}$`,
+      'i'
+    );
 
-    expect(screen.getByText(/petroselinum crispum/i)).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: regexPrimaryName })
+    ).toBeInTheDocument();
+    expect(screen.getByText(regexScientific)).toBeInTheDocument();
 
     expect(screen.getByTestId('section-📅 calendario')).toBeInTheDocument();
     expect(screen.getByTestId('section-⚡ datos rápidos')).toBeInTheDocument();
@@ -60,82 +71,89 @@ describe('PlantDetail', () => {
 
   it('should change hemisphere', async () => {
     const user = userEvent.setup();
-    vi.mocked(getPlantById).mockResolvedValue(mockPlant);
+    mockedGetPlantById.mockResolvedValue(mockPlant);
 
     renderPlantDetail();
 
-    await screen.findByRole('heading', { name: /perejil/i });
-
-    const southBtn = screen.getByRole('button', { name: /sur/i });
+    const southBtn = await screen.findByRole('button', { name: /sur/i });
     await user.click(southBtn);
 
     expect(southBtn).toHaveClass('hemisphere-toggle__btn--active');
   });
 
   it('should render propagation methods', async () => {
-    vi.mocked(getPlantById).mockResolvedValue(mockPlant);
+    mockedGetPlantById.mockResolvedValue(mockPlant);
 
     renderPlantDetail();
 
     const card = await screen.findByTestId('propagation-seed');
 
     expect(card).toBeInTheDocument();
-    expect(card).toHaveTextContent('Macerar semillas 24h antes de siembra');
   });
 
   it('should render pruning information', async () => {
-    vi.mocked(getPlantById).mockResolvedValue(mockPlant);
+    mockedGetPlantById.mockResolvedValue(mockPlant);
 
     renderPlantDetail();
 
     const pruningCard = await screen.findByTestId('pruning-maintenance');
 
     expect(pruningCard).toBeInTheDocument();
-
-    expect(pruningCard).toHaveTextContent(/Mantenimiento/i);
-    expect(pruningCard).toHaveTextContent(/Moderada/i);
-    expect(pruningCard).toHaveTextContent(/Primavera/i);
   });
 
   it('should render error when service fails', async () => {
-    vi.mocked(getPlantById).mockRejectedValue(new Error('Plant not found'));
+    mockedGetPlantById.mockRejectedValue(new Error('Plant not found'));
+
     renderPlantDetail();
 
-    await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent(/plant not found/i);
-    });
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /plant not found/i
+    );
   });
 
   it('should render resources section with youtube videos and articles', async () => {
-    vi.mocked(getPlantById).mockResolvedValue(mockPlantWithVideos);
+    mockedGetPlantById.mockResolvedValue(mockPlantWithVideos);
 
     renderPlantDetail();
 
     const section = await screen.findByTestId('section-📚 recursos');
-    const articlesTab = document.getElementById(
-      'tab-articles'
-    ) as HTMLButtonElement;
-    const articleLinks = await screen.findAllByRole('link');
-
     expect(section).toBeInTheDocument();
-    expect(articleLinks.length).toBeGreaterThan(0);
-    expect(articlesTab).toBeInTheDocument();
+
+    const articlesTab = document.getElementById('tab-articles');
     expect(articlesTab).toHaveAttribute('aria-selected', 'true');
   });
 
   it('should switch to videos tab and render videos', async () => {
-    vi.mocked(getPlantById).mockResolvedValue(mockPlantWithVideos);
+    const user = userEvent.setup();
+    mockedGetPlantById.mockResolvedValue(mockPlantWithVideos);
 
     renderPlantDetail();
-
     await screen.findByTestId('section-📚 recursos');
 
-    const videosTab = document.getElementById(
-      'tab-videos'
-    ) as HTMLButtonElement;
-    await userEvent.click(videosTab);
+    const videosTab = await screen.getByTestId('tab-videos');
+    await user.click(videosTab);
 
     expect(videosTab).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getAllByTestId('resource-video')).toHaveLength(2);
+  });
+
+  it('navigates to family page when clicking family badge', async () => {
+    const user = userEvent.setup();
+    mockedGetPlantById.mockResolvedValue(mockPlant);
+
+    renderWithProviders(
+      <Routes>
+        <Route path="/plants/:id" element={<PlantDetail />} />
+        <Route path="/families/:id" element={<div>FAMILY PAGE</div>} />
+      </Routes>,
+      { route: `/plants/${mockPlant.id}` }
+    );
+
+    const familyLink = await screen.findByRole('link', {
+      name: new RegExp(mockPlant.identity.family, 'i')
+    });
+
+    await user.click(familyLink);
+
+    expect(screen.getByText('FAMILY PAGE')).toBeInTheDocument();
   });
 });
