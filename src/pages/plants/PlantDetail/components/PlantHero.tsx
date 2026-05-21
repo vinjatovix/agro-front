@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { t } from '../../../../i18n/core/t';
 import Badge from '../../../../shared/components/Badge/Bagde';
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
@@ -23,9 +24,15 @@ export default function PlantHero({ plant }: Props) {
         />
       )}
 
-      <Badge variant="family" icon="🌿">
-        {plant.identity.family}
-      </Badge>
+      <Link
+        to={`/families/${plant.identity.family}`}
+        className="plant-hero__family-link"
+      >
+        <Badge variant="family" icon="🌿">
+          {plant.identity.family}
+        </Badge>
+      </Link>
+
       {plant.identity.scientificName && (
         <p className="plant-hero__scientific">
           <strong>🧬 {t('plant.hero.scientific_name')}: </strong>
