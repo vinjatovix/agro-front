@@ -1,3 +1,5 @@
+import { ApiError } from '../shared/errors/ApiError';
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export async function apiFetch<T>(
@@ -12,22 +14,39 @@ export async function apiFetch<T>(
   });
 
   if (!response.ok) {
-    const statusMessage = `API error: ${response.status}${
+    const status = response.status;
+
+    const baseMessage = `API error: ${status}${
       response.statusText ? ` ${response.statusText}` : ''
     }`;
 
-    let message = statusMessage;
+    let message = baseMessage;
+    let errors: Record<string, string> | undefined;
 
     try {
-      const errorBody = await response.json();
-      if (errorBody?.message) {
-        message = `(${statusMessage}) ${errorBody.message}`;
+      const errorBody: unknown = await response.json();
+
+      if (
+        typeof errorBody === 'object' &&
+        errorBody !== null &&
+        'message' in errorBody
+      ) {
+        const msg = (errorBody as { message?: string }).message;
+        if (msg) message = msg;
+      }
+
+      if (
+        typeof errorBody === 'object' &&
+        errorBody !== null &&
+        'errors' in errorBody
+      ) {
+        errors = (errorBody as { errors?: Record<string, string> }).errors;
       }
     } catch {
       // intentionally ignored: non-json error body
     }
 
-    throw new Error(message);
+    throw new ApiError(message, status, errors);
   }
 
   return (await response.json()) as T;
