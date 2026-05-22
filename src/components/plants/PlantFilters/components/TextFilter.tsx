@@ -4,9 +4,11 @@ interface Props {
   readonly onChange: (value: string) => void;
   readonly placeholder?: string;
   readonly testId?: string;
+  readonly icon?: string;
 }
 
 export default function TextFilter({
+  icon,
   label,
   value,
   onChange,
@@ -16,8 +18,8 @@ export default function TextFilter({
   return (
     <div className="plant-filters__group">
       <label>
+        {icon ? `${icon} ` : ''}
         {label}
-
         <input
           className="plant-filters__input"
           data-testid={testId}

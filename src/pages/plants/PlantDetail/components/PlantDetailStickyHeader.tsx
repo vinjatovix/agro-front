@@ -1,6 +1,6 @@
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
+import { iconsMap } from '../../../../shared/constants/iconsMap';
 import Badge from '../../../../shared/components/Badge/Bagde';
-
 import type { Plant } from '../../../../types/Plants/Plant';
 
 import './plantDetailStickyHeader.css';
@@ -19,7 +19,7 @@ export const PlantDetailStickyHeader = ({ plant }: Props) => {
       {plant.identity.name.aliases.length > 0 && (
         <div className="plant-detail__sticky-aliases">
           {plant.identity.name.aliases.map((alias) => (
-            <Badge key={alias} variant="alias" icon="🏷️">
+            <Badge key={alias} variant="alias" icon={iconsMap.tag}>
               {capitalizeFirstLetter(alias)}
             </Badge>
           ))}

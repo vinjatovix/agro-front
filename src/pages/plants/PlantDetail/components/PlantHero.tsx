@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
 import { t } from '../../../../i18n/core/t';
 import Badge from '../../../../shared/components/Badge/Bagde';
+import { iconsMap } from '../../../../shared/constants/iconsMap';
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
 import type { Plant } from '../../../../types/Plants/Plant';
+
 import { findPlantImage } from '../../utils/findPlantImage';
 
 import './plantHero.css';
@@ -28,14 +30,16 @@ export default function PlantHero({ plant }: Props) {
         to={`/families/${plant.identity.family}`}
         className="plant-hero__family-link"
       >
-        <Badge variant="family" icon="🌿">
+        <Badge variant="family" icon={iconsMap.genome}>
           {plant.identity.family}
         </Badge>
       </Link>
 
       {plant.identity.scientificName && (
         <p className="plant-hero__scientific">
-          <strong>🧬 {t('plant.hero.scientific_name')}: </strong>
+          <strong>
+            {iconsMap.research} {t('plant.hero.scientific_name')}:{' '}
+          </strong>
           {capitalizeFirstLetter(plant.identity.scientificName)}
         </p>
       )}

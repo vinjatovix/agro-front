@@ -1,6 +1,8 @@
 import { t } from '../../../../i18n/core/t';
-import InfoRow from './InfoRow';
 import { tValue } from '../../../../i18n/core/tValue';
+import { iconsMap } from '../../../../shared/constants/iconsMap';
+
+import InfoRow from './InfoRow';
 
 interface Props {
   readonly type: string;
@@ -20,12 +22,12 @@ export default function PruningCard({
   return (
     <div className="pruning-card" data-testid={`pruning-${type}`}>
       <InfoRow
-        label={`🧩 ${t('plant.cultivation.pruning.type')}`}
+        label={`${iconsMap.puzzle} ${t('plant.cultivation.pruning.type')}`}
         value={tValue('plant.cultivation.pruning.pruningTypeValues', type)}
       />
 
       <InfoRow
-        label={`⚡ ${t('plant.cultivation.pruning.intensity')}`}
+        label={`${iconsMap.lightning} ${t('plant.cultivation.pruning.intensity')}`}
         value={tValue(
           'plant.cultivation.pruning.pruningIntensityValues',
           intensity
@@ -33,18 +35,18 @@ export default function PruningCard({
       />
 
       <InfoRow
-        label={`📅 ${t('plant.calendar.season')}`}
+        label={`${iconsMap.calendar} ${t('plant.calendar.season')}`}
         value={tValue('plant.calendar.seasonValues', season)}
       />
 
       <InfoRow
-        label={`🔁 ${t('plant.cultivation.pruning.frequency')}`}
+        label={`${iconsMap.repeat} ${t('plant.cultivation.pruning.frequency')}`}
         value={`${frequencyPerYear} ${t('plant.cultivation.pruning.times_per_year')}`}
       />
 
       {bestPractices && bestPractices.length > 0 && (
         <InfoRow
-          label={`📌 ${t('plant.cultivation.pruning.best_practices')}`}
+          label={`${iconsMap.pin} ${t('plant.cultivation.pruning.best_practices')}`}
           value={
             <ul className="pruning-card__list">
               {bestPractices.map((bp) => (

@@ -1,13 +1,14 @@
+import { t } from '../../../../i18n/core/t';
+import { tValue } from '../../../../i18n/core/tValue';
+import BodySection from '../../../../shared/components/BodySection/BodySection';
+import { iconsMap } from '../../../../shared/constants/iconsMap';
 import type { Plant } from '../../../../types/Plants/Plant';
 
-import BodySection from '../../../../shared/components/BodySection/BodySection';
 import InfoRow from './InfoRow';
 import PropagationMethodCard from './PropagationMethodCard';
 import PruningCard from './PruningCard';
 
 import './plantCultivation.css';
-import { t } from '../../../../i18n/core/t';
-import { tValue } from '../../../../i18n/core/tValue';
 
 interface Props {
   readonly plant: Plant;
@@ -17,20 +18,20 @@ export default function PlantCultivation({ plant }: Props) {
   const propagationMethods = plant.knowledge.propagation?.methods ?? {};
 
   return (
-    <BodySection title={`🌱 ${t('plant.cultivation.title')}`}>
+    <BodySection title={`${iconsMap.sowing} ${t('plant.cultivation.title')}`}>
       <div className="cultivation-basic">
         <InfoRow
-          label={`⚗️ ${t('plant.cultivation.soil_ph')}`}
+          label={`${iconsMap.chemistry} ${t('plant.cultivation.soil_ph')}`}
           value={`${plant.knowledge.soil.ph.min}-${plant.knowledge.soil.ph.max}`}
         />
 
         <InfoRow
-          label={`🪴 ${t('plant.cultivation.soil_depth')}`}
+          label={`${iconsMap.soilDepth} ${t('plant.cultivation.soil_depth')}`}
           value={`${plant.knowledge.soil.availableDepthCm.min}-${plant.knowledge.soil.availableDepthCm.max} cm`}
         />
 
         <InfoRow
-          label={`🫚 ${t('plant.cultivation.root_system')}`}
+          label={`${iconsMap.rootSystem} ${t('plant.cultivation.root_system')}`}
           value={tValue(
             'plant.filters.rootSystemValues',
             plant.knowledge.rootSystem.type
@@ -38,14 +39,14 @@ export default function PlantCultivation({ plant }: Props) {
         />
 
         <InfoRow
-          label={`📏 ${t('plant.cultivation.root_depth')}`}
+          label={`${iconsMap.ruler} ${t('plant.cultivation.root_depth')}`}
           value={`${plant.knowledge.rootSystem.depthCm.min}-${plant.knowledge.rootSystem.depthCm.max} cm`}
         />
       </div>
 
       <div className="cultivation-section">
         <h3 className="cultivation-section__title">
-          🌱 {t('plant.cultivation.propagation.propagation')}
+          {iconsMap.sowing} {t('plant.cultivation.propagation.propagation')}
         </h3>
 
         <div className="propagation-grid">
@@ -63,7 +64,7 @@ export default function PlantCultivation({ plant }: Props) {
       {plant.knowledge.pruning && plant.knowledge.pruning.length > 0 && (
         <div className="cultivation-section">
           <h3 className="cultivation-section__title">
-            ✂️ {t('plant.cultivation.pruning.pruning')}
+            {iconsMap.scissors} {t('plant.cultivation.pruning.pruning')}
           </h3>
 
           <div className="pruning-grid">

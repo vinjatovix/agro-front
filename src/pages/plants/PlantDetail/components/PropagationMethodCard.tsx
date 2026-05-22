@@ -1,5 +1,7 @@
 import { t } from '../../../../i18n/core/t';
 import { tValue } from '../../../../i18n/core/tValue';
+import { iconsMap } from '../../../../shared/constants/iconsMap';
+
 import InfoRow from './InfoRow';
 
 interface Props {
@@ -16,18 +18,18 @@ export default function PropagationMethodCard({
   return (
     <div className="propagation-card" data-testid={`propagation-${method}`}>
       <InfoRow
-        label={`🧪 ${t('plant.cultivation.propagation.method')}`}
+        label={`${iconsMap.testTube} ${t('plant.cultivation.propagation.method')}`}
         value={tValue('plant.cultivation.propagation.methodValues', method)}
       />
 
       <InfoRow
-        label={`📅 ${t('plant.calendar.season')}`}
+        label={`${iconsMap.calendar} ${t('plant.calendar.season')}`}
         value={tValue('plant.calendar.seasonValues', season)}
       />
 
       {bestPractices && bestPractices.length > 0 && (
         <InfoRow
-          label={`📌 ${t('plant.cultivation.propagation.best_practices')}`}
+          label={`${iconsMap.pin} ${t('plant.cultivation.propagation.best_practices')}`}
           value={
             <ul className="propagation-card__list">
               {bestPractices.map((bp) => (

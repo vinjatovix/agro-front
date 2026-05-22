@@ -1,6 +1,7 @@
 import { useId } from 'react';
 import { t } from '../../../../../i18n/core/t';
 import { useFamilies } from '../../../../../pages/families/hooks/useFamilies';
+import { iconsMap } from '../../../../../shared/constants/iconsMap';
 
 interface Props {
   readonly value: string;
@@ -13,7 +14,9 @@ export default function FamilySelect({ value, onChange }: Props) {
 
   return (
     <div className="plant-filters__group">
-      <label htmlFor={selectId}>{t('plant.filters.family')}</label>
+      <label htmlFor={selectId}>
+        {iconsMap['genome']} {t('plant.filters.family')}
+      </label>
 
       <select
         id={selectId}
