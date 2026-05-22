@@ -1,49 +1,68 @@
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
+
 import { usePlants } from '../../../../src/pages/plants/hooks/usePlants';
+import { getPlants } from '../../../../src/services/plants.service';
+import type { PaginatedResponse } from '../../../../src/types/api';
+import type { Plant } from '../../../../src/types/Plants/Plant';
 
-import * as plantsService from '../../../../src/services/plants.service';
 import { listPlantsResponse } from '../../../fixtures/plants/listPlants';
-import { SUPPORTED_LIMITS } from '../../../../src/shared/components/constants';
+import { createTestQueryClient } from '../../../test-utils/createTestQueryClient';
 
-const getPlantsMock = vi
-  .spyOn(plantsService, 'getPlants')
-  .mockResolvedValue(listPlantsResponse);
+vi.mock('../../../../src/services/plants.service', () => ({
+  getPlants: vi.fn()
+}));
 
-type WrapperProps = {
-  children: React.ReactNode;
-  initialEntries: string[];
-};
+const mockedGetPlants = vi.mocked(getPlants);
 
-function createWrapper({ initialEntries, children }: WrapperProps) {
-  return (
-    <MemoryRouter initialEntries={initialEntries}>
-      <Routes>
-        <Route path="*" element={children} />
-      </Routes>
-    </MemoryRouter>
-  );
+function createWrapper(initialEntries: string[] = ['/plants']) {
+  const queryClient = createTestQueryClient();
+
+  return function Wrapper({ children }: { children: React.ReactNode }) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Routes>
+            <Route path="*" element={children} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+  };
 }
 
 describe('usePlants', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    getPlantsMock.mockResolvedValue(listPlantsResponse);
   });
 
-  it('calls backend when identity is in query params', async () => {
-    renderHook(() => usePlants(), {
-      wrapper: ({ children }) =>
-        createWrapper({
-          initialEntries: ['/plants?identity=pepper'],
-          children
-        })
+  it('loads plants successfully', async () => {
+    mockedGetPlants.mockResolvedValue(listPlantsResponse);
+
+    const { result } = renderHook(() => usePlants(), {
+      wrapper: createWrapper()
     });
 
     await waitFor(() => {
-      expect(getPlantsMock).toHaveBeenCalledWith(
+      expect(result.current.data.length).toBeGreaterThan(0);
+    });
+
+    expect(mockedGetPlants).toHaveBeenCalled();
+  });
+
+  it('calls API with filters from URL', async () => {
+    mockedGetPlants.mockResolvedValue(listPlantsResponse);
+
+    renderHook(() => usePlants(), {
+      wrapper: createWrapper(['/plants?family=rosaceae&identity=pepper'])
+    });
+
+    await waitFor(() => {
+      expect(mockedGetPlants).toHaveBeenCalledWith(
         expect.objectContaining({
+          family: 'rosaceae',
           identity: 'pepper'
         }),
         expect.any(Object),
@@ -52,28 +71,61 @@ describe('usePlants', () => {
     });
   });
 
-  it('parses default page and limit', async () => {
-    const { result } = renderHook(() => usePlants(), {
-      wrapper: ({ children }) =>
-        createWrapper({
-          initialEntries: ['/plants'],
-          children
-        })
+  it('passes pagination and sort', async () => {
+    mockedGetPlants.mockResolvedValue(listPlantsResponse);
+
+    renderHook(() => usePlants(), {
+      wrapper: createWrapper(['/plants?page=2&limit=25&sortDirection=desc'])
     });
 
     await waitFor(() => {
-      expect(result.current.page).toBe(1);
-      expect(result.current.limit).toBe(SUPPORTED_LIMITS[0]);
+      expect(mockedGetPlants).toHaveBeenCalledWith(
+        expect.any(Object),
+        {
+          page: 2,
+          limit: 25
+        },
+        {
+          field: 'identity.name.primary',
+          direction: 'desc'
+        }
+      );
     });
   });
 
-  it('setPage updates URL correctly', async () => {
+  it('handles error state', async () => {
+    mockedGetPlants.mockRejectedValue(new Error('API error'));
+
     const { result } = renderHook(() => usePlants(), {
-      wrapper: ({ children }) =>
-        createWrapper({
-          initialEntries: ['/plants?page=1'],
-          children
-        })
+      wrapper: createWrapper()
+    });
+
+    await waitFor(() => {
+      expect(result.current.error).toBeTruthy();
+    });
+  });
+
+  it('exposes loading state', () => {
+    mockedGetPlants.mockImplementation(
+      () => new Promise(() => {}) as Promise<PaginatedResponse<Plant>>
+    );
+
+    const { result } = renderHook(() => usePlants(), {
+      wrapper: createWrapper()
+    });
+
+    expect(result.current.loading).toBe(true);
+  });
+
+  it('updates page search param when setPage is called', async () => {
+    mockedGetPlants.mockResolvedValue(listPlantsResponse);
+
+    const { result } = renderHook(() => usePlants(), {
+      wrapper: createWrapper(['/plants?page=1'])
+    });
+
+    await waitFor(() => {
+      expect(mockedGetPlants).toHaveBeenCalled();
     });
 
     act(() => {
@@ -85,38 +137,45 @@ describe('usePlants', () => {
     });
   });
 
-  it('setLimit resets page to 1', async () => {
-    const { result } = renderHook(() => usePlants(), {
-      wrapper: ({ children }) =>
-        createWrapper({
-          initialEntries: ['/plants?page=5&limit=25'],
-          children
-        })
-    });
+  it('updates limit and resets page when setLimit is called', async () => {
+    mockedGetPlants.mockResolvedValue(listPlantsResponse);
 
-    act(() => {
-      result.current.setLimit(SUPPORTED_LIMITS[1]);
+    const { result } = renderHook(() => usePlants(), {
+      wrapper: createWrapper(['/plants?page=4&limit=25'])
     });
 
     await waitFor(() => {
-      expect(result.current.limit).toBe(SUPPORTED_LIMITS[1]);
+      expect(mockedGetPlants).toHaveBeenCalled();
+    });
+
+    act(() => {
+      result.current.setLimit(50);
+    });
+
+    await waitFor(() => {
+      expect(result.current.limit).toBe(50);
       expect(result.current.page).toBe(1);
     });
   });
 
-  it('exposes loading state', async () => {
+  it('updates sort direction and resets page when setSortDirection is called', async () => {
+    mockedGetPlants.mockResolvedValue(listPlantsResponse);
+
     const { result } = renderHook(() => usePlants(), {
-      wrapper: ({ children }) =>
-        createWrapper({
-          initialEntries: ['/plants'],
-          children
-        })
+      wrapper: createWrapper(['/plants?page=4&sortDirection=asc'])
     });
 
-    expect(result.current.loading).toBe(true);
+    await waitFor(() => {
+      expect(mockedGetPlants).toHaveBeenCalled();
+    });
+
+    act(() => {
+      result.current.setSortDirection('desc');
+    });
 
     await waitFor(() => {
-      expect(result.current.loading).toBe(false);
+      expect(result.current.sortDirection).toBe('desc');
+      expect(result.current.page).toBe(1);
     });
   });
 });

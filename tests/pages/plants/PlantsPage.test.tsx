@@ -14,7 +14,7 @@ vi.mock('../../../src/shared/hooks/useMediaQuery', () => ({
 
 vi.mock('../../../src/pages/plants/hooks/usePlants', () => ({
   usePlants: () => ({
-    plants: [],
+    data: [],
     loading: false,
     pagination: null,
     page: 1,
