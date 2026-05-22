@@ -1,41 +1,85 @@
-import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+
 import { getPlants } from '../../../services/plants.service';
-
-import type {
-  LightType,
-  Plant,
-  PlantLifecycle,
-  RootSystem,
-  SowingMethod
-} from '../../../types/Plants/Plant';
-
-import type { PaginationResult } from '../../../types/Pagination';
-import { ALLOWED_SORT_FIELDS } from '../../../components/plants/PlantFilters/constants';
+import { QUERY_DEFAULTS } from '../../../shared/reactQuery/queryDefaults';
+import type { Plant } from '../../../types/Plants/Plant';
+import type { PaginatedResponse } from '../../../types/api';
 import type { PlantsSortField } from '../../../types/Plants/PlantsAllowedSortFields';
+import { parsePositiveInt } from '../../../shared/utils/parsePositiveInt';
+import {
+  isPlantLifecycle,
+  isSowingMethod,
+  isLightType,
+  isRootSystem
+} from '../../../components/plants/PlantFilters/utils/plantFilter.utils';
+import { safeNumber } from '../../../shared/utils/safeNumber';
 
 type SortDirection = 'asc' | 'desc';
-
-function isSortField(value: string): value is PlantsSortField {
-  return ALLOWED_SORT_FIELDS.includes(value as PlantsSortField);
-}
 
 export function usePlants() {
   const [params, setParams] = useSearchParams();
 
-  const page = Number(params.get('page') ?? 1);
-  const limit = Number(params.get('limit') ?? 25);
+  const page = parsePositiveInt(params.get('page'), 1);
+  const limit = parsePositiveInt(params.get('limit'), 25);
 
-  const rawSortField = params.get('sortField');
-  const sortField: PlantsSortField = isSortField(rawSortField ?? '')
-    ? (rawSortField as PlantsSortField)
-    : 'identity.name.primary';
+  const rawSortDirection = params.get('sortDirection');
+  const sortDirection: SortDirection =
+    rawSortDirection === 'asc' || rawSortDirection === 'desc'
+      ? rawSortDirection
+      : 'asc';
 
-  const sortDirection = (params.get('sortDirection') as SortDirection) ?? 'asc';
+  const rawLifeCycle = params.get('lifeCycle');
+  const rawSowingMethod = params.get('sowingMethod');
+  const rawLightType = params.get('lightType');
+  const rawRootSystem = params.get('rootSystem');
 
-  const [plants, setPlants] = useState<Plant[]>([]);
-  const [pagination, setPagination] = useState<PaginationResult | null>(null);
-  const [loading, setLoading] = useState(true);
+  const filters = {
+    family: params.get('family') || undefined,
+    identity: params.get('identity') || undefined,
+    lifeCycle:
+      rawLifeCycle && isPlantLifecycle(rawLifeCycle) ? rawLifeCycle : undefined,
+
+    sowingMethod:
+      rawSowingMethod && isSowingMethod(rawSowingMethod)
+        ? rawSowingMethod
+        : undefined,
+
+    lightType:
+      rawLightType && isLightType(rawLightType) ? rawLightType : undefined,
+
+    rootSystem:
+      rawRootSystem && isRootSystem(rawRootSystem) ? rawRootSystem : undefined,
+
+    sowingMonths: (() => {
+      const v = safeNumber(params.get('sowingMonth'));
+      return v !== undefined ? [v] : undefined;
+    })(),
+
+    soilPh: safeNumber(params.get('soilPh')),
+
+    lightHoursMin: safeNumber(params.get('lightHoursMin')),
+
+    spacingCm: safeNumber(params.get('spacingCm')),
+
+    soilAvailableDepthCm: safeNumber(params.get('soilAvailableDepthCm'))
+  };
+
+  const pagination = {
+    page,
+    limit
+  };
+
+  const sort = {
+    field: 'identity.name.primary' as PlantsSortField,
+    direction: sortDirection
+  };
+
+  const query = useQuery<PaginatedResponse<Plant>>({
+    queryKey: ['plants', { pagination, filters, sort }],
+    queryFn: () => getPlants(filters, pagination, sort),
+    ...QUERY_DEFAULTS
+  });
 
   function setPage(next: number) {
     setParams((prev) => {
@@ -54,15 +98,6 @@ export function usePlants() {
     });
   }
 
-  function setSortField(next: PlantsSortField) {
-    setParams((prev) => {
-      const p = new URLSearchParams(prev);
-      p.set('sortField', next);
-      p.set('page', '1');
-      return p;
-    });
-  }
-
   function setSortDirection(next: SortDirection) {
     setParams((prev) => {
       const p = new URLSearchParams(prev);
@@ -72,79 +107,18 @@ export function usePlants() {
     });
   }
 
-  const paramsString = params.toString();
-
-  useEffect(() => {
-    async function loadPlants() {
-      try {
-        setLoading(true);
-
-        const response = await getPlants(
-          {
-            family: params.get('family') || undefined,
-            identity: params.get('identity') || undefined,
-
-            lifeCycle: params.get('lifeCycle') as PlantLifecycle | undefined,
-            sowingMethod: params.get('sowingMethod') as
-              | SowingMethod
-              | undefined,
-            lightType: params.get('lightType') as LightType | undefined,
-            rootSystem: params.get('rootSystem') as RootSystem | undefined,
-
-            sowingMonths: params.get('sowingMonth')
-              ? [Number(params.get('sowingMonth'))]
-              : undefined,
-
-            soilPh: params.get('soilPh')
-              ? Number(params.get('soilPh'))
-              : undefined,
-
-            lightHoursMin: params.get('lightHoursMin')
-              ? Number(params.get('lightHoursMin'))
-              : undefined,
-
-            spacingCm: params.get('spacingCm')
-              ? Number(params.get('spacingCm'))
-              : undefined,
-
-            soilAvailableDepthCm: params.get('soilAvailableDepthCm')
-              ? Number(params.get('soilAvailableDepthCm'))
-              : undefined
-          },
-          {
-            page,
-            limit
-          },
-          {
-            field: sortField,
-            direction: sortDirection
-          }
-        );
-
-        setPlants(response.data);
-        setPagination(response.pagination);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadPlants();
-  }, [paramsString, page, limit, sortField, sortDirection]);
-
   return {
-    plants,
-    loading,
-    pagination,
+    data: query.data?.data ?? [],
+    pagination: query.data?.pagination ?? null,
+    loading: query.isLoading,
+    error: query.error,
 
     page,
     limit,
-
-    sortField,
     sortDirection,
 
     setPage,
     setLimit,
-    setSortField,
     setSortDirection
   };
 }

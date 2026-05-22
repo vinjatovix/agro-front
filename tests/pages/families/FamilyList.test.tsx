@@ -18,7 +18,7 @@ const mockedUseFamilies = vi.mocked(useFamilies);
 describe('FamilyList', () => {
   it('shows loading state', () => {
     mockedUseFamilies.mockReturnValue({
-      families: [],
+      data: [],
       loading: true,
       error: null
     });
@@ -31,7 +31,7 @@ describe('FamilyList', () => {
   it('renders families', () => {
     mockedUseFamilies.mockReturnValue({
       loading: false,
-      families: listFamiliesResponse.data,
+      data: listFamiliesResponse.data,
       error: null
     });
 
@@ -55,7 +55,7 @@ describe('FamilyList', () => {
   it('creates links to family detail', () => {
     mockedUseFamilies.mockReturnValue({
       loading: false,
-      families: listFamiliesResponse.data,
+      data: listFamiliesResponse.data,
       error: null
     });
 

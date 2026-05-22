@@ -15,7 +15,7 @@ const mockSetFamily = vi.fn();
 vi.mock('../../../../src/pages/families/hooks/useFamilies', () => ({
   useFamilies: () => ({
     loading: false,
-    families: [
+    data: [
       { id: 'family-id', slug: 'rosaceae' },
       { id: 'family-id2', slug: 'lamiaceae' }
     ]

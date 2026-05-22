@@ -43,7 +43,7 @@ describe('useFamilies', () => {
 
     const { result } = renderHook(() => useFamilies(), { wrapper });
 
-    expect(result.current.families).toEqual([]);
+    expect(result.current.data).toEqual([]);
   });
 
   it('loads families successfully', async () => {
@@ -52,7 +52,7 @@ describe('useFamilies', () => {
     const { result } = renderHook(() => useFamilies(), { wrapper });
 
     await waitFor(() => {
-      expect(result.current.families).toEqual(familiesMock);
+      expect(result.current.data).toEqual(familiesMock);
     });
   });
 });

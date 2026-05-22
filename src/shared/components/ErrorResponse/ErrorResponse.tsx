@@ -11,7 +11,7 @@ export const ErrorResponse: React.FC<UiError> = ({ message, details }) => {
       {details?.length ? (
         <ul className="error-response__details">
           {details.map((d, i) => (
-            <li key={i}>{d}</li>
+            <li key={`${i}-${d}`}>{d}</li>
           ))}
         </ul>
       ) : null}

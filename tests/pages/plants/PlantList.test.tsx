@@ -1,97 +1,92 @@
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Plant } from '../../../src/types/Plants/Plant';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
+
+import { t } from '../../../src/i18n/core/t';
+import PlantList from '../../../src/pages/plants/PlantList';
 import { usePlants } from '../../../src/pages/plants/hooks/usePlants';
 import { buildPaginationPages } from '../../../src/shared/utils/pagination/buildPaginationPages';
-import { PaginationResult } from '../../../src/types/Pagination';
-import PlantList from '../../../src/pages/plants/PlantList';
-import { PlantCardProps } from '../../../src/pages/plants/PlantCard/PlantCard';
+import type { Plant } from '../../../src/types/Plants/Plant';
+import { ApiError } from '../../../src/shared/errors/ApiError';
+
 import { listPlantsResponse } from '../../fixtures/plants/listPlants';
-import { t } from '../../../src/i18n/core/t';
 
 vi.mock('../../../src/pages/plants/hooks/usePlants');
-
-vi.mock('../../../src/shared/utils/pagination/buildPaginationPages', () => ({
-  buildPaginationPages: vi.fn()
-}));
+vi.mock('../../../src/shared/utils/pagination/buildPaginationPages');
 
 vi.mock('../../../src/pages/plants/PlantCard/PlantCard', () => ({
-  default: ({ plant }: PlantCardProps) => (
+  default: ({ plant }: { plant: Plant }) => (
     <div>{plant.identity.name.primary}</div>
   )
 }));
 
-const setPage = vi.fn<(page: number) => void>();
-const setLimit = vi.fn<(limit: number) => void>();
-const setSortDirection = vi.fn<(direction: 'asc' | 'desc') => void>();
-const setSortField = vi.fn<(field: string) => void>();
+type UsePlantsReturn = ReturnType<typeof usePlants>;
 
 const mockedUsePlants = vi.mocked(usePlants);
 const mockedBuildPaginationPages = vi.mocked(buildPaginationPages);
 
-const plant: Plant = listPlantsResponse.data[0];
+const plant = listPlantsResponse.data[0];
+const pagination = listPlantsResponse.pagination;
 
-const pagination: PaginationResult = listPlantsResponse.pagination;
-
-type UsePlantsReturn = ReturnType<typeof usePlants>;
+function renderWithRoute(route: string) {
+  return render(
+    <MemoryRouter initialEntries={[route]}>
+      <Routes>
+        <Route path="*" element={<PlantList />} />
+      </Routes>
+    </MemoryRouter>
+  );
+}
 
 const baseHookResult: UsePlantsReturn = {
-  plants: [plant],
-
-  loading: false,
-
+  data: [plant],
   pagination,
-
+  loading: false,
+  error: null,
   page: 1,
   limit: 25,
-
-  setPage,
-  setLimit,
-  sortField: 'identity.name.primary',
   sortDirection: 'asc',
-  setSortDirection,
-  setSortField
+  setPage: vi.fn(),
+  setLimit: vi.fn(),
+  setSortDirection: vi.fn()
 };
 
 describe('PlantList', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockedBuildPaginationPages.mockReturnValue([1, 2, 3]);
-
     mockedUsePlants.mockReturnValue(baseHookResult);
+    mockedBuildPaginationPages.mockReturnValue([1, 2, 3]);
   });
 
   it('renders loading state', () => {
-    const loadingResult: UsePlantsReturn = {
+    mockedUsePlants.mockReturnValue({
       ...baseHookResult,
-      plants: [],
       loading: true,
+      data: [],
       pagination: null
-    };
+    });
 
-    mockedUsePlants.mockReturnValue(loadingResult);
+    renderWithRoute('/plants');
 
-    render(<PlantList />);
-
-    expect(screen.getByText(/Cargando/i)).toBeInTheDocument();
+    expect(screen.getByText(t('common.loading'))).toBeInTheDocument();
   });
 
   it('renders title', () => {
-    render(<PlantList />);
+    renderWithRoute('/plants');
 
     expect(screen.getByText(t('plant.plants'))).toBeInTheDocument();
   });
 
   it('renders plants', () => {
-    render(<PlantList />);
+    renderWithRoute('/plants');
 
     expect(screen.getByText(plant.identity.name.primary)).toBeInTheDocument();
   });
 
-  it('calls buildPaginationPages with current page and total pages', () => {
-    render(<PlantList />);
+  it('calls buildPaginationPages when pagination exists', () => {
+    renderWithRoute('/plants');
 
     expect(mockedBuildPaginationPages).toHaveBeenCalledWith(
       pagination.page,
@@ -99,52 +94,80 @@ describe('PlantList', () => {
     );
   });
 
-  it('renders pagination twice', () => {
-    render(<PlantList />);
-
-    const paginationButtons = screen.getAllByTestId('pagination-button-1');
-    expect(paginationButtons).toHaveLength(2);
-  });
-
-  it('passes limit changes to setLimit', () => {
-    render(<PlantList />);
-
-    fireEvent.change(document.getElementById('limit-select')!, {
-      target: { value: '50' }
-    });
-
-    expect(setLimit).toHaveBeenCalledWith(50);
-  });
-
-  it('passes page changes to setPage', () => {
-    render(<PlantList />);
-
-    const paginationButtons = screen.getAllByTestId('pagination-button-3');
-    fireEvent.click(paginationButtons[0]);
-
-    expect(setPage).toHaveBeenCalledWith(3);
-  });
-
-  it('does not build pagination pages when pagination is null', () => {
-    const noPaginationResult: UsePlantsReturn = {
+  it('does not call buildPaginationPages when pagination is null', () => {
+    mockedUsePlants.mockReturnValue({
       ...baseHookResult,
       pagination: null
-    };
+    });
 
-    mockedUsePlants.mockReturnValue(noPaginationResult);
-
-    render(<PlantList />);
+    renderWithRoute('/plants');
 
     expect(mockedBuildPaginationPages).not.toHaveBeenCalled();
   });
 
-  it('passes sort direction changes to setSortDirection', () => {
-    render(<PlantList />);
-
-    fireEvent.change(document.getElementById('order-select')!, {
-      target: { value: 'desc' }
+  it('renders error state', () => {
+    mockedUsePlants.mockReturnValue({
+      ...baseHookResult,
+      error: new ApiError('Failed to load plants', 500),
+      loading: false,
+      data: []
     });
 
+    renderWithRoute('/plants');
+
+    expect(screen.getByText(/failed to load plants/i)).toBeInTheDocument();
+  });
+
+  it('calls setLimit when limit changes', () => {
+    const setLimit = vi.fn();
+
+    mockedUsePlants.mockReturnValue({
+      ...baseHookResult,
+      setLimit
+    });
+
+    renderWithRoute('/plants');
+
+    const select = screen.getByLabelText(/resultados por página/i);
+
+    fireEvent.change(select, { target: { value: '50' } });
+
+    expect(setLimit).toHaveBeenCalledWith(50);
+  });
+
+  it('calls setSortDirection when order changes', () => {
+    const setSortDirection = vi.fn();
+
+    mockedUsePlants.mockReturnValue({
+      ...baseHookResult,
+      setSortDirection
+    });
+
+    renderWithRoute('/plants');
+
+    const select = screen.getByLabelText(/orden/i);
+
+    fireEvent.change(select, { target: { value: 'desc' } });
+
     expect(setSortDirection).toHaveBeenCalledWith('desc');
+  });
+
+  it('calls setPage when pagination is clicked', () => {
+    const setPage = vi.fn();
+
+    mockedUsePlants.mockReturnValue({
+      ...baseHookResult,
+      setPage
+    });
+
+    mockedBuildPaginationPages.mockReturnValue([1, 2, 3]);
+
+    renderWithRoute('/plants');
+
+    const buttons = screen.getAllByTestId(/pagination-button-2/i);
+
+    fireEvent.click(buttons[0]);
+
+    expect(setPage).toHaveBeenCalledWith(2);
   });
 });

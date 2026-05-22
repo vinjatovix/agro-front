@@ -1,6 +1,6 @@
 import { useId } from 'react';
-import { useFamilies } from '../../../../../pages/families/hooks/useFamilies';
 import { t } from '../../../../../i18n/core/t';
+import { useFamilies } from '../../../../../pages/families/hooks/useFamilies';
 
 interface Props {
   readonly value: string;
@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function FamilySelect({ value, onChange }: Props) {
-  const { families, loading } = useFamilies();
+  const { data, loading } = useFamilies();
   const selectId = useId();
 
   return (
@@ -29,7 +29,7 @@ export default function FamilySelect({ value, onChange }: Props) {
           <>
             <option value="">{t('plant.filters.allFamilies')}</option>
 
-            {families.map((f) => (
+            {data.map((f) => (
               <option key={f.id} value={f.id}>
                 {f.slug}
               </option>

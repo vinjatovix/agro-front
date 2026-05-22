@@ -1,20 +1,23 @@
-import { usePlants } from './hooks/usePlants';
-
-import PlantCard from './PlantCard/PlantCard';
+import { t } from '../../i18n/core/t';
 
 import { buildPaginationPages } from '../../shared/utils/pagination';
+import { toUiError } from '../../shared/errors/toUiError';
 import OrderSelector from '../../shared/components/OrderSelector/OrderSelector';
 import LimitSelector from '../../shared/components/LimitSelector/LimitSelector';
 import Pagination from '../../shared/components/Pagination/Pagination';
-import { t } from '../../i18n/core/t';
+import { ErrorResponse } from '../../shared/components/ErrorResponse/ErrorResponse';
+
+import PlantCard from './PlantCard/PlantCard';
+import { usePlants } from './hooks/usePlants';
 
 import './plantList.css';
 
 export default function PlantList() {
   const {
-    plants,
-    loading,
+    data,
     pagination,
+    loading,
+    error,
     page,
     setPage,
     limit,
@@ -25,6 +28,10 @@ export default function PlantList() {
 
   if (loading) {
     return <div>{t('common.loading')}</div>;
+  }
+
+  if (error) {
+    return <ErrorResponse {...toUiError(error)} />;
   }
 
   const pages = pagination
@@ -42,13 +49,14 @@ export default function PlantList() {
           labelDes={t('plant.orders.desc')}
           onChange={setSortDirection}
         />
+
         <LimitSelector value={limit} onChange={setLimit} />
       </div>
 
       <Pagination pages={pages} currentPage={page} onPageChange={setPage} />
 
       <div className="plant-grid">
-        {plants.map((plant) => (
+        {data.map((plant) => (
           <PlantCard key={plant.id} plant={plant} />
         ))}
       </div>

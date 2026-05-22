@@ -14,7 +14,7 @@ export function useFamilies() {
   });
 
   return {
-    families: query.data?.data ?? [],
+    data: query.data?.data ?? [],
     loading: query.isLoading,
     error: query.error
   };
