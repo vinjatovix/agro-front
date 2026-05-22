@@ -1,9 +1,13 @@
+import { t } from '../../../i18n/core/t';
+import { tValue } from '../../../i18n/core/tValue';
+import { iconsMap } from '../../../shared/constants/iconsMap';
+
 import SliderFilter from '../SliderFilter';
 import ToggleGroup from '../ToggleGroup';
+
 import TextFilter from './components/TextFilter';
 import MonthSelector from './components/MonthSelector';
 import FamilySelect from './components/FamilySelect/FamilySelect';
-
 import { usePlantFilters } from './hooks/usePlantFilters';
 
 import {
@@ -13,8 +17,6 @@ import {
 } from './config/filters.config';
 
 import './PlantFilters.css';
-import { t } from '../../../i18n/core/t';
-import { tValue } from '../../../i18n/core/tValue';
 
 export default function PlantFilters() {
   const {
@@ -65,7 +67,7 @@ export default function PlantFilters() {
         className="plant-filters__clear"
         onClick={clearFilters}
       >
-        🆑 {t('plant.filters.clear')}
+        {iconsMap.clear} {t('plant.filters.clear')}
       </button>
 
       <FamilySelect value={family} onChange={setFamily} />
@@ -74,7 +76,8 @@ export default function PlantFilters() {
         <TextFilter
           testId={`text-filter-${filter.key}`}
           key={filter.key}
-          label={t(filter.labelKey)}
+          icon={filter.icon}
+          label={`${t(filter.labelKey)}`}
           value={textState[filter.key] ?? ''}
           placeholder={t(filter.placeholder)}
           onChange={(value) => handleTextChange(filter.key, value)}
@@ -82,7 +85,7 @@ export default function PlantFilters() {
       ))}
 
       <ToggleGroup
-        label={t('plant.hemisphere.title')}
+        label={`${iconsMap.planet} ${t('plant.hemisphere.title')}`}
         options={['north', 'south']}
         value={hemisphere}
         onChange={(value) => setHemisphere(value as 'north' | 'south')}
@@ -102,7 +105,7 @@ export default function PlantFilters() {
       {TOGGLE_FILTERS.map((filter) => (
         <ToggleGroup
           key={filter.key}
-          label={t(filter.labelKey)}
+          label={`${filter.icon} ${t(filter.labelKey)}`}
           options={[...filter.options]}
           value={toggleValues[filter.key]}
           onChange={(value) =>
@@ -132,7 +135,7 @@ export default function PlantFilters() {
         <SliderFilter
           testId={`slider-filter-${filter.key}`}
           key={filter.key}
-          label={t(filter.labelKey)}
+          label={`${filter.icon} ${t(filter.labelKey)}`}
           value={sliderValues[filter.key].value}
           min={filter.min}
           max={filter.max}

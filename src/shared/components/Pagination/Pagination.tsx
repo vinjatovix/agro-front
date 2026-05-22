@@ -1,10 +1,12 @@
+import { iconsMap } from '../../constants/iconsMap';
+
+import './pagination.css';
+
 interface Props {
   readonly pages: (number | '...')[];
   readonly currentPage: number;
   readonly onPageChange: (page: number) => void;
 }
-
-import './pagination.css';
 
 export default function Pagination({
   pages,
@@ -21,7 +23,7 @@ export default function Pagination({
 
           return (
             <span key={key} className="pagination__ellipsis">
-              ...
+              {iconsMap.ellipsis}
             </span>
           );
         }

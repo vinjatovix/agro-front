@@ -1,4 +1,7 @@
 import React from 'react';
+
+import { iconsMap } from '../../constants/iconsMap';
+
 import type { UiError } from './types';
 
 import './errorResponse.css';
@@ -6,7 +9,9 @@ import './errorResponse.css';
 export const ErrorResponse: React.FC<UiError> = ({ message, details }) => {
   return (
     <div role="alert" className="error-response">
-      <p className="error-response__message">🚨 {message}</p>
+      <p className="error-response__message">
+        {iconsMap.alert} {message}
+      </p>
 
       {details?.length ? (
         <ul className="error-response__details">

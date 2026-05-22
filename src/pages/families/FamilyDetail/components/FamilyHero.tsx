@@ -1,6 +1,7 @@
 import { t } from '../../../../i18n/core/t';
 import type { Family } from '../../../../types/Family';
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
+import { iconsMap } from '../../../../shared/constants/iconsMap';
 import Badge from '../../../../shared/components/Badge/Bagde';
 
 import './familyHero.css';
@@ -17,18 +18,20 @@ export function FamilyHero({ family }: Props) {
       <div className="family-hero-grid">
         {family.extra?.order && (
           <p className="family-hero__scientific">
-            🧭 <strong>{t('family.hero.order')}:</strong> {family.extra.order}
+            {iconsMap.compass} <strong>{t('family.hero.order')}:</strong>{' '}
+            {family.extra.order}
           </p>
         )}
 
         <p className="family-hero__scientific">
-          🧬 <strong>{t('family.hero.scientific_name')}:</strong>{' '}
+          {iconsMap.research}{' '}
+          <strong>{t('family.hero.scientific_name')}:</strong>{' '}
           {family.scientificName}
         </p>
 
         {family.extra?.speciesCount && (
           <p className="family-hero__scientific">
-            📊 <strong>{t('family.hero.species')}:</strong>{' '}
+            {iconsMap.chart} <strong>{t('family.hero.species')}:</strong>{' '}
             {family.extra.speciesCount}
           </p>
         )}
@@ -37,7 +40,7 @@ export function FamilyHero({ family }: Props) {
       <div className="family-hero__aliases">
         <span className="family-hero__label">{t('family.hero.aliases')}:</span>
         {family.aliases.map((alias) => (
-          <Badge key={alias} variant="alias" icon="🏷️">
+          <Badge key={alias} variant="alias" icon={iconsMap.tag}>
             {capitalizeFirstLetter(alias)}
           </Badge>
         ))}
@@ -45,7 +48,7 @@ export function FamilyHero({ family }: Props) {
 
       {family.extra?.distribution && (
         <p>
-          🌍 <strong>{t('family.hero.distribution')}:</strong>{' '}
+          {iconsMap.planet} <strong>{t('family.hero.distribution')}:</strong>{' '}
           {family.extra.distribution}
         </p>
       )}

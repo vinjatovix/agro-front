@@ -1,5 +1,5 @@
 import { t } from '../../../../../i18n/core/t';
-
+import { iconsMap } from '../../../../../shared/constants/iconsMap';
 import { getDomainFromUrl } from '../../../../../shared/utils/getDomainFromUrl';
 import type { Plant } from '../../../../../types/Plants/Plant';
 import BodySection from '../../../../../shared/components/BodySection/BodySection';
@@ -21,7 +21,7 @@ export default function PlantResources({ plant }: Props) {
   if (!videos.length && !articles.length) return null;
 
   return (
-    <BodySection title={`📚 ${t('plant.resources.title')}`}>
+    <BodySection title={`${iconsMap.education} ${t('plant.resources.title')}`}>
       <div className="plant-resources__tabs" role="tablist">
         {videos.length > 0 && (
           <button
@@ -35,7 +35,7 @@ export default function PlantResources({ plant }: Props) {
             className={tab === 'videos' ? 'active' : ''}
             onClick={() => setTab('videos')}
           >
-            🎬 {t('plant.resources.videos')}
+            {iconsMap.videos} {t('plant.resources.videos')}
           </button>
         )}
 
@@ -51,7 +51,7 @@ export default function PlantResources({ plant }: Props) {
             className={tab === 'articles' ? 'active' : ''}
             onClick={() => setTab('articles')}
           >
-            📄 {t('plant.resources.articles')}
+            {iconsMap.articles} {t('plant.resources.articles')}
           </button>
         )}
       </div>
@@ -100,7 +100,7 @@ export default function PlantResources({ plant }: Props) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              🔗 {article.title ?? getDomainFromUrl(article.url)}
+              {iconsMap.link} {article.title ?? getDomainFromUrl(article.url)}
             </a>
           ))}
         </div>

@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
+import { t } from '../../../../i18n/core/t';
 import BodySection from '../../../../shared/components/BodySection/BodySection';
+import { iconsMap } from '../../../../shared/constants/iconsMap';
+import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
 import type { Family } from '../../../../types/Family';
 import type { Plant } from '../../../../types/Plants/Plant';
-import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
-import { t } from '../../../../i18n/core/t';
 
 interface Props {
   readonly family: Family;
@@ -12,12 +13,12 @@ interface Props {
 
 export default function FamilyPlants({ family, plants }: Props) {
   return (
-    <BodySection title={`🌿 ${t('family.plants.title')}`}>
+    <BodySection title={`${iconsMap.gardening} ${t('family.plants.title')}`}>
       <Link
         to={`/plants?family=${family.id}`}
         className="family-detail__cta-link"
       >
-        ➡️ {t('family.plants.view_all')}
+        {iconsMap.arrowRight} {t('family.plants.view_all')}
       </Link>
 
       <div className="plant-grid">
