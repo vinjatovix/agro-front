@@ -15,13 +15,16 @@ import PlantNotes from './components/PlantNotes';
 import PlantResources from './components/PlantResources/PlantResources';
 
 import './plantDetail.css';
+import type { UiError } from '../../../shared/components/ErrorResponse/types';
+import { toUiError } from '../../../shared/errors/toUiError';
+import { ErrorResponse } from '../../../shared/components/ErrorResponse/ErrorResponse';
 
 export default function PlantDetail() {
   const { id } = useParams();
 
   const [plant, setPlant] = useState<Plant | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<UiError | null>(null);
 
   const [hemisphere, setHemisphere] = useState<'north' | 'south'>('north');
 
@@ -46,9 +49,7 @@ export default function PlantDetail() {
       } catch (error) {
         setPlant(null);
 
-        setError(
-          error instanceof Error ? error.message : t('common.unknown_error')
-        );
+        setError(toUiError(error));
       } finally {
         setLoading(false);
       }
@@ -61,10 +62,12 @@ export default function PlantDetail() {
     return <div>{t('plant.detail.loading')}</div>;
   }
   if (error) {
-    return <div role="alert">{error}</div>;
+    return <ErrorResponse {...error} />;
   }
   if (!plant) {
-    return <div>{t('plant.detail.not_found')}</div>;
+    return (
+      <ErrorResponse {...toUiError(new Error(t('plant.detail.not_found')))} />
+    );
   }
 
   return (

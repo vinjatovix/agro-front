@@ -12,6 +12,9 @@ import FamilyPlants from './components/FamilyPlants';
 import FamilyInfo from './components/FamilyInfo';
 
 import './familyDetail.css';
+import { ErrorResponse } from '../../../shared/components/ErrorResponse/ErrorResponse';
+import { toUiError } from '../../../shared/errors/toUiError';
+import type { UiError } from '../../../shared/components/ErrorResponse/types';
 
 export default function FamilyDetail() {
   const { id } = useParams();
@@ -24,7 +27,7 @@ export default function FamilyDetail() {
 
   const [plants, setPlants] = useState<Plant[]>([]);
   const [loadingPlants, setLoadingPlants] = useState(true);
-  const [plantsError, setPlantsError] = useState<string | null>(null);
+  const [plantsError, setPlantsError] = useState<UiError | null>(null);
 
   useEffect(() => {
     let isActive = true;
@@ -43,9 +46,7 @@ export default function FamilyDetail() {
         if (!isActive) return;
 
         setPlants([]);
-        setPlantsError(
-          error instanceof Error ? error.message : t('common.unknown_error')
-        );
+        setPlantsError(toUiError(error));
       }
 
       if (!isActive) return;
@@ -65,21 +66,17 @@ export default function FamilyDetail() {
   }
 
   if (familyQuery.error) {
-    return (
-      <div role="alert">
-        {familyQuery.error instanceof Error
-          ? familyQuery.error.message
-          : t('common.unknown_error')}
-      </div>
-    );
+    return <ErrorResponse {...toUiError(familyQuery.error)} />;
   }
 
   if (plantsError) {
-    return <div role="alert">{plantsError}</div>;
+    return <ErrorResponse {...plantsError} />;
   }
 
   if (!familyQuery.data) {
-    return <div role="alert">{t('family.detail.not_found')}</div>;
+    return (
+      <ErrorResponse {...toUiError(new Error(t('family.detail.not_found')))} />
+    );
   }
 
   return (
