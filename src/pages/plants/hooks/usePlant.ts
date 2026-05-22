@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { getFamilyById } from '../../../services/families.service';
+import { getPlantById } from '../../../services/plants.service';
 import { QUERY_DEFAULTS } from '../../../shared/reactQuery/queryDefaults';
 
-export function useFamily(id: string) {
+export function usePlant(id: string) {
   return useQuery({
-    queryKey: ['family', id],
-    queryFn: () => getFamilyById(id),
+    queryKey: ['plant', id],
+    queryFn: () => getPlantById(id),
     ...QUERY_DEFAULTS
   });
 }

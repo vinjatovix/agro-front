@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { t } from '../../../i18n/core/t';
-import { getPlantById } from '../../../services/plants.service';
-import type { Plant } from '../../../types/Plants/Plant';
+import { ErrorResponse } from '../../../shared/components/ErrorResponse/ErrorResponse';
+import { toUiError } from '../../../shared/errors/toUiError';
+
+import { usePlant } from '../hooks/usePlant';
 
 import { PlantDetailStickyHeader } from './components/PlantDetailStickyHeader';
 import PlantHero from './components/PlantHero';
@@ -15,60 +17,31 @@ import PlantNotes from './components/PlantNotes';
 import PlantResources from './components/PlantResources/PlantResources';
 
 import './plantDetail.css';
-import type { UiError } from '../../../shared/components/ErrorResponse/types';
-import { toUiError } from '../../../shared/errors/toUiError';
-import { ErrorResponse } from '../../../shared/components/ErrorResponse/ErrorResponse';
 
 export default function PlantDetail() {
   const { id } = useParams();
 
-  const [plant, setPlant] = useState<Plant | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<UiError | null>(null);
+  if (!id) {
+    throw new Error('Invalid route: missing plant id');
+  }
 
   const [hemisphere, setHemisphere] = useState<'north' | 'south'>('north');
+  const plantQuery = usePlant(id);
 
-  useEffect(() => {
-    async function loadPlant() {
-      if (!id) {
-        setPlant(null);
-        setError(null);
-        setLoading(false);
-
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-        setPlant(null);
-
-        const response = await getPlantById(id);
-
-        setPlant(response);
-      } catch (error) {
-        setPlant(null);
-
-        setError(toUiError(error));
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadPlant();
-  }, [id]);
-
-  if (loading) {
+  if (plantQuery.isLoading) {
     return <div>{t('plant.detail.loading')}</div>;
   }
-  if (error) {
-    return <ErrorResponse {...error} />;
+
+  if (plantQuery.error) {
+    return <ErrorResponse {...toUiError(plantQuery.error)} />;
   }
-  if (!plant) {
+  if (!plantQuery.data) {
     return (
       <ErrorResponse {...toUiError(new Error(t('plant.detail.not_found')))} />
     );
   }
+
+  const plant = plantQuery.data;
 
   return (
     <div className="plant-detail">

@@ -10,28 +10,21 @@ import { getPlantById } from '../../../../src/services/plants.service';
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import { listPlantsResponse } from '../../../fixtures/plants/listPlants';
 
-const mockPlant = listPlantsResponse.data[0];
-const mockPlantWithVideos = listPlantsResponse.data[1];
-
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useParams: () => ({ id: mockPlant.id })
-  };
-});
-
 vi.mock('../../../../src/services/plants.service', () => ({
   getPlantById: vi.fn()
 }));
 
+const mockedGetPlantById = vi.mocked(getPlantById);
+
+const mockPlant = listPlantsResponse.data[0];
+const mockPlantWithVideos = listPlantsResponse.data[1];
+
 function renderPlantDetail() {
   return renderWithProviders(<PlantDetail />, {
-    route: `/plants/${mockPlant.id}`
+    route: `/plants/${mockPlant.id}`,
+    path: '/plants/:id'
   });
 }
-
-const mockedGetPlantById = vi.mocked(getPlantById);
 
 describe('PlantDetail', () => {
   beforeEach(() => {
