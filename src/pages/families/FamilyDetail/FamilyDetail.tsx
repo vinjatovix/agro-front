@@ -79,11 +79,13 @@ export default function FamilyDetail() {
     );
   }
 
+  const family = familyQuery.data;
+
   return (
     <div className="family-detail">
-      <FamilyHero family={familyQuery.data} />
-      <FamilyInfo family={familyQuery.data} />
-      <FamilyPlants family={familyQuery.data} plants={plants} />
+      <FamilyHero family={family} />
+      <FamilyInfo family={family} />
+      <FamilyPlants family={family} plants={plants} />
     </div>
   );
 }
