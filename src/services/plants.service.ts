@@ -44,7 +44,7 @@ export async function getPlants(
       : 'identity.name.primary';
 
   const query = QueryBuilder.create()
-    .add('filter[identity][contains]', filters?.identity)
+    .add('filter[identity][contains]', filters?.identity?.trim())
     .add('filter[family][eq]', filters?.family)
     .add('filter[lifeCycle][eq]', filters?.lifeCycle)
     .add('filter[sowingMethod][eq]', filters?.sowingMethod)
