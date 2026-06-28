@@ -4,7 +4,6 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router-dom';
 
-import { t } from '../../../../src/i18n/core/t';
 import PlantDetail from '../../../../src/pages/plants/PlantDetail/PlantDetail';
 import { getPlantById } from '../../../../src/services/plants.service';
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
@@ -36,7 +35,7 @@ describe('PlantDetail', () => {
 
     renderPlantDetail();
 
-    expect(screen.getByText(t('plant.detail.loading'))).toBeInTheDocument();
+    expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
   it('should render plant information', async () => {

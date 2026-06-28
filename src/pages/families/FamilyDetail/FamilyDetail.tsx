@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 
 import { t } from '../../../i18n/core/t';
+import { Loader } from '../../../shared/components/Loader/Loader';
 import { ErrorResponse } from '../../../shared/components/ErrorResponse/ErrorResponse';
 import { toUiError } from '../../../shared/errors/toUiError';
 
@@ -27,7 +28,7 @@ export default function FamilyDetail() {
   const isLoading = familyQuery.isLoading || plantsQuery.loading;
 
   if (isLoading) {
-    return <div>{t('family.detail.loading')}</div>;
+    return <Loader labelKey="family.detail.loading" />;
   }
 
   if (familyQuery.error) {

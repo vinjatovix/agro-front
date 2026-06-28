@@ -2,6 +2,7 @@ import { t } from '../../i18n/core/t';
 
 import { buildPaginationPages } from '../../shared/utils/pagination';
 import { toUiError } from '../../shared/errors/toUiError';
+import { Loader } from '../../shared/components/Loader/Loader';
 import OrderSelector from '../../shared/components/OrderSelector/OrderSelector';
 import LimitSelector from '../../shared/components/LimitSelector/LimitSelector';
 import Pagination from '../../shared/components/Pagination/Pagination';
@@ -27,7 +28,7 @@ export default function PlantList() {
   } = usePlants();
 
   if (loading) {
-    return <div>{t('common.loading')}</div>;
+    return <Loader />;
   }
 
   if (error) {
