@@ -11,7 +11,6 @@ vi.mock('../../../src/pages/families/hooks/useFamilies', () => ({
 
 import { useFamilies } from '../../../src/pages/families/hooks/useFamilies';
 import { listFamiliesResponse } from '../../fixtures/families/listFamilies';
-import { t } from '../../../src/i18n/core/t';
 
 const mockedUseFamilies = vi.mocked(useFamilies);
 
@@ -25,7 +24,7 @@ describe('FamilyList', () => {
 
     renderWithProviders(<FamilyList />);
 
-    expect(screen.getByText(t('common.loading'))).toBeInTheDocument();
+    expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
   it('renders families', () => {

@@ -2,7 +2,6 @@ import '@testing-library/jest-dom';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 
-import { t } from '../../../../src/i18n/core/t';
 import FamilyDetail from '../../../../src/pages/families/FamilyDetail/FamilyDetail';
 import { getFamilyById } from '../../../../src/services/families.service';
 import { getPlants } from '../../../../src/services/plants.service';
@@ -43,7 +42,7 @@ describe('FamilyDetail', () => {
 
     renderFamilyDetail();
 
-    expect(screen.getByText(t('family.detail.loading'))).toBeInTheDocument();
+    expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
   it('should render family information and plants', async () => {
@@ -116,7 +115,7 @@ describe('FamilyDetail', () => {
 
     await waitFor(() => {
       expect(mockedGetFamilyById).toHaveBeenCalled();
-      expect(screen.getByText(t('family.detail.loading'))).toBeInTheDocument();
+      expect(screen.getByRole('status')).toBeInTheDocument();
     });
   });
 });

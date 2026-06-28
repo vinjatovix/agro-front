@@ -70,7 +70,7 @@ describe('PlantList', () => {
 
     renderWithRoute('/plants');
 
-    expect(screen.getByText(t('common.loading'))).toBeInTheDocument();
+    expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
   it('renders title', () => {
