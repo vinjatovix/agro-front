@@ -1,0 +1,32 @@
+.body-section {
+  margin-top: 1rem;
+  padding: 0 1.5rem 1rem;
+  border-radius: 0.75rem;
+  background: #fff;
+  border: 1px solid #e3e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.body-section__title {
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.body-section__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.body-section p {
+  margin: 0;
+}
+
+.body-section ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.body-section li {
+  margin: 0.25rem 0;
+}

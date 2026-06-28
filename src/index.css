@@ -1,0 +1,153 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.5rem;
+  --space-8: 3rem;
+  --space-9: 3.5rem;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  background: #f5f5f5;
+  color: #222;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  height: 64px;
+  background: white;
+  border-bottom: 1px solid #ddd;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 24px;
+}
+
+.app-brand {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.app-nav {
+  display: flex;
+  gap: 16px;
+}
+
+.app-nav a {
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.app-nav a:hover {
+  background: #ececec;
+}
+
+.app-content {
+  flex: 1;
+  padding: 24px;
+}
+
+.plant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-2);
+  margin: var(--space-4) 0;
+}
+
+.plant-scientific-name {
+  font-style: italic;
+  color: #666;
+}
+
+.plant-filters {
+  margin-top: 24px;
+}
+
+.plant-filters input {
+  width: 100%;
+  max-width: 400px;
+
+  padding: 12px;
+
+  border: 1px solid #ccc;
+  border-radius: 8px;
+
+  font-size: 16px;
+}
+
+.plant-detail {
+  max-width: 700px;
+}
+
+.plant-detail h1 {
+  margin-bottom: 4px;
+}
+
+.plant-detail .scientific {
+  font-style: italic;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.plant-detail section {
+  margin-top: 24px;
+  padding: 16px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+}
+
+.plant-detail h2 {
+  margin-top: 0;
+}
+
+.family-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.family-card {
+  display: block;
+  padding: 16px;
+
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+
+  text-decoration: none;
+  color: inherit;
+}
+
+.family-card:hover {
+  border-color: #999;
+}

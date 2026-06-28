@@ -1,0 +1,20 @@
+.month-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.month-chip {
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid #ccc;
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+.month-chip--active {
+  background: #2f7d32;
+  color: white;
+  border-color: #2f7d32;
+  opacity: 1;
+}

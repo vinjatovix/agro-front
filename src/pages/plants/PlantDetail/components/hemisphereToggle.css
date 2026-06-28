@@ -1,0 +1,30 @@
+.hemisphere-toggle {
+  display: inline-flex;
+  width: fit-content;
+  align-self: flex-start;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.hemisphere-toggle__btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: #444;
+  flex: 1;
+  text-align: center;
+  min-width: 70px;
+}
+
+.hemisphere-toggle__btn:hover {
+  background: #f3f3f3;
+}
+
+.hemisphere-toggle__btn--active {
+  background: #2e7d32;
+  color: white;
+}
