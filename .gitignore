@@ -25,3 +25,10 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+
+# Prototipos de Stitch (solo referencia visual; extraído a docs/design.md)
+stitch_redise_o_de_prototipo_inicial 2/
+.claude
+.specify
+.codegraph
+specs

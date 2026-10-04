@@ -1,0 +1,2310 @@
+openapi: 3.0.3
+
+info:
+  title: AgroApp API
+  version: 1.0.0
+  description: API for managing plants and user authentication in the AgroApp application.
+  termsOfService: http://example.com/terms/
+  contact:
+    name: AgroApp Support
+    email: vinjadevix@gmail.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+tags:
+  - name: Health
+    description: Endpoint for health checks.
+  - name: Auth
+    description: Endpoints for user authentication and management.
+  - name: Families
+    description: Endpoints for managing plant families.
+  - name: Plants
+    description: Endpoints for managing plant data.
+  - name: Beds
+    description: Endpoints for managing garden beds.
+
+paths:
+  /api/v1/health:
+    get:
+      tags: [Health]
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUserRequest'
+      responses:
+        '201':
+          description: User created. No body; call `/auth/login` to get a token.
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUserRequest'
+      responses:
+        '200':
+          description: JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [token]
+                properties:
+                  token:
+                    type: string
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/auth/google:
+    post:
+      tags: [Auth]
+      summary: Authenticate with Google
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticateWithGoogleRequest'
+      responses:
+        '200':
+          description: JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [token]
+                properties:
+                  token:
+                    type: string
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/auth/validate/{token}:
+    get:
+      tags: [Auth]
+      summary: Validate email
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          description: Email validated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh token
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: New token
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [token]
+                properties:
+                  token:
+                    type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/auth/update:
+    post:
+      tags: [Auth]
+      summary: Update password
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePasswordRequest'
+      responses:
+        '200':
+          description: Password updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/families:
+    get:
+      tags: [Families]
+      summary: Get all families
+
+      parameters:
+        - in: query
+          name: filter
+          description: >
+            Declared fields only, one operator per field. Unknown fields,
+            operators or values of the wrong type → 400.
+          style: deepObject
+          explode: true
+          schema:
+            $ref: '#/components/schemas/FamilyListFilter'
+        - in: query
+          name: sort
+          description: Declared sort keys only, `asc` or `desc`.
+          style: deepObject
+          explode: true
+          schema:
+            $ref: '#/components/schemas/FamilyListSort'
+        - in: query
+          name: pagination
+          style: deepObject
+          explode: true
+          schema:
+            $ref: '#/components/schemas/ListPagination'
+        - $ref: '#/components/parameters/FamilyFields'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      anyOf:
+                        - $ref: '#/components/schemas/Family'
+                        - $ref: '#/components/schemas/FamilyFieldset'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags: [Families]
+      summary: Create family
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFamily'
+
+      responses:
+        '201':
+          description: Family created
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Family'
+
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/families/{idOrSlug}:
+    get:
+      tags: [Families]
+      summary: Get family by id or slug
+      parameters:
+        - $ref: '#/components/parameters/FamilyIdOrSlug'
+        - $ref: '#/components/parameters/FamilyFields'
+      responses:
+        '200':
+          description: OK
+          headers:
+            ETag:
+              $ref: '#/components/headers/ReadETag'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/Family'
+                  - $ref: '#/components/schemas/FamilyFieldset'
+        '304':
+          # Only for a read without `fields`.
+          $ref: '#/components/responses/NotModified'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      tags: [Families]
+      summary: Update family
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/FamilyIdOrSlug'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFamily'
+      responses:
+        '200':
+          description: Updated
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Family'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '412':
+          $ref: '#/components/responses/PreconditionFailedError'
+        '428':
+          $ref: '#/components/responses/PreconditionRequiredError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/plants:
+    get:
+      tags: [Plants]
+      summary: Get all plants
+      description: >
+        Public. The token is optional: anonymous callers and plain users get
+        only ACTIVE plants; with an `admin` token the list also includes
+        DELETED ones (tell them apart by `status` and `deletedAt`). There is
+        no filter by status. A malformed or expired token → 401.
+      security:
+        - {}
+        - bearerAuth: []
+
+      parameters:
+        - in: query
+          name: filter
+          description: >
+            Declared fields only, one operator per field. Unknown fields,
+            operators or values of the wrong type → 400.
+          style: deepObject
+          explode: true
+          schema:
+            $ref: '#/components/schemas/PlantListFilter'
+        - in: query
+          name: sort
+          description: Declared sort keys only, `asc` or `desc`.
+          style: deepObject
+          explode: true
+          schema:
+            $ref: '#/components/schemas/PlantListSort'
+        - in: query
+          name: pagination
+          style: deepObject
+          explode: true
+          schema:
+            $ref: '#/components/schemas/ListPagination'
+        - $ref: '#/components/parameters/PlantFields'
+        - $ref: '#/components/parameters/PlantInclude'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      anyOf:
+                        - $ref: '#/components/schemas/Plant'
+                        - $ref: '#/components/schemas/PlantFieldset'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationResponse'
+
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags: [Plants]
+      summary: Create plant
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePlant'
+      responses:
+        '201':
+          description: Plant created
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plant'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/plants/{id}:
+    get:
+      tags: [Plants]
+      summary: Get plant by id
+      description: >
+        Public. The token is optional: a DELETED plant answers 404 unless the
+        caller has an `admin` token. A malformed or expired token → 401.
+      security:
+        - {}
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PlantFields'
+        - $ref: '#/components/parameters/PlantInclude'
+      responses:
+        '200':
+          description: OK
+          headers:
+            ETag:
+              $ref: '#/components/headers/ReadETag'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/Plant'
+                  - $ref: '#/components/schemas/PlantFieldset'
+        '304':
+          # Only for a read without `fields` or `include`.
+          $ref: '#/components/responses/NotModified'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      tags: [Plants]
+      summary: Update plant
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePlant'
+      responses:
+        '200':
+          description: Updated
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plant'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '412':
+          $ref: '#/components/responses/PreconditionFailedError'
+        '428':
+          $ref: '#/components/responses/PreconditionRequiredError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags: [Plants]
+      summary: Delete plant
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '412':
+          $ref: '#/components/responses/PreconditionFailedError'
+        '428':
+          $ref: '#/components/responses/PreconditionRequiredError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/beds:
+    get:
+      tags: [Beds]
+      summary: Get user beds
+      description: No query parameters and no body are accepted.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of beds
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Bed'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags: [Beds]
+      summary: Create bed
+      description: >
+        No query parameters are accepted. Unknown body fields (`userId`,
+        `plantInstances`…) → 400.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBed'
+      responses:
+        '201':
+          description: Bed created
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bed'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/beds/{id}:
+    get:
+      tags: [Beds]
+      summary: Get bed by id
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/BedId'
+      responses:
+        '200':
+          description: Bed
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bed'
+        '304':
+          $ref: '#/components/responses/NotModified'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      tags: [Beds]
+      summary: Update bed
+      description: Check order — authentication, If-Match, then request validation.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/BedId'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBed'
+      responses:
+        '200':
+          description: Updated bed
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bed'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '412':
+          $ref: '#/components/responses/PreconditionFailedError'
+        '428':
+          $ref: '#/components/responses/PreconditionRequiredError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags: [Beds]
+      summary: Delete bed
+      description: >
+        Check order — authentication, If-Match, then request validation. No
+        query, no body.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/BedId'
+        - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '412':
+          $ref: '#/components/responses/PreconditionFailedError'
+        '428':
+          $ref: '#/components/responses/PreconditionRequiredError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  headers:
+    ETag:
+      description: >
+        Strong entity tag holding the resource's current `version` as a quoted
+        decimal integer. Always equal to the `version` field of the body.
+      required: true
+      schema:
+        type: string
+        pattern: '^"(0|[1-9][0-9]*)"$'
+        example: '"4"'
+
+    ReadETag:
+      description: >
+        Version of the full resource, as in `ETag`. Sent only when the read
+        uses neither `fields` nor `include`: a tailored body is not the
+        representation the version names, so it carries no tag and
+        `If-None-Match` is ignored.
+      required: false
+      schema:
+        type: string
+        pattern: '^"(0|[1-9][0-9]*)"$'
+        example: '"4"'
+
+  parameters:
+    PlantFields:
+      in: query
+      name: fields
+      description: >
+        JSON:API sparse fieldset. `fields[plants]` is a comma-separated list
+        of top-level fields: `id`, `identity`, `traits`, `phenology`,
+        `knowledge`, `metadata`, `status`, `deletedAt`, `version`. Entries are
+        trimmed, blanks and repeats dropped, and the order does not matter;
+        `id` is always sent. Any other resource type, an unknown or nested
+        name (names are case-sensitive), or an empty list → 400. The response
+        then holds `id` and the requested fields only, and carries no `ETag`.
+      style: deepObject
+      explode: true
+      schema:
+        type: object
+        additionalProperties: false
+        properties:
+          plants:
+            type: string
+            example: identity,traits
+
+    FamilyFields:
+      in: query
+      name: fields
+      description: >
+        JSON:API sparse fieldset. `fields[families]` is a comma-separated list
+        of top-level fields: `id`, `slug`, `name`, `aliases`, `scientificName`,
+        `shortDescription`, `highlights`, `extra`, `metadata`, `version`. Same
+        rules as for plants.
+      style: deepObject
+      explode: true
+      schema:
+        type: object
+        additionalProperties: false
+        properties:
+          families:
+            type: string
+            example: name,slug
+
+    PlantInclude:
+      in: query
+      name: include
+      description: >
+        JSON:API include, comma-separated. `family` sends `identity.family`
+        as a `FamilySummary`, reading every family of the page at once; a
+        plant whose family is not found keeps the plain id. Skipped when
+        `fields[plants]` leaves out `identity`. Any other relation or an empty
+        list → 400. The response carries no `ETag`.
+      style: form
+      explode: false
+      schema:
+        type: array
+        minItems: 1
+        items:
+          type: string
+          enum: [family]
+
+    FamilyIdOrSlug:
+      name: idOrSlug
+      in: path
+      required: true
+      description: A UUID is looked up by id; anything else by slug. Trimmed.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 200
+        pattern: '\S'
+
+    BedId:
+      name: id
+      in: path
+      required: true
+      description: Bed identifier (UUID).
+      schema:
+        type: string
+        format: uuid
+
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: >
+        One or more entity tags, comma-separated (RFC 9110 §13.1.1), as
+        returned in `ETag`. The write proceeds when a strong tag equals the
+        current version. Missing, empty or `*` → 428. Not an entity-tag list
+        (e.g. `3`, `"3`, `"3" "4"`) or more than 50 tags → 400 with the error
+        at `if-match`. Well-formed tags that cannot match (weak `W/"3"`, tags
+        the API never emits such as `"abc"`, outdated versions) → 412, after
+        the existence check (a missing resource still answers 404).
+      schema:
+        type: string
+        # Documentation pattern: a list of [W/]"etagc*" with optional spaces.
+        pattern: '^[ \t]*(,[ \t]*)*(W/)?"[^"\x00-\x20\x7F]*"([ \t]*,([ \t]*(W/)?"[^"\x00-\x20\x7F]*")?)*[ \t]*$'
+        example: '"3"'
+      examples:
+        single:
+          value: '"3"'
+        list:
+          value: '"2", "3"'
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        HS256 JWT returned as `{ token }` by `/auth/login`, `/auth/google`
+        and `/auth/refresh`. Payload: `id` (UUID), `email`, `username`,
+        `roles` (array of `admin` | `user`), plus the standard `iat` and
+        `exp` claims. Lifetime comes from `JWT_DEFAULT_DURATION` (2h by
+        default); read `exp` instead of assuming it. `/auth/refresh` only
+        renews a token that has not expired yet.
+
+  schemas:
+    Metadata:
+      type: object
+      required:
+        - createdAt
+        - createdBy
+        - updatedAt
+        - updatedBy
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+
+    PaginationResponse:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        totalPages:
+          type: integer
+          example: 1
+        totalItems:
+          type: integer
+          example: 42
+      required:
+        - page
+        - limit
+        - totalPages
+        - totalItems
+
+    # ---------- shared operator shapes (one operator per field) ----------
+
+    FilterText:
+      description: Trimmed text, 1–200 characters. Blank → 400.
+      type: string
+      minLength: 1
+      maxLength: 200
+      pattern: '\S'
+
+    FilterTextList:
+      description: >
+        Comma-separated values or a repeated key. Entries are trimmed and blank
+        entries dropped; at least 1 and at most 50 entries remain.
+      oneOf:
+        - type: string
+        - type: array
+          maxItems: 50
+          items:
+            type: string
+
+    TextFieldFilter:
+      description: >
+        Text field. Exactly one operator. `eq` with a comma → 400 (use `in`);
+        `has`/`hasAny` → 400 (use `in`). Text operators match literally and
+        case-insensitively.
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      maxProperties: 1
+      properties:
+        eq: { $ref: '#/components/schemas/FilterText' }
+        in: { $ref: '#/components/schemas/FilterTextList' }
+        contains: { $ref: '#/components/schemas/FilterText' }
+        startsWith: { $ref: '#/components/schemas/FilterText' }
+        endsWith: { $ref: '#/components/schemas/FilterText' }
+
+    TextListFieldFilter:
+      description: >
+        List-of-text field. Exactly one operator. `has` takes one value (a comma
+        → 400, use `hasAny`); `in` → 400 (use `hasAny`).
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      maxProperties: 1
+      properties:
+        has: { $ref: '#/components/schemas/FilterText' }
+        hasAny: { $ref: '#/components/schemas/FilterTextList' }
+
+    RangeFieldFilter:
+      description: >
+        Range field. `eq` is the available value; the plant matches when its
+        range covers it. Decimal number.
+      type: object
+      additionalProperties: false
+      required: [eq]
+      properties:
+        eq:
+          type: string
+          pattern: '^-?\d+(\.\d+)?$'
+
+    # ---------- Families ----------
+
+    FamilyListFilter:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: object
+          additionalProperties: false
+          minProperties: 1
+          maxProperties: 1
+          properties:
+            eq: { type: string, format: uuid }
+            in: { $ref: '#/components/schemas/FilterTextList' }
+        slug: { $ref: '#/components/schemas/TextFieldFilter' }
+        name: { $ref: '#/components/schemas/TextFieldFilter' }
+        scientificName: { $ref: '#/components/schemas/TextFieldFilter' }
+        aliases: { $ref: '#/components/schemas/TextListFieldFilter' }
+      example:
+        name:
+          startsWith: Aster
+
+    FamilyListSort:
+      type: object
+      additionalProperties: false
+      properties:
+        name: { $ref: '#/components/schemas/SortDirection' }
+        scientificName: { $ref: '#/components/schemas/SortDirection' }
+        slug: { $ref: '#/components/schemas/SortDirection' }
+
+    # ---------- Plants ----------
+
+    PlantListFilter:
+      description: >
+        Every field accepts its type's full operator set.
+      type: object
+      additionalProperties: false
+      properties:
+        identity:
+          description: >
+            Matches name, aliases or scientific name (any of them).
+          allOf:
+            - $ref: '#/components/schemas/TextFieldFilter'
+        family:
+          description: Family id.
+          type: object
+          additionalProperties: false
+          minProperties: 1
+          maxProperties: 1
+          properties:
+            eq: { type: string, format: uuid }
+            in: { $ref: '#/components/schemas/FilterTextList' }
+        lightType: { $ref: '#/components/schemas/TextFieldFilter' }
+        rootSystem: { $ref: '#/components/schemas/TextFieldFilter' }
+        lifeCycle:
+          description: Values annual, biennial, perennial. Exactly one operator.
+          type: object
+          additionalProperties: false
+          minProperties: 1
+          maxProperties: 1
+          properties:
+            eq:
+              type: string
+              enum: [annual, biennial, perennial]
+            in: { $ref: '#/components/schemas/FilterTextList' }
+        sowingMethod:
+          description: Values direct, starter. Exactly one operator.
+          type: object
+          additionalProperties: false
+          minProperties: 1
+          maxProperties: 1
+          properties:
+            eq:
+              type: string
+              enum: [direct, starter]
+            in: { $ref: '#/components/schemas/FilterTextList' }
+        spacingCm: { $ref: '#/components/schemas/RangeFieldFilter' }
+        soilPh: { $ref: '#/components/schemas/RangeFieldFilter' }
+        soilAvailableDepthCm: { $ref: '#/components/schemas/RangeFieldFilter' }
+        lightHoursMin: { $ref: '#/components/schemas/RangeFieldFilter' }
+        sowingMonths:
+          description: Months 1–12. Exactly one operator.
+          type: object
+          additionalProperties: false
+          minProperties: 1
+          maxProperties: 1
+          properties:
+            has:
+              type: string
+              pattern: '^(1[0-2]|[1-9])$'
+            hasAny: { $ref: '#/components/schemas/FilterTextList' }
+      example:
+        sowingMonths:
+          hasAny: '3,4,5'
+
+    PlantListSort:
+      type: object
+      additionalProperties: false
+      properties:
+        name: { $ref: '#/components/schemas/SortDirection' }
+        scientificName: { $ref: '#/components/schemas/SortDirection' }
+
+    # ---------- shared sort and pagination ----------
+
+    SortDirection:
+      type: string
+      enum: [asc, desc]
+
+    ListPagination:
+      description: Defaults page 1, limit 25. Unknown keys → 400.
+      type: object
+      additionalProperties: false
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          default: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 25
+
+    # ================= AUTH =================
+
+    LoginUserRequest:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    RegisterUserRequest:
+      type: object
+      additionalProperties: false
+      required: [id, email, username, password, repeatPassword]
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        password:
+          type: string
+          minLength: 8
+          maxLength: 64
+          description: 8 to 64 characters and at most 72 bytes in UTF-8, including a lowercase letter, an uppercase letter, a digit and a non-alphanumeric character.
+        repeatPassword:
+          type: string
+          minLength: 8
+          maxLength: 64
+          description: Must equal `password`.
+
+    AuthenticateWithGoogleRequest:
+      type: object
+      additionalProperties: false
+      required: [idToken]
+      properties:
+        idToken:
+          type: string
+
+    UpdatePasswordRequest:
+      type: object
+      additionalProperties: false
+      required: [password, repeatPassword, oldPassword]
+      properties:
+        password:
+          type: string
+          minLength: 8
+          maxLength: 64
+          description: 8 to 64 characters and at most 72 bytes in UTF-8, including a lowercase letter, an uppercase letter, a digit and a non-alphanumeric character.
+        repeatPassword:
+          type: string
+          minLength: 8
+          maxLength: 64
+          description: Must equal `password`.
+        oldPassword:
+          type: string
+
+    # ================= RANGE =================
+
+    Range:
+      type: object
+      required: [min, max]
+      properties:
+        min:
+          type: number
+        max:
+          type: number
+
+    # ================= FAMILY =================
+
+    # Required texts are trimmed and never blank; text lists drop blank and
+    # repeated entries. Limits mirror the request validation.
+
+    FamilyTextList:
+      description: >
+        Entries are trimmed; blank entries and repeated entries (compared
+        after trimming, ignoring letter case) are dropped, keeping the first
+        occurrence. Non-string entries are rejected.
+      type: array
+      maxItems: 50
+      items:
+        type: string
+        maxLength: 200
+
+    FamilyHighlights:
+      description: Same rule as FamilyTextList, with long-text entries.
+      type: array
+      maxItems: 50
+      items:
+        type: string
+        maxLength: 2000
+
+    FamilyExtra:
+      description: >
+        Optional taxonomy details. An empty object is never stored: it is
+        returned and stored as absent.
+      type: object
+      additionalProperties: false
+      properties:
+        order:
+          $ref: '#/components/schemas/RequiredShortText'
+        distribution:
+          $ref: '#/components/schemas/RequiredShortText'
+        speciesCount:
+          type: integer
+          minimum: 1
+        subfamilies:
+          $ref: '#/components/schemas/FamilyTextList'
+
+    UpdateFamilyExtra:
+      description: >
+        Merged key by key. `null` on a key removes that key; `{}` changes
+        nothing; an extra left without keys is removed.
+      type: object
+      nullable: true
+      additionalProperties: false
+      properties:
+        order:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 200
+          pattern: '\S'
+        distribution:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 200
+          pattern: '\S'
+        speciesCount:
+          type: integer
+          nullable: true
+          minimum: 1
+        subfamilies:
+          type: array
+          nullable: true
+          maxItems: 50
+          items:
+            type: string
+            maxLength: 200
+
+    Family:
+      type: object
+      required:
+        [id, slug, name, scientificName, shortDescription, aliases, highlights]
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 0
+          readOnly: true
+        slug:
+          $ref: '#/components/schemas/RequiredShortText'
+        name:
+          $ref: '#/components/schemas/RequiredShortText'
+        scientificName:
+          $ref: '#/components/schemas/RequiredShortText'
+        shortDescription:
+          $ref: '#/components/schemas/RequiredLongText'
+        aliases:
+          $ref: '#/components/schemas/FamilyTextList'
+        highlights:
+          $ref: '#/components/schemas/FamilyHighlights'
+        extra:
+          $ref: '#/components/schemas/FamilyExtra'
+        metadata:
+          allOf:
+            - $ref: '#/components/schemas/Metadata'
+          readOnly: true
+
+    FamilySummary:
+      description: >
+        Embedded family relation: only id, name and slug. Sent in place of the
+        family id with `include=family`.
+      type: object
+      additionalProperties: false
+      required: [id, name, slug]
+      properties:
+        id:
+          type: string
+        name:
+          $ref: '#/components/schemas/RequiredShortText'
+        slug:
+          $ref: '#/components/schemas/RequiredShortText'
+
+    CreateFamily:
+      type: object
+      additionalProperties: false
+      required: [id, slug, name, scientificName, shortDescription, highlights]
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          $ref: '#/components/schemas/RequiredShortText'
+        name:
+          $ref: '#/components/schemas/RequiredShortText'
+        scientificName:
+          $ref: '#/components/schemas/RequiredShortText'
+        shortDescription:
+          $ref: '#/components/schemas/RequiredLongText'
+        aliases:
+          $ref: '#/components/schemas/FamilyTextList'
+        highlights:
+          $ref: '#/components/schemas/FamilyHighlights'
+        extra:
+          $ref: '#/components/schemas/FamilyExtra'
+
+    UpdateFamily:
+      description: >
+        JSON Merge Patch. Every field optional; `{}` is a no-op. `id` and
+        `version` are not accepted. Only `extra` and its keys accept `null`.
+      type: object
+      additionalProperties: false
+      properties:
+        slug:
+          $ref: '#/components/schemas/RequiredShortText'
+        name:
+          $ref: '#/components/schemas/RequiredShortText'
+        scientificName:
+          $ref: '#/components/schemas/RequiredShortText'
+        shortDescription:
+          $ref: '#/components/schemas/RequiredLongText'
+        aliases:
+          $ref: '#/components/schemas/FamilyTextList'
+        highlights:
+          $ref: '#/components/schemas/FamilyHighlights'
+        extra:
+          $ref: '#/components/schemas/UpdateFamilyExtra'
+
+    # ================= PLANT =================
+    # Shared pieces are published once and reused by the response, create and
+    # update schemas. Size limits mirror the request validation.
+
+    FamilyFieldset:
+      description: >
+        A family read with `fields[families]`: `id` plus the requested fields,
+        each with the same shape as in `Family`. Any field but `id` may be
+        missing.
+      type: object
+      additionalProperties: false
+      required: [id]
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 0
+          readOnly: true
+        slug:
+          $ref: '#/components/schemas/RequiredShortText'
+        name:
+          $ref: '#/components/schemas/RequiredShortText'
+        scientificName:
+          $ref: '#/components/schemas/RequiredShortText'
+        shortDescription:
+          $ref: '#/components/schemas/RequiredLongText'
+        aliases:
+          $ref: '#/components/schemas/FamilyTextList'
+        highlights:
+          $ref: '#/components/schemas/FamilyHighlights'
+        extra:
+          $ref: '#/components/schemas/FamilyExtra'
+        metadata:
+          allOf:
+            - $ref: '#/components/schemas/Metadata'
+          readOnly: true
+
+    Plant:
+      type: object
+      required: [id, identity, traits, phenology]
+      properties:
+        id:
+          type: string
+
+        version:
+          type: integer
+          minimum: 0
+          readOnly: true
+
+        identity:
+          $ref: '#/components/schemas/PlantIdentityView'
+
+        traits:
+          $ref: '#/components/schemas/PlantTraits'
+
+        phenology:
+          $ref: '#/components/schemas/PlantPhenology'
+
+        knowledge:
+          $ref: '#/components/schemas/PlantKnowledge'
+
+        metadata:
+          allOf:
+            - $ref: '#/components/schemas/Metadata'
+          readOnly: true
+
+        status:
+          allOf:
+            - $ref: '#/components/schemas/PlantStatus'
+          readOnly: true
+
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          readOnly: true
+          description: Set when the plant is deleted; `null` otherwise.
+
+    PlantPhenology:
+      type: object
+      required: [sowing, flowering, harvest]
+      properties:
+        sowing:
+          $ref: '#/components/schemas/PlantSowing'
+        flowering:
+          $ref: '#/components/schemas/PlantFlowering'
+        harvest:
+          $ref: '#/components/schemas/PlantHarvest'
+
+    PlantFieldset:
+      description: >
+        A plant read with `fields[plants]`: `id` plus the requested fields,
+        each with the same shape as in `Plant`. Any field but `id` may be
+        missing.
+      type: object
+      additionalProperties: false
+      required: [id]
+      properties:
+        id:
+          type: string
+        version:
+          type: integer
+          minimum: 0
+          readOnly: true
+        identity:
+          $ref: '#/components/schemas/PlantIdentityView'
+        traits:
+          $ref: '#/components/schemas/PlantTraits'
+        phenology:
+          $ref: '#/components/schemas/PlantPhenology'
+        knowledge:
+          $ref: '#/components/schemas/PlantKnowledge'
+        metadata:
+          allOf:
+            - $ref: '#/components/schemas/Metadata'
+          readOnly: true
+        status:
+          allOf:
+            - $ref: '#/components/schemas/PlantStatus'
+          readOnly: true
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          readOnly: true
+
+    PlantStatus:
+      type: string
+      enum: [ACTIVE, DELETED]
+
+    CreatePlant:
+      type: object
+      required: [id, identity, traits, phenology, knowledge]
+      properties:
+        id:
+          type: string
+          format: uuid
+        identity:
+          $ref: '#/components/schemas/PlantIdentity'
+        traits:
+          $ref: '#/components/schemas/PlantTraits'
+        phenology:
+          type: object
+          description: >-
+            Every plant is sown. `flowering` and `harvest` may be left out for
+            plants that never flower or are not harvested.
+          required: [sowing]
+          properties:
+            sowing:
+              $ref: '#/components/schemas/PlantSowing'
+            flowering:
+              $ref: '#/components/schemas/PlantFlowering'
+            harvest:
+              $ref: '#/components/schemas/PlantHarvest'
+        knowledge:
+          allOf:
+            - $ref: '#/components/schemas/PlantKnowledge'
+            - type: object
+              required: [rootSystem, soil, light, propagation]
+
+    # Nullable fields declare their own `type` instead of reusing a shared
+    # schema: OpenAPI 3.0.3 ignores `nullable` without `type` in the same
+    # object, so `allOf` + `nullable` would not accept `null`.
+    UpdatePlant:
+      type: object
+      description: >-
+        Partial update. An absent field is kept; `null` removes an optional
+        field (JSON Merge Patch, RFC 7396). Required fields reject `null`.
+        Ranges may carry a single bound, merged into the stored one. An
+        empty body `{}` changes nothing; `If-Match` is still checked.
+      properties:
+        identity:
+          type: object
+          properties:
+            name:
+              type: object
+              properties:
+                primary:
+                  $ref: '#/components/schemas/RequiredShortText'
+                aliases:
+                  type: array
+                  nullable: true
+                  maxItems: 50
+                  items:
+                    $ref: '#/components/schemas/ShortText'
+            scientificName:
+              $ref: '#/components/schemas/RequiredShortText'
+            family:
+              $ref: '#/components/schemas/RequiredShortText'
+
+        traits:
+          type: object
+          properties:
+            lifecycle:
+              $ref: '#/components/schemas/PlantLifecycle'
+            size:
+              type: object
+              properties:
+                height:
+                  $ref: '#/components/schemas/PartialRange'
+                spread:
+                  $ref: '#/components/schemas/PartialRange'
+            spacingCm:
+              $ref: '#/components/schemas/PartialRange'
+
+        phenology:
+          type: object
+          properties:
+            sowing:
+              type: object
+              properties:
+                months:
+                  allOf:
+                    - $ref: '#/components/schemas/Months'
+                  minItems: 1
+                seedsPerHole:
+                  $ref: '#/components/schemas/PartialRange'
+                germinationDays:
+                  $ref: '#/components/schemas/PartialRange'
+                methods:
+                  type: object
+                  properties:
+                    direct:
+                      type: object
+                      properties:
+                        depthCm:
+                          $ref: '#/components/schemas/PartialRange'
+                    starter:
+                      type: object
+                      nullable: true
+                      properties:
+                        depthCm:
+                          $ref: '#/components/schemas/PartialRange'
+
+            flowering:
+              type: object
+              properties:
+                months:
+                  $ref: '#/components/schemas/Months'
+                pollination:
+                  type: object
+                  nullable: true
+                  description: >-
+                    Merged into the stored pollination: `types` replaces the
+                    list, and a new pollination without `types` is rejected.
+                    The agents are kept while an insect, bird or bat type
+                    remains: `types` without any of them drops the stored
+                    agents, and sending `agents` with it is rejected.
+                    `pollination: null` removes the whole pollination;
+                    `agents: null` removes only the agents.
+                  properties:
+                    types:
+                      $ref: '#/components/schemas/PollinationTypes'
+                    agents:
+                      type: array
+                      nullable: true
+                      maxItems: 50
+                      items:
+                        $ref: '#/components/schemas/ShortText'
+
+            harvest:
+              type: object
+              properties:
+                months:
+                  $ref: '#/components/schemas/Months'
+                description:
+                  type: string
+                  nullable: true
+                  description: Optional, but never blank when given.
+                  minLength: 1
+                  maxLength: 2000
+                  pattern: '\S'
+
+        knowledge:
+          $ref: '#/components/schemas/UpdatePlantKnowledge'
+
+    UpdatePlantKnowledge:
+      type: object
+      properties:
+        soil:
+          type: object
+          properties:
+            ph:
+              $ref: '#/components/schemas/PartialRange'
+            availableDepthCm:
+              $ref: '#/components/schemas/PartialRange'
+        rootSystem:
+          type: object
+          properties:
+            type:
+              $ref: '#/components/schemas/RequiredShortText'
+            depthCm:
+              $ref: '#/components/schemas/PartialRange'
+            spreadCm:
+              $ref: '#/components/schemas/PartialRange'
+        watering:
+          type: object
+          nullable: true
+          properties:
+            frequency:
+              $ref: '#/components/schemas/RequiredShortText'
+            conditions:
+              type: array
+              nullable: true
+              maxItems: 50
+              items:
+                type: string
+                maxLength: 2000
+        light:
+          type: object
+          properties:
+            hoursMin:
+              type: number
+              minimum: 0
+              maximum: 24
+              description: Hours of light a day.
+            type:
+              $ref: '#/components/schemas/RequiredShortText'
+            preference:
+              type: string
+              nullable: true
+              maxLength: 200
+        pruning:
+          type: array
+          nullable: true
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/PruningEntry'
+        propagation:
+          type: object
+          properties:
+            methods:
+              type: object
+              description: >-
+                Methods keyed by camelCase name; `null` removes that method.
+              maxProperties: 20
+              additionalProperties:
+                type: object
+                nullable: true
+                properties:
+                  seasons:
+                    type: array
+                    nullable: true
+                    minItems: 1
+                    maxItems: 4
+                    uniqueItems: true
+                    items:
+                      $ref: '#/components/schemas/Season'
+                  estimatedTimeWeeks:
+                    type: object
+                    nullable: true
+                    properties:
+                      min:
+                        type: number
+                      max:
+                        type: number
+                  bestPractices:
+                    type: array
+                    nullable: true
+                    maxItems: 50
+                    items:
+                      type: string
+                      maxLength: 2000
+        ecology:
+          type: object
+          nullable: true
+          properties:
+            strategicBenefits:
+              type: array
+              nullable: true
+              maxItems: 50
+              items:
+                type: string
+                maxLength: 2000
+        resources:
+          type: array
+          nullable: true
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/PlantResource'
+        notes:
+          type: array
+          nullable: true
+          maxItems: 50
+          items:
+            type: string
+            maxLength: 2000
+
+    PlantIdentity:
+      type: object
+      required: [name, scientificName, family]
+      properties:
+        name:
+          type: object
+          required: [primary]
+          properties:
+            primary:
+              $ref: '#/components/schemas/RequiredShortText'
+            aliases:
+              $ref: '#/components/schemas/ShortTextList'
+        scientificName:
+          $ref: '#/components/schemas/RequiredShortText'
+        family:
+          $ref: '#/components/schemas/RequiredShortText'
+
+    PlantIdentityView:
+      description: >
+        Plant identity as returned by the API. `family` is the family id, or
+        the family summary with `include=family`.
+      type: object
+      required: [name, scientificName, family]
+      properties:
+        name:
+          type: object
+          required: [primary]
+          properties:
+            primary:
+              $ref: '#/components/schemas/RequiredShortText'
+            aliases:
+              $ref: '#/components/schemas/ShortTextList'
+        scientificName:
+          $ref: '#/components/schemas/RequiredShortText'
+        family:
+          description: >
+            The family id; with `include=family`, the family summary (or the
+            id when the family is not found).
+          oneOf:
+            - $ref: '#/components/schemas/RequiredShortText'
+            - $ref: '#/components/schemas/FamilySummary'
+
+    PlantLifecycle:
+      type: string
+      enum: [annual, biennial, perennial]
+
+    PlantTraits:
+      type: object
+      required: [lifecycle, size, spacingCm]
+      properties:
+        lifecycle:
+          $ref: '#/components/schemas/PlantLifecycle'
+        size:
+          type: object
+          required: [height, spread]
+          properties:
+            height:
+              $ref: '#/components/schemas/Range'
+            spread:
+              $ref: '#/components/schemas/Range'
+        spacingCm:
+          $ref: '#/components/schemas/Range'
+
+    PlantSowing:
+      type: object
+      required: [months, seedsPerHole, germinationDays, methods]
+      properties:
+        months:
+          allOf:
+            - $ref: '#/components/schemas/Months'
+          minItems: 1
+        seedsPerHole:
+          $ref: '#/components/schemas/Range'
+        germinationDays:
+          $ref: '#/components/schemas/Range'
+        methods:
+          type: object
+          required: [direct]
+          properties:
+            direct:
+              $ref: '#/components/schemas/SowingMethod'
+            starter:
+              $ref: '#/components/schemas/SowingMethod'
+
+    SowingMethod:
+      type: object
+      required: [depthCm]
+      properties:
+        depthCm:
+          $ref: '#/components/schemas/Range'
+
+    PlantFlowering:
+      type: object
+      description: No months for a plant that never flowers.
+      required: [months]
+      properties:
+        months:
+          $ref: '#/components/schemas/Months'
+        pollination:
+          type: object
+          description: >-
+            Types do not repeat. Agents need an insect, bird or bat type; an
+            empty list is no agents. A plant that is not pollinated (spores,
+            sterile…) has no pollination.
+          required: [types]
+          properties:
+            types:
+              $ref: '#/components/schemas/PollinationTypes'
+            agents:
+              $ref: '#/components/schemas/ShortTextList'
+
+    PlantHarvest:
+      type: object
+      description: No months for a plant that is not harvested.
+      required: [months]
+      properties:
+        months:
+          $ref: '#/components/schemas/Months'
+        description:
+          $ref: '#/components/schemas/HarvestDescription'
+
+    HarvestDescription:
+      type: string
+      description: Optional, but never blank when given.
+      minLength: 1
+      maxLength: 2000
+      pattern: '\S'
+
+    # ================= KNOWLEDGE =================
+
+    PlantKnowledge:
+      type: object
+      nullable: true
+      properties:
+        soil:
+          type: object
+          required: [ph, availableDepthCm]
+          properties:
+            ph:
+              $ref: '#/components/schemas/Range'
+            availableDepthCm:
+              $ref: '#/components/schemas/Range'
+
+        rootSystem:
+          type: object
+          required: [type, depthCm, spreadCm]
+          properties:
+            type:
+              $ref: '#/components/schemas/RequiredShortText'
+            depthCm:
+              $ref: '#/components/schemas/Range'
+            spreadCm:
+              $ref: '#/components/schemas/Range'
+
+        watering:
+          type: object
+          required: [frequency]
+          properties:
+            frequency:
+              $ref: '#/components/schemas/RequiredShortText'
+            conditions:
+              $ref: '#/components/schemas/LongTextList'
+
+        light:
+          type: object
+          required: [hoursMin, type]
+          properties:
+            hoursMin:
+              type: number
+              minimum: 0
+              maximum: 24
+              description: Hours of light a day.
+            type:
+              $ref: '#/components/schemas/RequiredShortText'
+            preference:
+              $ref: '#/components/schemas/ShortText'
+
+        pruning:
+          type: array
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/PruningEntry'
+
+        propagation:
+          $ref: '#/components/schemas/PlantPropagation'
+
+        ecology:
+          type: object
+          properties:
+            strategicBenefits:
+              $ref: '#/components/schemas/LongTextList'
+
+        resources:
+          type: array
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/PlantResource'
+
+        notes:
+          $ref: '#/components/schemas/LongTextList'
+
+    PartialRange:
+      type: object
+      description: Either bound may be sent alone; it is merged by the domain.
+      properties:
+        min:
+          type: number
+        max:
+          type: number
+
+    Month:
+      type: integer
+      minimum: 1
+      maximum: 12
+
+    Months:
+      type: array
+      maxItems: 12
+      items:
+        $ref: '#/components/schemas/Month'
+
+    PollinationType:
+      type: string
+      enum: [insect, wind, self, water, bird, bat]
+
+    PollinationTypes:
+      type: array
+      minItems: 1
+      maxItems: 6
+      uniqueItems: true
+      items:
+        $ref: '#/components/schemas/PollinationType'
+
+    Season:
+      type: string
+      enum: [spring, summer, autumn, winter]
+
+    Seasons:
+      type: array
+      minItems: 1
+      maxItems: 4
+      uniqueItems: true
+      items:
+        $ref: '#/components/schemas/Season'
+
+    ShortText:
+      type: string
+      maxLength: 200
+
+    RequiredShortText:
+      type: string
+      minLength: 1
+      maxLength: 200
+      pattern: '\S'
+
+    RequiredLongText:
+      type: string
+      minLength: 1
+      maxLength: 2000
+      pattern: '\S'
+
+    ShortTextList:
+      type: array
+      maxItems: 50
+      items:
+        $ref: '#/components/schemas/ShortText'
+
+    LongTextList:
+      type: array
+      maxItems: 50
+      items:
+        type: string
+        maxLength: 2000
+
+    PruningEntry:
+      type: object
+      required: [type, intensity, seasons, frequencyPerYear]
+      properties:
+        type:
+          $ref: '#/components/schemas/RequiredShortText'
+        intensity:
+          $ref: '#/components/schemas/RequiredShortText'
+        seasons:
+          $ref: '#/components/schemas/Seasons'
+        frequencyPerYear:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+          description: Prunings per year; 0.5 is once every two years.
+        bestPractices:
+          $ref: '#/components/schemas/LongTextList'
+
+    PlantPropagation:
+      type: object
+      required: [methods]
+      properties:
+        methods:
+          type: object
+          description: Propagation methods keyed by camelCase method name.
+          maxProperties: 20
+          additionalProperties:
+            type: object
+            properties:
+              seasons:
+                $ref: '#/components/schemas/Seasons'
+              estimatedTimeWeeks:
+                $ref: '#/components/schemas/Range'
+              bestPractices:
+                $ref: '#/components/schemas/LongTextList'
+
+    PlantResource:
+      type: object
+      required: [type, url]
+      properties:
+        type:
+          $ref: '#/components/schemas/RequiredShortText'
+        url:
+          type: string
+          format: uri
+          description: Absolute `http` or `https` URL.
+          pattern: '^https?://'
+          maxLength: 2048
+        title:
+          $ref: '#/components/schemas/ShortText'
+        source:
+          $ref: '#/components/schemas/ShortText'
+        tags:
+          $ref: '#/components/schemas/ShortTextList'
+
+    # ================= BEDS =================
+
+    Bed:
+      type: object
+      # `name` and `depth` are always returned: now required in the response.
+      required:
+        [
+          id,
+          userId,
+          name,
+          width,
+          height,
+          depth,
+          plantInstances,
+          metadata,
+          deleted,
+          version
+        ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+        name:
+          $ref: '#/components/schemas/RequiredShortText'
+        width:
+          $ref: '#/components/schemas/BedDimension'
+        height:
+          $ref: '#/components/schemas/BedDimension'
+        depth:
+          $ref: '#/components/schemas/BedDimension'
+        plantInstances:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlantInstance'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        deleted:
+          type: boolean
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+        version:
+          type: integer
+          minimum: 0
+          readOnly: true
+
+    BedDimension:
+      description: A positive finite JSON number (numeric strings are rejected).
+      type: number
+      exclusiveMinimum: 0
+
+    CreateBed:
+      type: object
+      additionalProperties: false
+      required: [id, name, width, height, depth]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          $ref: '#/components/schemas/RequiredShortText'
+        width:
+          $ref: '#/components/schemas/BedDimension'
+        height:
+          $ref: '#/components/schemas/BedDimension'
+        depth:
+          $ref: '#/components/schemas/BedDimension'
+
+    UpdateBed:
+      description: >
+        Partial update. Every field is optional and none can be cleared
+        (`null` → 400). `{}` is a no-op: 200, version unchanged. Plants are
+        never placed by patching the bed.
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          $ref: '#/components/schemas/RequiredShortText'
+        width:
+          $ref: '#/components/schemas/BedDimension'
+        height:
+          $ref: '#/components/schemas/BedDimension'
+        depth:
+          $ref: '#/components/schemas/BedDimension'
+
+    #  ================= PLANT INSTANCES =================
+
+    PlantInstance:
+      type: object
+      required:
+        - id
+        - userId
+        - plantId
+        - position
+        - growthStatus
+        - instanceStatus
+        - plantedAt
+      properties:
+        id:
+          type: string
+          format: string
+
+        userId:
+          type: string
+          format: string
+
+        plantId:
+          type: string
+          format: string
+
+        position:
+          type: object
+          required: [x, y]
+          properties:
+            x:
+              type: number
+            y:
+              type: number
+
+        growthStatus:
+          type: string
+
+        instanceStatus:
+          type: string
+          enum:
+            - ACTIVE
+            - REMOVED
+
+        plantedAt:
+          type: string
+          format: date-time
+
+        removedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+        variety:
+          type: string
+          nullable: true
+
+        notes:
+          type: string
+          nullable: true
+
+  responses:
+    UnauthorizedError:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+
+    ForbiddenError:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+
+    ConflictError:
+      description: >-
+        Conflict with a business rule (e.g. duplicate resource, bed that still
+        has plants). Outdated versions are reported as 412, not 409.
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+              errors:
+                type: object
+                description: >-
+                  One message per invalid field. Keys are dot-notation paths
+                  inside the request part, without a part prefix (`id`,
+                  `identity.name.primary`, `tags.1`); a wrong part root uses
+                  `params`, `query` or `body`. When a field has several
+                  problems, the first one wins. Unknown fields get the message
+                  "Unknown field"; a failed pattern check whose message would
+                  reveal the pattern gets "Invalid format". At most 20 field
+                  entries are returned; if there are more, an extra
+                  `_truncated` entry is added. Keys longer than 64 characters
+                  are cut to 64 ending in `…`; two keys equal after cutting
+                  share one entry. Messages never contain submitted values.
+                additionalProperties:
+                  type: string
+
+    NotFoundError:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+
+    PreconditionFailedError:
+      description: The stated version is not the current one. Reload with GET and retry.
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+
+    PreconditionRequiredError:
+      description: The `If-Match` header is required (missing or `*`).
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+
+    InternalServerError:
+      description: >-
+        Unexpected server failure, or stored data that breaks this contract:
+        the body is never sent then (fail closed) and the failure is logged.
+        The message is always generic.
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+                example: Internal server error
+
+    NotModified:
+      description: >-
+        The request's `If-None-Match` matches the current `ETag`; no body.
+        Framework behavior accepted by the contract (no caching semantics).
