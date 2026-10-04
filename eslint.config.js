@@ -7,15 +7,9 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import localRules from './.eslint/plugins/local-rules.js';
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'coverage']),
   {
     files: ['**/*.{ts,tsx}'],
-    plugins: {
-      local: localRules
-    },
-    rules: {
-      'local/no-hardcoded-ui-text': 'warn'
-    },
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
@@ -24,6 +18,15 @@ export default defineConfig([
     ],
     languageOptions: {
       globals: globals.browser
+    }
+  },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    plugins: {
+      local: localRules
+    },
+    rules: {
+      'local/no-hardcoded-ui-text': 'warn'
     }
   }
 ]);

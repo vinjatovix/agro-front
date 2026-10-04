@@ -1,5 +1,5 @@
-import { PaginatedResponse } from '../../../src/types/api';
-import { Family } from '../../../src/types/Family';
+import type { PaginatedResponse } from '../../../src/types/api';
+import type { Family } from '../../../src/types/Family';
 
 export const listFamiliesResponse: PaginatedResponse<Family> = {
   data: [
