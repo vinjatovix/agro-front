@@ -27,8 +27,3 @@ export const ROOT_SYSTEMS = [
   'tuber',
   'fasciculate'
 ] as const;
-
-export const ALLOWED_SORT_FIELDS = [
-  'identity.name.primary',
-  'identity.scientificName'
-] as const;

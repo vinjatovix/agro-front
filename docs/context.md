@@ -109,13 +109,13 @@ No hay ruta 404 ni `errorElement`, y no hay guards de autenticación.
 
 **Llamadas HTTP salientes** (todas `GET`, sin auth):
 
-| Función           | Endpoint                                                                                                  |
-| ----------------- | --------------------------------------------------------------------------------------------------------- |
-| `getPlants`       | `GET /api/v1/plants?filter[...]&pagination[page]&pagination[limit]&sort[identity.name.primary]=asc\|desc` |
-| `getPlantById`    | `GET /api/v1/plants/{id}`                                                                                 |
-| `getFamilies`     | `GET /api/v1/families?pagination[limit]=100&sort[name]=asc`                                               |
-| `getFamilyById`   | `GET /api/v1/families/{idOrSlug}`                                                                         |
-| `useFamilyPlants` | `getPlants({ family })`, es decir `GET /api/v1/plants?filter[family][eq]=…`                               |
+| Función           | Endpoint                                                                                 |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| `getPlants`       | `GET /api/v1/plants?filter[...]&pagination[page]&pagination[limit]&sort[name]=asc\|desc` |
+| `getPlantById`    | `GET /api/v1/plants/{id}`                                                                |
+| `getFamilies`     | `GET /api/v1/families?pagination[limit]=100&sort[name]=asc`                              |
+| `getFamilyById`   | `GET /api/v1/families/{idOrSlug}`                                                        |
+| `useFamilyPlants` | `getPlants({ family })`, es decir `GET /api/v1/plants?filter[family][eq]=…`              |
 
 ## 6. Modelo de datos
 
@@ -161,14 +161,13 @@ Comportamientos transversales del contrato:
 
 ### 6.3 Divergencias en las peticiones (consultas de listado)
 
-| Parámetro enviado                                                                             | Contrato                                                                                   | Riesgo                                                                                                                                 |
-| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `sort[identity.name.primary]=asc` (siempre se envía)                                          | `PlantListSort` solo admite `name`, `scientificName`; las claves no declaradas dan **400** | **Bug del front** respecto al contrato vigente: el listado de plantas recibe 400. Hay que enviar `sort[name]` / `sort[scientificName]` |
-| `filter[family][eq]=<valor>`                                                                  | `eq` debe ser `uuid`                                                                       | `/families/:id` acepta slug, pero `useFamilyPlants` pasa ese mismo valor como filtro; con slug, 400                                    |
-| `pagination[limit]=<limit de la URL>`                                                         | máximo 100                                                                                 | `?limit=500` en la URL pasa `parsePositiveInt` (sin máximo) y da 400                                                                   |
-| `filter[lightType][eq]` con `full_sun\|partial_shade`, `filter[rootSystem][eq]` con 6 valores | texto libre                                                                                | Los filtros solo funcionan si los datos usan exactamente esos literales                                                                |
-| `getFamilies` con `pagination[limit]=100`                                                     | máximo 100                                                                                 | Con más de 100 familias, el `FamilySelect` queda truncado sin aviso                                                                    |
-| `useFamilyPlants` sin paginación                                                              | 25 por defecto                                                                             | La ficha de familia muestra como máximo 25 plantas, sin indicarlo (el enlace "ver todas" sí lleva al listado filtrado)                 |
+| Parámetro enviado                                                                             | Contrato             | Riesgo                                                                                                                 |
+| --------------------------------------------------------------------------------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `filter[family][eq]=<valor>`                                                                  | `eq` debe ser `uuid` | `/families/:id` acepta slug, pero `useFamilyPlants` pasa ese mismo valor como filtro; con slug, 400                    |
+| `pagination[limit]=<limit de la URL>`                                                         | máximo 100           | `?limit=500` en la URL pasa `parsePositiveInt` (sin máximo) y da 400                                                   |
+| `filter[lightType][eq]` con `full_sun\|partial_shade`, `filter[rootSystem][eq]` con 6 valores | texto libre          | Los filtros solo funcionan si los datos usan exactamente esos literales                                                |
+| `getFamilies` con `pagination[limit]=100`                                                     | máximo 100           | Con más de 100 familias, el `FamilySelect` queda truncado sin aviso                                                    |
+| `useFamilyPlants` sin paginación                                                              | 25 por defecto       | La ficha de familia muestra como máximo 25 plantas, sin indicarlo (el enlace "ver todas" sí lleva al listado filtrado) |
 
 ## 7. Dependencias externas
 
@@ -263,7 +262,7 @@ Estado de lint: 0 errores, 12 warnings (`no-hardcoded-ui-text`: 1 en `Home.tsx`,
 
 ### Alta (puede romper en producción)
 
-1. **Orden del listado fuera de contrato**: siempre se envía `sort[identity.name.primary]` (`usePlants.ts:74`, `plants.service.ts:41-60`; constantes en `PlantFilters/constants.ts` y `types/Plants/PlantsAllowedSortFields.ts`), pero el contrato vigente solo acepta `sort[name|scientificName]` y responde 400 a claves desconocidas.
+1. ~~**Orden del listado fuera de contrato**~~ (corregido en la feature 002, `fix(plants): use contract sort keys`): `getPlants` envía `sort[name]` o `sort[scientificName]`; las claves permitidas viven en `services/plantsSortFields.ts`.
 2. **Tipos de dominio desincronizados con el contrato** (ver 6.2): `pruning.seasons`, `propagation.seasons` y `pollination.types` llegan con otra forma, por lo que hoy se pintan claves i18n crudas. Además hay campos opcionales tratados como obligatorios (`aliases`, `knowledge`, `ecology`), lo que puede provocar un `TypeError` en render. No hay validación en tiempo de ejecución (`apiFetch` hace `as T`).
 3. **Sin `errorElement` ni ErrorBoundary**: `PlantDetail` y `FamilyDetail` hacen `throw new Error('Invalid route…')`, y cualquier excepción de render tumba la app.
 4. **`FamilyList` ignora `error`**: si la API falla, muestra la lista vacía.
@@ -274,7 +273,7 @@ Estado de lint: 0 errores, 12 warnings (`no-hardcoded-ui-text`: 1 en `Home.tsx`,
 6. **`limit` sin máximo** en `parsePositiveInt`, aunque el contrato permite como máximo 100.
 7. **El badge de familia en `PlantHero` muestra el UUID**: no se usa `include=family`. Además el `TODO` de `useFamilyPlants.ts:12` habla de "projected fields", que el backend **ya ofrece** (`fields[plants]`).
 8. **i18n incompleta**: `QuickFacts` tiene diccionarios de etiquetas propios (`LIFE_CYCLE_LABELS` duplica `lifeCycleValues` con otro texto: "Pleno sol" frente a "Sol pleno"), y hay literales como `"al día"`, `"cm"`, `"❌"`, `"Close drawer"`, `"Pagination"` y los meses `Jan…Dec` en inglés con la UI en español. La regla ESLint no los detecta.
-9. **Acoplamiento inverso**: `components/plants/FamilySelect` importa `pages/families/hooks/useFamilies`; `services/plants.service` importa `components/plants/PlantFilters/constants`; `PlantDetail/MonthChips` importa de `components/plants/PlantFilters`.
+9. **Acoplamiento inverso**: `components/plants/FamilySelect` importa `pages/families/hooks/useFamilies`; `PlantDetail/MonthChips` importa de `components/plants/PlantFilters`.
 10. **Duplicidad de estado de hemisferio**: en el listado vive en la URL (`?hemisphere`) y en el detalle en un `useState` local (no se comparte; al navegar vuelve a "north").
 11. **`sowingMonth` singular**: la UI permite un solo mes aunque el contrato admite `hasAny` con varios.
 12. **`useSliderFilter`** sincroniza estado en un `useEffect` con `eslint-disable react-hooks/set-state-in-effect`.

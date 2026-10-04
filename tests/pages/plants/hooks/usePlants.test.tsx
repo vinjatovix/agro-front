@@ -86,7 +86,7 @@ describe('usePlants', () => {
           limit: 25
         },
         {
-          field: 'identity.name.primary',
+          field: 'name',
           direction: 'desc'
         }
       );
