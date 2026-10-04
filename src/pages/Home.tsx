@@ -1,4 +1,5 @@
 import { t } from '../i18n/core/t';
+import { CONTACT_EMAIL } from '../shared/constants/contact';
 
 export default function Home() {
   return (
@@ -20,7 +21,7 @@ export default function Home() {
 
       <p>
         {t('app.info.email')}{' '}
-        <a href="mailto:vinjadevix@gmail.com">vinjadevix@gmail.com</a>
+        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
       </p>
       <p>
         {t('app.info.github')}{' '}
