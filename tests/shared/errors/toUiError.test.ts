@@ -24,4 +24,16 @@ describe('toUiError', () => {
 
     expect(result.message).toBe('Error desconocido');
   });
+
+  it('maps ApiError without field errors to a message without details', () => {
+    const result = toUiError(new ApiError('not found', 404));
+
+    expect(result).toEqual({ message: 'not found', details: undefined });
+  });
+
+  it('maps a thrown non-Error value to the unknown error message', () => {
+    const result = toUiError('boom');
+
+    expect(result.message).toBe('Error desconocido');
+  });
 });

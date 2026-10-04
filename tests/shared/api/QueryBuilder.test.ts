@@ -30,7 +30,7 @@ describe('QueryBuilder', () => {
   it('supports array values', () => {
     const result = QueryBuilder.create().addArray('months', [1, 2, 3]).build();
 
-    expect(result).toBe('months=1%2C2%2C3'); // URL encoding of "1,2,3"
+    expect(result).toBe('months=1%2C2%2C3');
   });
 
   it('supports single value array input', () => {
@@ -57,5 +57,24 @@ describe('QueryBuilder', () => {
     expect(result).toContain('name=carrot');
     expect(result).toContain('family=apiaceae');
     expect(result).toContain('months=4%2C5');
+  });
+
+  it('ignores strings that are empty after trimming', () => {
+    const result = QueryBuilder.create()
+      .add('name', '   ')
+      .add('valid', 'ok')
+      .build();
+
+    expect(result).toBe('valid=ok');
+  });
+
+  it('ignores null, undefined and empty arrays', () => {
+    const result = QueryBuilder.create()
+      .addArray('months', null)
+      .addArray('weeks', undefined)
+      .addArray('days', [])
+      .build();
+
+    expect(result).toBe('');
   });
 });
