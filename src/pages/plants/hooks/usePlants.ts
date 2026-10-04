@@ -2,10 +2,10 @@ import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 
 import { getPlants } from '../../../services/plants.service';
+import { DEFAULT_SORT_FIELD } from '../../../services/plantsSortFields';
 import { QUERY_DEFAULTS } from '../../../shared/reactQuery/queryDefaults';
 import type { Plant } from '../../../types/Plants/Plant';
 import type { PaginatedResponse } from '../../../types/api';
-import type { PlantsSortField } from '../../../types/Plants/PlantsAllowedSortFields';
 import { parsePositiveInt } from '../../../shared/utils/parsePositiveInt';
 import {
   isPlantLifecycle,
@@ -71,7 +71,7 @@ export function usePlants() {
   };
 
   const sort = {
-    field: 'identity.name.primary' as PlantsSortField,
+    field: DEFAULT_SORT_FIELD,
     direction: sortDirection
   };
 

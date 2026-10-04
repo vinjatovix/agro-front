@@ -1,10 +1,9 @@
-import { ALLOWED_SORT_FIELDS } from '../components/plants/PlantFilters/constants';
 import { QueryBuilder } from '../shared/api/QueryBuilder';
 import type { PaginatedResponse } from '../types/api';
 import type { PaginationParams } from '../types/Pagination';
 import type { Plant } from '../types/Plants/Plant';
-import type { PlantsSortField } from '../types/Plants/PlantsAllowedSortFields';
 import { apiFetch } from './api';
+import { DEFAULT_SORT_FIELD, isPlantsSortField } from './plantsSortFields';
 
 export type PlantFilterParams = {
   identity?: string;
@@ -30,34 +29,54 @@ export type PlantFilterParams = {
     | 'fasciculate';
 };
 
-export async function getPlants(
-  filters?: PlantFilterParams,
-  pagination?: PaginationParams,
-  sort?: {
-    field: string;
-    direction: 'asc' | 'desc';
-  }
-): Promise<PaginatedResponse<Plant>> {
-  const sortField: string =
-    sort?.field && ALLOWED_SORT_FIELDS.includes(sort.field as PlantsSortField)
-      ? sort.field
-      : 'identity.name.primary';
+type PlantSort = {
+  field: string;
+  direction: 'asc' | 'desc';
+};
 
-  const query = QueryBuilder.create()
-    .add('filter[identity][contains]', filters?.identity?.trim())
-    .add('filter[family][eq]', filters?.family)
-    .add('filter[lifeCycle][eq]', filters?.lifeCycle)
-    .add('filter[sowingMethod][eq]', filters?.sowingMethod)
-    .addArray('filter[sowingMonths][hasAny]', filters?.sowingMonths)
-    .add('filter[soilPh][eq]', filters?.soilPh)
-    .add('filter[soilAvailableDepthCm][eq]', filters?.soilAvailableDepthCm)
-    .add('filter[spacingCm][eq]', filters?.spacingCm)
-    .add('filter[lightType][eq]', filters?.lightType)
-    .add('filter[lightHoursMin][eq]', filters?.lightHoursMin)
-    .add('filter[rootSystem][eq]', filters?.rootSystem)
-    .add('pagination[page]', pagination?.page)
-    .add('pagination[limit]', pagination?.limit)
-    .add(`sort[${sortField}]`, sort?.direction ?? 'asc')
+function resolveSortField(sort?: PlantSort): string {
+  return sort && isPlantsSortField(sort.field)
+    ? sort.field
+    : DEFAULT_SORT_FIELD;
+}
+
+function addFilters(
+  query: QueryBuilder,
+  filters: PlantFilterParams
+): QueryBuilder {
+  return query
+    .add('filter[identity][contains]', filters.identity?.trim())
+    .add('filter[family][eq]', filters.family)
+    .add('filter[lifeCycle][eq]', filters.lifeCycle)
+    .add('filter[sowingMethod][eq]', filters.sowingMethod)
+    .addArray('filter[sowingMonths][hasAny]', filters.sowingMonths)
+    .add('filter[soilPh][eq]', filters.soilPh)
+    .add('filter[soilAvailableDepthCm][eq]', filters.soilAvailableDepthCm)
+    .add('filter[spacingCm][eq]', filters.spacingCm)
+    .add('filter[lightType][eq]', filters.lightType)
+    .add('filter[lightHoursMin][eq]', filters.lightHoursMin)
+    .add('filter[rootSystem][eq]', filters.rootSystem);
+}
+
+function addPagination(
+  query: QueryBuilder,
+  pagination: Partial<PaginationParams>
+): QueryBuilder {
+  return query
+    .add('pagination[page]', pagination.page)
+    .add('pagination[limit]', pagination.limit);
+}
+
+export async function getPlants(
+  filters: PlantFilterParams = {},
+  pagination: Partial<PaginationParams> = {},
+  sort?: PlantSort
+): Promise<PaginatedResponse<Plant>> {
+  const query = addPagination(
+    addFilters(QueryBuilder.create(), filters),
+    pagination
+  )
+    .add(`sort[${resolveSortField(sort)}]`, sort?.direction ?? 'asc')
     .build();
 
   return apiFetch(`/api/v1/plants?${query}`) as Promise<
