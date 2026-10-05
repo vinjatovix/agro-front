@@ -113,6 +113,29 @@ describe('peticiones del listado conformes al contrato', () => {
   });
 });
 
+describe('filtros de comestible y tóxica conformes al contrato', () => {
+  it.each([
+    ['/plants?edible=true', `filter[edible][eq]=true&${DEFAULT_TAIL}`],
+    [
+      '/plants?edible=true&toxic=false&lifeCycle=annual&page=3',
+      [
+        'filter[lifeCycle][eq]=annual',
+        'filter[edible][eq]=true',
+        'filter[toxic][eq]=false',
+        'pagination[page]=3',
+        'pagination[limit]=25',
+        'sort[name]=asc'
+      ].join('&')
+    ],
+    ['/plants?edible=quiza&toxic=FALSE', DEFAULT_TAIL]
+  ])('%s', async (pageUrl, query) => {
+    const url = await requestFor(pageUrl);
+
+    expect(url).toBe(expected(query));
+    expect(validateRequest('get', url)).toEqual([]);
+  });
+});
+
 describe('las URL inválidas producen peticiones corregidas y conformes', () => {
   it.each([
     ['/plants?limit=500', DEFAULT_TAIL],

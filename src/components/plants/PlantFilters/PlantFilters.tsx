@@ -8,6 +8,7 @@ import ToggleGroup from '../ToggleGroup';
 import TextFilter from './components/TextFilter';
 import MonthSelector from './components/MonthSelector';
 import FamilySelect from './components/FamilySelect/FamilySelect';
+import BooleanFilterGroups from './components/BooleanFilterGroups';
 import { usePlantFilters } from './hooks/usePlantFilters';
 
 import {
@@ -32,6 +33,8 @@ export default function PlantFilters() {
     sowingMethod,
     lightType,
     rootSystem,
+    edible,
+    toxic,
 
     hemisphere,
     sowingMonth,
@@ -115,22 +118,11 @@ export default function PlantFilters() {
               toggleValues[filter.key] === value ? '' : value
             )
           }
-          renderLabel={(value) => {
-            switch (filter.key) {
-              case 'lifeCycle':
-                return tValue('plant.filters.lifeCycleValues', value);
-              case 'sowingMethod':
-                return tValue('plant.filters.sowingMethodValues', value);
-              case 'lightType':
-                return tValue('plant.filters.lightTypeValues', value);
-              case 'rootSystem':
-                return tValue('plant.filters.rootSystemValues', value);
-              default:
-                return value;
-            }
-          }}
+          renderLabel={(value) => tValue(filter.valuesGroup, value)}
         />
       ))}
+
+      <BooleanFilterGroups values={{ edible, toxic }} onChange={setParam} />
 
       {SLIDER_FILTERS.map((filter) => (
         <SliderFilter

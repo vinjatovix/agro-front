@@ -1,4 +1,9 @@
 import type { PaginationParams } from '../types/Pagination';
+import { pickAllowed } from '../shared/utils/pickAllowed';
+
+export const BOOLEAN_FILTER_VALUES = ['true', 'false'] as const;
+
+export type BooleanFilterValue = (typeof BOOLEAN_FILTER_VALUES)[number];
 
 export type PlantFilterParams = {
   identity?: string;
@@ -22,6 +27,9 @@ export type PlantFilterParams = {
     | 'rhizome'
     | 'tuber'
     | 'fasciculate';
+
+  edible?: BooleanFilterValue;
+  toxic?: BooleanFilterValue;
 };
 
 export const PLANT_SORT_FIELDS = ['name', 'scientificName'] as const;
@@ -53,6 +61,8 @@ export const PLANT_FILTER_QUERY_KEYS: Record<keyof PlantFilterParams, string> =
     identity: 'filter[identity][contains]',
     family: 'filter[family][eq]',
     lifeCycle: 'filter[lifeCycle][eq]',
+    edible: 'filter[edible][eq]',
+    toxic: 'filter[toxic][eq]',
     sowingMethod: 'filter[sowingMethod][eq]',
     sowingMonths: 'filter[sowingMonths][hasAny]',
     soilPh: 'filter[soilPh][eq]',
@@ -80,4 +90,10 @@ export function isPlantsSortField(value: string): value is PlantsSortField {
 
 export function isSortDirection(value: string): value is SortDirection {
   return (SORT_DIRECTIONS as readonly string[]).includes(value);
+}
+
+export function parseBooleanFilter(
+  values: readonly string[]
+): BooleanFilterValue | undefined {
+  return pickAllowed(values, BOOLEAN_FILTER_VALUES);
 }

@@ -70,7 +70,15 @@ describe('parsePlantListSearchParams: filtros', () => {
     ['rootSystem=none', {}],
     ['sowingMethod=%20direct%20', { sowingMethod: 'direct' }],
     ['hemisphere=south', {}],
-    ['unknown=1&other=x', {}]
+    ['unknown=1&other=x', {}],
+    ['edible=true', { edible: 'true' }],
+    ['edible=false', { edible: 'false' }],
+    ['toxic=true', { toxic: 'true' }],
+    ['toxic=false', { toxic: 'false' }],
+    ['edible=%20true%20', { edible: 'true' }],
+    ['edible=quiza', {}],
+    ['toxic=FALSE', {}],
+    ['edible=quiza&edible=false&edible=true', { edible: 'false' }]
   ])('%s → %j', (query, filters) => {
     expect(parse(query).filters).toEqual(filters);
   });

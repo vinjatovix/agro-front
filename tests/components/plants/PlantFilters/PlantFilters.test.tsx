@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import userEvent from '@testing-library/user-event';
 
 import PlantFilters from '../../../../src/components/plants/PlantFilters/PlantFilters';
 
@@ -11,6 +12,7 @@ const mockClearFilters = vi.fn();
 const mockSetHemisphere = vi.fn();
 const mockHandleTextChange = vi.fn();
 const mockSetFamily = vi.fn();
+const mockBooleans: { edible?: string; toxic?: string } = {};
 
 vi.mock('../../../../src/pages/families/hooks/useFamilies', () => ({
   useFamilies: () => ({
@@ -33,6 +35,8 @@ vi.mock(
       sowingMethod: 'direct',
       lightType: 'full_sun',
       rootSystem: 'taproot',
+      edible: mockBooleans.edible,
+      toxic: mockBooleans.toxic,
 
       hemisphere: 'north',
       sowingMonth: 3,
@@ -61,6 +65,8 @@ describe('PlantFilters', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetParam.mockReturnValue('');
+    mockBooleans.edible = undefined;
+    mockBooleans.toxic = undefined;
   });
 
   function renderComponent() {
@@ -140,5 +146,107 @@ describe('PlantFilters', () => {
     fireEvent.pointerUp(slider);
 
     expect(mockSetParam).toHaveBeenCalledWith('soilPh', '8');
+  });
+
+  it.each([
+    ['Ciclo de vida', 'Anual'],
+    ['Método de siembra', 'Directa'],
+    ['Tipo de luz', 'Sol pleno'],
+    ['Sistema radicular', 'Pivotante']
+  ])('the %s group keeps its Spanish labels', (group, option) => {
+    renderComponent();
+
+    const toggle = screen.getByRole('group', { name: new RegExp(group) });
+
+    expect(
+      within(toggle).getByRole('button', { name: option })
+    ).toBeInTheDocument();
+  });
+
+  it.each(['Comestible', 'Tóxica'])(
+    'renders the %s group with any, yes and no options',
+    (name) => {
+      renderComponent();
+
+      const group = screen.getByRole('group', { name: new RegExp(name) });
+
+      expect(
+        within(group)
+          .getAllByRole('button')
+          .map((button) => button.textContent)
+      ).toEqual(['Cualquiera', 'Sí', 'No']);
+      expect(
+        within(group).getByRole('button', { name: 'Cualquiera' })
+      ).toHaveAttribute('aria-pressed', 'true');
+      expect(within(group).getByRole('button', { name: 'Sí' })).toHaveAttribute(
+        'aria-pressed',
+        'false'
+      );
+      expect(group).toHaveAccessibleDescription(
+        'Elegir «No» excluye las plantas sin dato.'
+      );
+    }
+  );
+
+  it('shows the boolean hint once', () => {
+    renderComponent();
+
+    expect(
+      screen.getAllByText('Elegir «No» excluye las plantas sin dato.')
+    ).toHaveLength(1);
+  });
+
+  it('marks the URL value as pressed', () => {
+    mockBooleans.edible = 'true';
+    mockBooleans.toxic = 'false';
+
+    renderComponent();
+
+    const edible = screen.getByRole('group', { name: /Comestible/ });
+    const toxic = screen.getByRole('group', { name: /Tóxica/ });
+
+    expect(within(edible).getByRole('button', { name: 'Sí' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+    expect(within(toxic).getByRole('button', { name: 'No' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+  });
+
+  it.each([
+    ['Sí', 'true'],
+    ['No', 'false'],
+    ['Cualquiera', undefined]
+  ])('choosing %s sets edible to %s', (option, value) => {
+    mockBooleans.edible = 'true';
+    renderComponent();
+
+    const group = screen.getByRole('group', { name: /Comestible/ });
+    fireEvent.click(within(group).getByRole('button', { name: option }));
+
+    expect(mockSetParam).toHaveBeenCalledWith('edible', value);
+  });
+
+  it('the boolean options work with the keyboard', async () => {
+    const user = userEvent.setup();
+    renderComponent();
+
+    const group = screen.getByRole('group', { name: /Tóxica/ });
+    const any = within(group).getByRole('button', { name: 'Cualquiera' });
+    const yes = within(group).getByRole('button', { name: 'Sí' });
+    const no = within(group).getByRole('button', { name: 'No' });
+
+    any.focus();
+    await user.tab();
+    expect(yes).toHaveFocus();
+    await user.keyboard('{Enter}');
+    expect(mockSetParam).toHaveBeenLastCalledWith('toxic', 'true');
+
+    await user.tab();
+    expect(no).toHaveFocus();
+    await user.keyboard(' ');
+    expect(mockSetParam).toHaveBeenLastCalledWith('toxic', 'false');
   });
 });

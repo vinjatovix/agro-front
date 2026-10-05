@@ -69,3 +69,8 @@
 .plant-filters__slider-clear:hover {
   color: #111;
 }
+
+.plant-filters__hint {
+  margin: 0;
+  font-size: 0.875rem;
+}

@@ -159,4 +159,52 @@ describe('usePlantFilters', () => {
     expect(result.current.getParam(key)).toBe(value);
     expect(result.current.getParam('page')).toBe('');
   });
+
+  function renderWithUrl(url: string) {
+    return renderHook(() => usePlantFilters(), {
+      wrapper: ({ children }: { children: React.ReactNode }) => (
+        <MemoryRouter initialEntries={[url]}>{children}</MemoryRouter>
+      )
+    });
+  }
+
+  it.each([
+    ['/plants', undefined, undefined],
+    ['/plants?edible=true&toxic=false', 'true', 'false'],
+    ['/plants?edible=%20false%20', 'false', undefined],
+    ['/plants?edible=quiza&toxic=FALSE', undefined, undefined]
+  ])('reads edible and toxic from %s', (url, edible, toxic) => {
+    const { result } = renderWithUrl(url);
+
+    expect(result.current.edible).toBe(edible);
+    expect(result.current.toxic).toBe(toxic);
+  });
+
+  it('choosing a boolean value resets the page and clearing removes it', () => {
+    const { result } = renderWithUrl('/plants?page=3');
+
+    act(() => {
+      result.current.setParam('edible', 'true');
+    });
+
+    expect(result.current.edible).toBe('true');
+    expect(result.current.getParam('page')).toBe('');
+
+    act(() => {
+      result.current.setParam('edible', undefined);
+    });
+
+    expect(result.current.edible).toBeUndefined();
+  });
+
+  it('clearFilters resets edible and toxic to any', () => {
+    const { result } = renderWithUrl('/plants?edible=true&toxic=false');
+
+    act(() => {
+      result.current.clearFilters();
+    });
+
+    expect(result.current.edible).toBeUndefined();
+    expect(result.current.toxic).toBeUndefined();
+  });
 });

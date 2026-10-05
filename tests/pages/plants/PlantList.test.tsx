@@ -207,4 +207,17 @@ describe('PlantList', () => {
     expect(screen.getAllByRole('img', { name: 'Comestible' })).toHaveLength(1);
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+
+  it('un filtro booleano sin resultados muestra el estado vacío', async () => {
+    const fetchMock = stubFetchOk({
+      data: [],
+      pagination: { page: 1, limit: 25, totalPages: 1, totalItems: 0 }
+    });
+
+    renderPlantList('/plants?edible=false');
+
+    expect(await screen.findByText(t('plant.empty'))).toBeInTheDocument();
+    expect(lastUrl(fetchMock)).toContain('filter[edible][eq]=false');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 });

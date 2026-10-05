@@ -1,5 +1,6 @@
 import { FILTER_TEXT_MAX_LENGTH } from '../../../../shared/constants/filterText';
 import { iconsMap } from '../../../../shared/constants/iconsMap';
+import type { ValueGroup } from '../../../../i18n/core/tValue';
 import {
   LIFE_CYCLES,
   SOWING_METHODS,
@@ -12,25 +13,48 @@ export const TOGGLE_FILTERS = [
     icon: iconsMap['recycle'],
     key: 'lifeCycle',
     labelKey: 'plant.filters.lifeCycle',
+    valuesGroup: 'plant.filters.lifeCycleValues' satisfies ValueGroup,
     options: LIFE_CYCLES
   },
   {
     icon: iconsMap['sowing'],
     key: 'sowingMethod',
     labelKey: 'plant.filters.sowingMethod',
+    valuesGroup: 'plant.filters.sowingMethodValues' satisfies ValueGroup,
     options: SOWING_METHODS
   },
   {
     icon: iconsMap['sun'],
     key: 'lightType',
     labelKey: 'plant.filters.lightType',
+    valuesGroup: 'plant.filters.lightTypeValues' satisfies ValueGroup,
     options: LIGHT_TYPES
   },
   {
     icon: iconsMap['rootSystem'],
     key: 'rootSystem',
     labelKey: 'plant.filters.rootSystem',
+    valuesGroup: 'plant.filters.rootSystemValues' satisfies ValueGroup,
     options: ROOT_SYSTEMS
+  }
+] as const;
+
+export const BOOLEAN_FILTER_ANY = 'any';
+
+export const BOOLEAN_FILTERS = [
+  {
+    icon: iconsMap['edible'],
+    key: 'edible',
+    labelKey: 'plant.filters.edible',
+    valuesGroup: 'plant.filters.booleanValues' satisfies ValueGroup,
+    options: [BOOLEAN_FILTER_ANY, 'true', 'false']
+  },
+  {
+    icon: iconsMap['toxic'],
+    key: 'toxic',
+    labelKey: 'plant.filters.toxic',
+    valuesGroup: 'plant.filters.booleanValues' satisfies ValueGroup,
+    options: [BOOLEAN_FILTER_ANY, 'true', 'false']
   }
 ] as const;
 

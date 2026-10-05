@@ -94,6 +94,14 @@ export const dictionary = {
       aliases: 'Alias',
       family: 'Familia',
       allFamilies: 'Todas las familias',
+      edible: 'Comestible',
+      toxic: 'Tóxica',
+      booleanValues: {
+        any: 'Cualquiera',
+        true: 'Sí',
+        false: 'No'
+      },
+      boolean_no_hint: 'Elegir «No» excluye las plantas sin dato.',
       lifeCycle: 'Ciclo de vida',
       lifeCycleValues: {
         annual: 'Anual',
