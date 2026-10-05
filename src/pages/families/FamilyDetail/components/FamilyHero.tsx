@@ -2,7 +2,7 @@ import { t } from '../../../../i18n/core/t';
 import type { Family } from '../../../../types/Family';
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
 import { iconsMap } from '../../../../shared/constants/iconsMap';
-import Badge from '../../../../shared/components/Badge/Bagde';
+import Badge from '../../../../shared/components/Badge/Badge';
 
 import './familyHero.css';
 

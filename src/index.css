@@ -15,6 +15,8 @@
 
   --color-error-container: #ffdad6;
   --color-on-error-container: #93000a;
+  --color-on-surface-variant: #414943;
+  --color-outline-variant: #c1c8c1;
 }
 
 html,

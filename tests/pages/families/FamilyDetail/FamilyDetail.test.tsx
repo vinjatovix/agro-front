@@ -118,4 +118,34 @@ describe('FamilyDetail', () => {
       expect(screen.getByRole('status')).toBeInTheDocument();
     });
   });
+
+  it('loads plants with family uuid when accessed by slug', async () => {
+    mockedGetFamilyById.mockResolvedValue(mockFamily);
+    mockedGetPlants.mockResolvedValue(mockPlants);
+
+    renderWithProviders(<FamilyDetail />, {
+      route: `/families/${mockFamily.slug}`,
+      path: '/families/:id'
+    });
+
+    await waitFor(() => {
+      expect(mockedGetPlants).toHaveBeenCalledWith({
+        family: mockFamily.id
+      });
+    });
+  });
+
+  it('displays plants when accessed by slug', async () => {
+    mockedGetFamilyById.mockResolvedValue(mockFamily);
+    mockedGetPlants.mockResolvedValue(mockPlants);
+
+    renderWithProviders(<FamilyDetail />, {
+      route: `/families/${mockFamily.slug}`,
+      path: '/families/:id'
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId(/section-🌿 Plantas/i)).toBeInTheDocument();
+    });
+  });
 });

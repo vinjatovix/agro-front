@@ -10,8 +10,10 @@ import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import { listPlantsResponse } from '../../../fixtures/plants/listPlants';
 import {
   buildPlant,
-  buildPlantWithEcological
+  buildPlantWithEcological,
+  buildPlantWithFamily
 } from '../../../fixtures/plants/buildPlant';
+import { buildFamilySummary } from '../../../fixtures/families/buildFamilySummary';
 
 vi.mock('../../../../src/services/plants.service', () => ({
   getPlantById: vi.fn()
@@ -206,24 +208,122 @@ describe('PlantDetail', () => {
     expect(videosTab).toHaveAttribute('aria-selected', 'true');
   });
 
-  it('navigates to family page when clicking family badge', async () => {
+  it('navigates to family page when clicking family link', async () => {
     const user = userEvent.setup();
-    mockedGetPlantById.mockResolvedValue(mockPlant);
+    const family = buildFamilySummary({
+      name: 'Solanáceas',
+      slug: 'solanaceae'
+    });
+    const plant = buildPlantWithFamily(family);
+    mockedGetPlantById.mockResolvedValue(plant);
 
     renderWithProviders(
       <Routes>
         <Route path="/plants/:id" element={<PlantDetail />} />
-        <Route path="/families/:id" element={<div>FAMILY PAGE</div>} />
+        <Route path="/families/:slug" element={<div>FAMILY PAGE</div>} />
       </Routes>,
-      { route: `/plants/${mockPlant.id}` }
+      { route: `/plants/${plant.id}` }
     );
 
     const familyLink = await screen.findByRole('link', {
-      name: new RegExp(mockPlant.identity.family, 'i')
+      name: 'Solanáceas'
     });
-
     await user.click(familyLink);
 
     expect(screen.getByText('FAMILY PAGE')).toBeInTheDocument();
+  });
+
+  it('does not display family id in the DOM when family is linked', async () => {
+    const family = buildFamilySummary({
+      id: '5a2380c4-1546-4511-a77b-ec9d3ebcb7cf',
+      name: 'Solanáceas',
+      slug: 'solanaceae'
+    });
+    const plant = buildPlantWithFamily(family);
+    mockedGetPlantById.mockResolvedValue(plant);
+
+    renderWithProviders(
+      <Routes>
+        <Route path="/plants/:id" element={<PlantDetail />} />
+        <Route path="/families/:slug" element={<div>FAMILY PAGE</div>} />
+      </Routes>,
+      { route: `/plants/${plant.id}` }
+    );
+
+    await screen.findByRole('link', { name: 'Solanáceas' });
+
+    expect(
+      screen.queryByText(new RegExp(family.id, 'i'))
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders unavailable family text when plant has unresolvable family id', async () => {
+    const unresolvableId = 'a1d5f8e2-b3c7-4e1a-9f2a-5c9b8d7e1f3a';
+    const plant = buildPlantWithFamily(unresolvableId);
+    mockedGetPlantById.mockResolvedValue(plant);
+
+    renderWithProviders(<PlantDetail />, {
+      route: `/plants/${plant.id}`,
+      path: '/plants/:id'
+    });
+
+    expect(
+      await screen.findByText('Familia no disponible')
+    ).toBeInTheDocument();
+  });
+
+  it('does not render a family link when plant has unresolvable family id', async () => {
+    const unresolvableId = 'a1d5f8e2-b3c7-4e1a-9f2a-5c9b8d7e1f3a';
+    const plant = buildPlantWithFamily(unresolvableId);
+    mockedGetPlantById.mockResolvedValue(plant);
+
+    renderWithProviders(<PlantDetail />, {
+      route: `/plants/${plant.id}`,
+      path: '/plants/:id'
+    });
+
+    await screen.findByRole('heading', {
+      name: new RegExp(plant.identity.name.primary, 'i')
+    });
+
+    expect(
+      screen.queryByRole('link', { name: /familia/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it('does not display raw family id in the DOM when plant has unresolvable family id', async () => {
+    const unresolvableId = 'a1d5f8e2-b3c7-4e1a-9f2a-5c9b8d7e1f3a';
+    const plant = buildPlantWithFamily(unresolvableId);
+    mockedGetPlantById.mockResolvedValue(plant);
+
+    renderWithProviders(<PlantDetail />, {
+      route: `/plants/${plant.id}`,
+      path: '/plants/:id'
+    });
+
+    await screen.findByRole('heading', {
+      name: new RegExp(plant.identity.name.primary, 'i')
+    });
+
+    expect(
+      screen.queryByText(new RegExp(unresolvableId, 'i'))
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders other plant sections normally when plant has unresolvable family id', async () => {
+    const unresolvableId = 'a1d5f8e2-b3c7-4e1a-9f2a-5c9b8d7e1f3a';
+    const plant = buildPlantWithFamily(unresolvableId);
+    mockedGetPlantById.mockResolvedValue(plant);
+
+    renderWithProviders(<PlantDetail />, {
+      route: `/plants/${plant.id}`,
+      path: '/plants/:id'
+    });
+
+    expect(
+      await screen.findByTestId('section-⚡ datos rápidos')
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('section-🌱 cultivo')).toBeInTheDocument();
+    expect(screen.getByTestId('section-📝 notas')).toBeInTheDocument();
   });
 });

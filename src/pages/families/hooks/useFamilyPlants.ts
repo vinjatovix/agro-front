@@ -6,10 +6,11 @@ import { QUERY_DEFAULTS } from '../../../shared/reactQuery/queryDefaults';
 
 type FamilyPlantsResponse = PaginatedResponse<Plant>;
 
-export function useFamilyPlants(familyId: string) {
+export function useFamilyPlants(familyId?: string) {
   const query = useQuery<FamilyPlantsResponse>({
     queryKey: ['family-plants', familyId],
-    queryFn: () => getPlants({ family: familyId }), //TODO: when back implements projected fields, we should request only the necessary fields for this screen
+    queryFn: () => getPlants({ family: familyId }),
+    enabled: Boolean(familyId),
     ...QUERY_DEFAULTS
   });
 

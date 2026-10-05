@@ -1,0 +1,92 @@
+import { renderHook, waitFor } from '@testing-library/react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+import { usePlant } from '../../../../src/pages/plants/hooks/usePlant';
+import { plantKeys } from '../../../../src/shared/reactQuery/plantKeys';
+import { getPlantById } from '../../../../src/services/plants.service';
+import { listPlantsResponse } from '../../../fixtures/plants/listPlants';
+import { createTestQueryClient } from '../../../test-utils/createTestQueryClient';
+
+vi.mock('../../../../src/services/plants.service', () => ({
+  getPlantById: vi.fn()
+}));
+
+const mockedGetPlantById = vi.mocked(getPlantById);
+
+describe('usePlant', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('exposes loading state initially while fetching', () => {
+    mockedGetPlantById.mockImplementation(() => new Promise(() => {}));
+    const queryClient = createTestQueryClient();
+
+    const { result } = renderHook(() => usePlant('plant-1'), {
+      wrapper: ({ children }) => (
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      )
+    });
+
+    expect(result.current.isLoading).toBe(true);
+  });
+
+  it('loads plant detail successfully', async () => {
+    const mockPlant = listPlantsResponse.data[0];
+    mockedGetPlantById.mockResolvedValue(mockPlant);
+    const queryClient = createTestQueryClient();
+
+    const { result } = renderHook(() => usePlant(mockPlant.id), {
+      wrapper: ({ children }) => (
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      )
+    });
+
+    await waitFor(() => {
+      expect(result.current.data).toEqual(mockPlant);
+    });
+  });
+
+  it('exposes error state when fetch fails', async () => {
+    mockedGetPlantById.mockRejectedValue(new Error('Network error'));
+    const queryClient = createTestQueryClient();
+
+    const { result } = renderHook(() => usePlant('plant-err'), {
+      wrapper: ({ children }) => (
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      )
+    });
+
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true);
+    });
+  });
+
+  it('uses plantKeys.detail(id) as the cache key', async () => {
+    const mockPlant = listPlantsResponse.data[0];
+    mockedGetPlantById.mockResolvedValue(mockPlant);
+    const queryClient = createTestQueryClient();
+
+    renderHook(() => usePlant(mockPlant.id), {
+      wrapper: ({ children }) => (
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      )
+    });
+
+    await waitFor(() => {
+      const entry = queryClient.getQueryCache().find({
+        queryKey: plantKeys.detail(mockPlant.id)
+      });
+      expect(entry).toBeDefined();
+    });
+  });
+});

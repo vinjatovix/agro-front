@@ -103,4 +103,28 @@ describe('useFamilyPlants', () => {
 
     expect(result.current.loading).toBe(true);
   });
+
+  it('does not call getPlants when familyId is undefined', () => {
+    renderHook(() => useFamilyPlants(undefined), {
+      wrapper: createWrapper()
+    });
+
+    expect(mockedGetPlants).not.toHaveBeenCalled();
+  });
+
+  it('returns empty data when familyId is undefined', () => {
+    const { result } = renderHook(() => useFamilyPlants(undefined), {
+      wrapper: createWrapper()
+    });
+
+    expect(result.current.data).toEqual([]);
+  });
+
+  it('returns loading as false when familyId is undefined', () => {
+    const { result } = renderHook(() => useFamilyPlants(undefined), {
+      wrapper: createWrapper()
+    });
+
+    expect(result.current.loading).toBe(false);
+  });
 });

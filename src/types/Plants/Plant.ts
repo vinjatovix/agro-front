@@ -1,6 +1,7 @@
 import type { Metadata } from '../Metadata';
 import type { Range } from '../Range';
 import type { Seasons } from '../Season';
+import type { PlantFamilyRef } from '../FamilySummary';
 
 export type PlantEcologicalTraits = {
   edible?: boolean;
@@ -17,7 +18,7 @@ export interface Plant {
       aliases: string[];
     };
     scientificName?: string;
-    family: string;
+    family: PlantFamilyRef;
   };
 
   traits: {

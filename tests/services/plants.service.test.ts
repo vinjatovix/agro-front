@@ -239,17 +239,42 @@ describe('getPlants: cada clave de filtro', () => {
 });
 
 describe('getPlantById', () => {
-  it('pide la planta por id con las cabeceras por defecto', async () => {
+  it('pide la planta por id incluyendo la familia', async () => {
     const plant = buildPlant({ id: 'abc' });
     const fetchMock = stubFetchOk(plant);
+
+    await getPlantById('abc');
+
+    const { url } = lastRequest(fetchMock);
+    expect(url).toBe(`${API_URL}/api/v1/plants/abc?include=family`);
+  });
+
+  it('la petición de planta cumple el contrato', async () => {
+    const plant = buildPlant({ id: 'abc' });
+    const fetchMock = stubFetchOk(plant);
+
+    await getPlantById('abc');
+
+    const { url } = lastRequest(fetchMock);
+    expect(validateRequest('get', url)).toEqual([]);
+  });
+
+  it('pide la planta con las cabeceras por defecto', async () => {
+    const plant = buildPlant({ id: 'abc' });
+    const fetchMock = stubFetchOk(plant);
+
+    await getPlantById('abc');
+
+    expect(lastRequest(fetchMock).init).toEqual({ headers: JSON_HEADERS });
+  });
+
+  it('devuelve el cuerpo de la planta', async () => {
+    const plant = buildPlant({ id: 'abc' });
+    stubFetchOk(plant);
 
     const result = await getPlantById('abc');
 
     expect(result).toEqual(plant);
-    expect(lastRequest(fetchMock)).toEqual({
-      url: `${API_URL}/api/v1/plants/abc`,
-      init: { headers: JSON_HEADERS }
-    });
   });
 
   it('rechaza con ApiError si la planta no existe', async () => {

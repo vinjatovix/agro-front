@@ -1,4 +1,4 @@
-import { validateRequest } from './openApiContract';
+import { validateRequest, validateSchema } from './openApiContract';
 
 const VALID_LIST_URL =
   '/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[name]=asc';
@@ -65,5 +65,70 @@ describe('validateRequest', () => {
 
     expect(found.length).toBeGreaterThan(0);
     expect(found.every((location) => location.startsWith(prefix))).toBe(true);
+  });
+});
+
+describe('validateSchema', () => {
+  it('valida un FamilySummary válido sin violaciones', () => {
+    const summary = {
+      id: 'fa821c9a-9e12-4c28-98e3-533bbbe114e2',
+      name: 'Solanáceas',
+      slug: 'solanaceae'
+    };
+
+    const violations = validateSchema('FamilySummary', summary);
+
+    expect(violations).toEqual([]);
+  });
+
+  it('rechaza propiedades adicionales en FamilySummary', () => {
+    const summaryWithExtra = {
+      id: 'fa821c9a-9e12-4c28-98e3-533bbbe114e2',
+      name: 'Solanáceas',
+      slug: 'solanaceae',
+      extraProperty: 'not-allowed'
+    };
+
+    const violations = validateSchema('FamilySummary', summaryWithExtra);
+
+    expect(violations.length).toBeGreaterThan(0);
+    expect(violations[0].location).toContain('extraProperty');
+  });
+
+  it.each([
+    [
+      'FamilySummary',
+      {
+        id: 'fa821c9a-9e12-4c28-98e3-533bbbe114e2',
+        name: 'Solanáceas',
+        slug: 'solanaceae'
+      }
+    ],
+    ['string id', 'fa821c9a-9e12-4c28-98e3-533bbbe114e2']
+  ])('valida PlantIdentityView con familia como %s', (_, family) => {
+    const identity = {
+      name: {
+        primary: 'Tomate',
+        aliases: []
+      },
+      scientificName: 'Solanum lycopersicum',
+      family
+    };
+
+    const violations = validateSchema('PlantIdentityView', identity);
+
+    expect(violations).toEqual([]);
+  });
+
+  it('rechaza PlantIdentityView sin campos requeridos', () => {
+    const invalidIdentity = {
+      name: {
+        primary: 'Tomate'
+      }
+    };
+
+    const violations = validateSchema('PlantIdentityView', invalidIdentity);
+
+    expect(violations.length).toBeGreaterThan(0);
   });
 });
