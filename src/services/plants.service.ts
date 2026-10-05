@@ -67,6 +67,15 @@ export async function getPlants(
   >;
 }
 
+export const PLANT_INCLUDE_QUERY_KEY = 'include';
+export const PLANT_INCLUDES = {
+  family: 'family'
+} as const;
+
 export async function getPlantById(id: string): Promise<Plant> {
-  return apiFetch(`/api/v1/plants/${id}`);
+  const query = QueryBuilder.create()
+    .add(PLANT_INCLUDE_QUERY_KEY, PLANT_INCLUDES.family)
+    .build();
+
+  return apiFetch(`/api/v1/plants/${id}?${query}`);
 }

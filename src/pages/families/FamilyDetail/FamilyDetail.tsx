@@ -23,7 +23,7 @@ export default function FamilyDetail() {
 
   const familyQuery = useFamily(id);
 
-  const plantsQuery = useFamilyPlants(id);
+  const plantsQuery = useFamilyPlants(familyQuery.data?.id);
 
   const isLoading = familyQuery.isLoading || plantsQuery.loading;
 

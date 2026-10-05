@@ -6,7 +6,7 @@ import { readPlantSafety } from '../utils/plantSafety';
 import PlantSafetyIndicators from '../components/PlantSafetyIndicators/PlantSafetyIndicators';
 
 import './plantCard.css';
-import Badge from '../../../shared/components/Badge/Bagde';
+import Badge from '../../../shared/components/Badge/Badge';
 import { iconsMap } from '../../../shared/constants/iconsMap';
 
 export interface PlantCardProps {

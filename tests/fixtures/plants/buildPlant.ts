@@ -1,3 +1,4 @@
+import type { PlantFamilyRef } from '../../../src/types/FamilySummary';
 import type {
   Plant,
   PlantEcologicalTraits
@@ -13,4 +14,9 @@ export function buildPlantWithEcological(
 ): Plant {
   const plant = buildPlant();
   return { ...plant, traits: { ...plant.traits, ecological } };
+}
+
+export function buildPlantWithFamily(family: PlantFamilyRef): Plant {
+  const plant = buildPlant();
+  return { ...plant, identity: { ...plant.identity, family } };
 }

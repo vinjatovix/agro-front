@@ -1,6 +1,6 @@
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
 import { iconsMap } from '../../../../shared/constants/iconsMap';
-import Badge from '../../../../shared/components/Badge/Bagde';
+import Badge from '../../../../shared/components/Badge/Badge';
 import type { Plant } from '../../../../types/Plants/Plant';
 import PlantSafetyIndicators from '../../components/PlantSafetyIndicators/PlantSafetyIndicators';
 import { readPlantSafety } from '../../utils/plantSafety';

@@ -33,3 +33,8 @@
 .badge--default {
   background: #fafafa;
 }
+.badge--unavailable {
+  color: var(--color-on-surface-variant);
+  background: transparent;
+  border: 1px dashed var(--color-outline-variant);
+}

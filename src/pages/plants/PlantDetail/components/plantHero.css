@@ -17,3 +17,16 @@
   color: #666;
   margin: 0;
 }
+
+.plant-hero__family-link {
+  display: inline-flex;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.plant-hero__family-link .badge {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}

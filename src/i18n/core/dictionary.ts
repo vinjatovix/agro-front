@@ -152,7 +152,8 @@ export const dictionary = {
     },
     hero: {
       scientific_name: 'Nombre científico',
-      aliases: 'Alias'
+      aliases: 'Alias',
+      family_unavailable: 'Familia no disponible'
     },
     calendar: {
       title: 'Calendario',

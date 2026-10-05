@@ -251,3 +251,24 @@ export function validateRequest(
     ...validateFlat(flat, declared)
   ];
 }
+
+export function validateSchema(
+  name: string,
+  value: unknown
+): ContractViolation[] {
+  const schemaPointer = `/components/schemas/${escapePointer(name)}`;
+  const validate = validatorFor(schemaPointer);
+  if (validate({ value })) return [];
+  return (validate.errors ?? []).map((error) => {
+    const basePath = error.instancePath.replace(/^\/value/, '');
+    const additional =
+      typeof error.params?.additionalProperty === 'string'
+        ? `/${error.params.additionalProperty}`
+        : '';
+    const location = `${basePath}${additional}` || '/';
+    return {
+      location,
+      message: `${error.message ?? 'invalid'} ${JSON.stringify(error.params)}`
+    };
+  });
+}

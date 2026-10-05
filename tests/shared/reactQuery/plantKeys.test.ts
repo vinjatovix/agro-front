@@ -25,4 +25,12 @@ describe('plantKeys', () => {
       plantKeys.list(buildRequest())
     );
   });
+
+  it('la key del detalle incluye el identificador de la planta', () => {
+    const plantId = 'plant-123';
+
+    const key = plantKeys.detail(plantId);
+
+    expect(key).toEqual(['plants', 'detail', plantId]);
+  });
 });
