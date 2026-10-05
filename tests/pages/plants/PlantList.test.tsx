@@ -174,4 +174,26 @@ describe('PlantList', () => {
     });
     expect(validateRequest('get', lastUrl(fetchMock))).toEqual([]);
   });
+
+  it('un límite no soportado en la URL se corrige a 25 en el selector y en la petición', async () => {
+    const fetchMock = stubFetchOk(listPlantsResponse);
+
+    renderPlantList('/plants?limit=37');
+
+    await waitForPlants();
+    expect(screen.getByLabelText(/resultados por página/i)).toHaveValue('25');
+    expect(lastUrl(fetchMock)).toBe(DEFAULT_REQUEST);
+  });
+
+  it('una página sin resultados muestra el estado vacío, no un error', async () => {
+    stubFetchOk({
+      data: [],
+      pagination: { page: 999, limit: 25, totalPages: 1, totalItems: 2 }
+    });
+
+    renderPlantList('/plants?page=999');
+
+    expect(await screen.findByText(t('plant.empty'))).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 });

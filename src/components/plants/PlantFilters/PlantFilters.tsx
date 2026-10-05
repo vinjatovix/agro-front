@@ -80,6 +80,7 @@ export default function PlantFilters() {
           label={`${t(filter.labelKey)}`}
           value={textState[filter.key] ?? ''}
           placeholder={t(filter.placeholder)}
+          maxLength={filter.maxLength}
           onChange={(value) => handleTextChange(filter.key, value)}
         />
       ))}

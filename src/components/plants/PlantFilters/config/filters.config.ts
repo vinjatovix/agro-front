@@ -1,3 +1,4 @@
+import { FILTER_TEXT_MAX_LENGTH } from '../../../../shared/constants/filterText';
 import { iconsMap } from '../../../../shared/constants/iconsMap';
 import {
   LIFE_CYCLES,
@@ -38,7 +39,8 @@ export const TEXT_FILTERS = [
     icon: iconsMap['google'],
     key: 'identity',
     labelKey: 'plant.filters.search_label',
-    placeholder: 'plant.filters.search_placeholder'
+    placeholder: 'plant.filters.search_placeholder',
+    maxLength: FILTER_TEXT_MAX_LENGTH
   }
 ] as const;
 

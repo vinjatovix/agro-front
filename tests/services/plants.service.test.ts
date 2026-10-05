@@ -4,6 +4,10 @@ import { buildPlant } from '../fixtures/plants/buildPlant';
 import { listPlantsResponse } from '../fixtures/plants/listPlants';
 import { validateRequest } from '../contract/openApiContract';
 import {
+  PLANT_FILTER_QUERY_KEYS,
+  type PlantFilterParams
+} from '../../src/services/plantListQuery';
+import {
   API_URL,
   JSON_HEADERS,
   lastRequest,
@@ -96,11 +100,11 @@ describe('getPlants: query completa', () => {
         lifeCycle: 'annual',
         sowingMethod: 'starter',
         sowingMonths: [3, 4],
-        soilPh: 6,
-        soilAvailableDepthCm: 30,
-        spacingCm: 40,
+        soilPh: '6',
+        soilAvailableDepthCm: '30',
+        spacingCm: '40',
         lightType: 'full_sun',
-        lightHoursMin: 6,
+        lightHoursMin: '6',
         rootSystem: 'taproot'
       },
       { page: 2, limit: 50 },
@@ -131,7 +135,7 @@ describe('getPlants: query completa', () => {
   it('un mes de siembra suelto se envía como hasAny de un valor', async () => {
     const fetchMock = stubFetchOk(listPlantsResponse);
 
-    await getPlants({ sowingMonths: 5 });
+    await getPlants({ sowingMonths: [5] });
 
     expect(lastRequest(fetchMock).url).toBe(
       `${API_URL}/api/v1/plants?filter[sowingMonths][hasAny]=5&sort[name]=asc`
@@ -161,6 +165,43 @@ describe('getPlants: query completa', () => {
 
     expect(error).toBeInstanceOf(ApiError);
     expect(error).toMatchObject({ status: 404, message: 'Plant not found' });
+  });
+});
+
+const VALID_FILTER_VALUES: Required<PlantFilterParams> = {
+  identity: 'tomate',
+  family: '3f2504e0-4f89-41d3-9a0c-0305e82c3301',
+  lifeCycle: 'annual',
+  sowingMethod: 'direct',
+  sowingMonths: [3, 5],
+  soilPh: '6.5',
+  soilAvailableDepthCm: '30',
+  spacingCm: '40',
+  lightType: 'full_sun',
+  lightHoursMin: '6',
+  rootSystem: 'taproot'
+};
+
+function formatFilterValue(value: string | number[]): string {
+  return Array.isArray(value) ? value.join(',') : value;
+}
+
+describe('getPlants: cada clave de filtro', () => {
+  const fields = Object.keys(PLANT_FILTER_QUERY_KEYS) as Array<
+    keyof PlantFilterParams
+  >;
+
+  it.each(fields)('%s envía su clave del contrato', async (field) => {
+    const fetchMock = stubFetchOk(listPlantsResponse);
+    const value = VALID_FILTER_VALUES[field];
+
+    await getPlants({ [field]: value });
+
+    const { url } = lastRequest(fetchMock);
+    expect(url).toBe(
+      `${API_URL}/api/v1/plants?${PLANT_FILTER_QUERY_KEYS[field]}=${formatFilterValue(value)}&sort[name]=asc`
+    );
+    expect(validateRequest('get', url)).toEqual([]);
   });
 });
 

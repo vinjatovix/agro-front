@@ -7,19 +7,26 @@ import {
   type PlantSort
 } from '../../../services/plantListQuery';
 import type { PaginationParams } from '../../../types/Pagination';
+import { SUPPORTED_LIMITS } from '../../../shared/components/constants';
+import { FILTER_TEXT_MAX_LENGTH } from '../../../shared/constants/filterText';
 import { PLANT_LIST_URL_PARAMS } from '../../../shared/constants/plantListUrlParams';
+import { isUuid } from '../../../shared/utils/isUuid';
+import { parseDecimalString } from '../../../shared/utils/parseDecimalString';
+import { parseFilterText } from '../../../shared/utils/parseFilterText';
+import { parseMonthList } from '../../../shared/utils/parseMonthList';
 import { parsePositiveInt } from '../../../shared/utils/parsePositiveInt';
 import { pickAllowed } from '../../../shared/utils/pickAllowed';
-import { safeNumber } from '../../../shared/utils/safeNumber';
 import {
-  isLightType,
-  isPlantLifecycle,
-  isRootSystem,
-  isSowingMethod
-} from '../../../components/plants/PlantFilters/utils/plantFilter.utils';
+  LIFE_CYCLES,
+  LIGHT_TYPES,
+  ROOT_SYSTEMS,
+  SOWING_METHODS
+} from '../../../components/plants/PlantFilters/constants';
 
 const DEFAULT_PAGE = 1;
-const DEFAULT_LIMIT = 25;
+const DEFAULT_LIMIT: number = SUPPORTED_LIMITS[0];
+
+type Read = (name: string) => string | null;
 
 function parseSort(params: URLSearchParams): PlantSort {
   return {
@@ -36,29 +43,67 @@ function parseSort(params: URLSearchParams): PlantSort {
   };
 }
 
+function parseLimit(value: string | null): number {
+  const limit = parsePositiveInt(value, DEFAULT_LIMIT);
+  return (SUPPORTED_LIMITS as readonly number[]).includes(limit)
+    ? limit
+    : DEFAULT_LIMIT;
+}
+
 function parsePagination(params: URLSearchParams): PaginationParams {
   return {
     page: parsePositiveInt(
       params.get(PLANT_LIST_URL_PARAMS.page),
       DEFAULT_PAGE
     ),
-    limit: parsePositiveInt(
-      params.get(PLANT_LIST_URL_PARAMS.limit),
-      DEFAULT_LIMIT
-    )
+    limit: parseLimit(params.get(PLANT_LIST_URL_PARAMS.limit))
   };
 }
 
-function guarded<T extends string>(
+function pickOne<T extends string>(
   value: string | null,
-  isAllowed: (candidate: string) => candidate is T
+  allowed: readonly T[]
 ): T | undefined {
-  return value && isAllowed(value) ? value : undefined;
+  return value === null ? undefined : pickAllowed([value], allowed);
 }
 
-function parseSowingMonths(params: URLSearchParams): number[] | undefined {
-  const month = safeNumber(params.get(PLANT_LIST_URL_PARAMS.sowingMonth));
-  return month !== undefined ? [month] : undefined;
+function parseFamily(value: string | null): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed && isUuid(trimmed) ? trimmed : undefined;
+}
+
+function parseTextFilters(read: Read): PlantFilterParams {
+  return {
+    identity: parseFilterText(
+      read(PLANT_LIST_URL_PARAMS.identity),
+      FILTER_TEXT_MAX_LENGTH
+    ),
+    family: parseFamily(read(PLANT_LIST_URL_PARAMS.family)),
+    lifeCycle: pickOne(read(PLANT_LIST_URL_PARAMS.lifeCycle), LIFE_CYCLES),
+    sowingMethod: pickOne(
+      read(PLANT_LIST_URL_PARAMS.sowingMethod),
+      SOWING_METHODS
+    ),
+    lightType: pickOne(read(PLANT_LIST_URL_PARAMS.lightType), LIGHT_TYPES),
+    rootSystem: pickOne(read(PLANT_LIST_URL_PARAMS.rootSystem), ROOT_SYSTEMS)
+  };
+}
+
+function parseNumericFilters(
+  read: Read,
+  params: URLSearchParams
+): PlantFilterParams {
+  return {
+    sowingMonths: parseMonthList(
+      params.getAll(PLANT_LIST_URL_PARAMS.sowingMonth)
+    ),
+    soilPh: parseDecimalString(read(PLANT_LIST_URL_PARAMS.soilPh)),
+    soilAvailableDepthCm: parseDecimalString(
+      read(PLANT_LIST_URL_PARAMS.soilAvailableDepthCm)
+    ),
+    spacingCm: parseDecimalString(read(PLANT_LIST_URL_PARAMS.spacingCm)),
+    lightHoursMin: parseDecimalString(read(PLANT_LIST_URL_PARAMS.lightHoursMin))
+  };
 }
 
 function withoutUndefined(filters: PlantFilterParams): PlantFilterParams {
@@ -68,24 +113,10 @@ function withoutUndefined(filters: PlantFilterParams): PlantFilterParams {
 }
 
 function parseFilters(params: URLSearchParams): PlantFilterParams {
-  const read = (name: string) => params.get(name);
+  const read: Read = (name) => params.get(name);
   return withoutUndefined({
-    family: read(PLANT_LIST_URL_PARAMS.family) || undefined,
-    identity: read(PLANT_LIST_URL_PARAMS.identity) || undefined,
-    lifeCycle: guarded(read(PLANT_LIST_URL_PARAMS.lifeCycle), isPlantLifecycle),
-    sowingMethod: guarded(
-      read(PLANT_LIST_URL_PARAMS.sowingMethod),
-      isSowingMethod
-    ),
-    lightType: guarded(read(PLANT_LIST_URL_PARAMS.lightType), isLightType),
-    rootSystem: guarded(read(PLANT_LIST_URL_PARAMS.rootSystem), isRootSystem),
-    sowingMonths: parseSowingMonths(params),
-    soilPh: safeNumber(read(PLANT_LIST_URL_PARAMS.soilPh)),
-    lightHoursMin: safeNumber(read(PLANT_LIST_URL_PARAMS.lightHoursMin)),
-    spacingCm: safeNumber(read(PLANT_LIST_URL_PARAMS.spacingCm)),
-    soilAvailableDepthCm: safeNumber(
-      read(PLANT_LIST_URL_PARAMS.soilAvailableDepthCm)
-    )
+    ...parseTextFilters(read),
+    ...parseNumericFilters(read, params)
   });
 }
 

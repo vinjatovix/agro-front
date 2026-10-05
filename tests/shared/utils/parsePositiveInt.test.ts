@@ -29,4 +29,14 @@ describe('parsePositiveInt', () => {
   it('returns fallback when value is negative', () => {
     expect(parsePositiveInt('-5', 25)).toBe(25);
   });
+
+  it.each([
+    [' 50 ', 50],
+    ['2.5', 25],
+    ['0', 25],
+    ['-3', 25],
+    ['abc', 25]
+  ])('%j → %i (reglas de página y límite)', (value, expected) => {
+    expect(parsePositiveInt(value, 25)).toBe(expected);
+  });
 });

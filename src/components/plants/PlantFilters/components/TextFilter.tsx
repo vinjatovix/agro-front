@@ -5,6 +5,7 @@ interface Props {
   readonly placeholder?: string;
   readonly testId?: string;
   readonly icon?: string;
+  readonly maxLength?: number;
 }
 
 export default function TextFilter({
@@ -13,7 +14,8 @@ export default function TextFilter({
   value,
   onChange,
   placeholder,
-  testId
+  testId,
+  maxLength
 }: Props) {
   return (
     <div className="plant-filters__group">
@@ -24,6 +26,7 @@ export default function TextFilter({
           className="plant-filters__input"
           data-testid={testId}
           placeholder={placeholder}
+          maxLength={maxLength}
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />

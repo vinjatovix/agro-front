@@ -66,11 +66,15 @@ export default function PlantList() {
 
       <Pagination pages={pages} currentPage={page} onPageChange={setPage} />
 
-      <div className="plant-grid">
-        {plants.map((plant) => (
-          <PlantCard key={plant.id} plant={plant} />
-        ))}
-      </div>
+      {plants.length === 0 ? (
+        <p className="plant-list__empty">{t('plant.empty')}</p>
+      ) : (
+        <div className="plant-grid">
+          {plants.map((plant) => (
+            <PlantCard key={plant.id} plant={plant} />
+          ))}
+        </div>
+      )}
 
       <Pagination pages={pages} currentPage={page} onPageChange={setPage} />
     </div>

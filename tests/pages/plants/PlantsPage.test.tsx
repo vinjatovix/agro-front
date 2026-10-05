@@ -3,6 +3,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+import { t } from '../../../src/i18n/core/t';
 import PlantsPage from '../../../src/pages/plants/PlantsPage';
 import { renderWithProviders } from '../../test-utils/renderWithProviders';
 
@@ -38,7 +39,9 @@ describe('PlantsPage', () => {
 
   it('should always render plant list', () => {
     renderPlantsPage();
-    expect(document.querySelector('.plant-grid')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: t('plant.plants') })
+    ).toBeInTheDocument();
   });
 
   it('should show filters button in mobile', () => {

@@ -25,3 +25,62 @@ describe('parsePlantListSearchParams: orden', () => {
     expect(parse(query).sort).toEqual({ field, direction });
   });
 });
+
+const UUID = '3f2504e0-4f89-41d3-9a0c-0305e82c3301';
+const LONG_TEXT = 'a'.repeat(201);
+
+describe('parsePlantListSearchParams: paginación', () => {
+  it.each([
+    ['limit=500', 1, 25],
+    ['limit=37', 1, 25],
+    ['limit=%2050%20', 1, 50],
+    ['limit=100', 1, 100],
+    ['page=0', 1, 25],
+    ['page=-3', 1, 25],
+    ['page=abc', 1, 25],
+    ['page=2.5', 1, 25],
+    ['page=4', 4, 25]
+  ])('%s → página %i, límite %i', (query, page, limit) => {
+    expect(parse(query).pagination).toEqual({ page, limit });
+  });
+});
+
+describe('parsePlantListSearchParams: filtros', () => {
+  it.each([
+    ['family=rosaceae&lifeCycle=annual', { lifeCycle: 'annual' }],
+    [`family=${UUID}`, { family: UUID }],
+    ['sowingMonth=13&sowingMonth=0&sowingMonth=3.5', {}],
+    ['sowingMonth=3&sowingMonth=13&sowingMonth=5,3', { sowingMonths: [3, 5] }],
+    ['soilPh=1e3', {}],
+    ['soilPh=abc', {}],
+    ['soilPh=Infinity', {}],
+    ['soilPh=6.5', { soilPh: '6.5' }],
+    ['lightHoursMin=6', { lightHoursMin: '6' }],
+    ['lightHoursMin=1e1', {}],
+    ['spacingCm=40', { spacingCm: '40' }],
+    ['spacingCm=abc', {}],
+    ['soilAvailableDepthCm=30.5', { soilAvailableDepthCm: '30.5' }],
+    ['soilAvailableDepthCm=Infinity', {}],
+    ['identity=%20%20', {}],
+    [`identity=${LONG_TEXT}`, {}],
+    ['identity=%20tomate%20', { identity: 'tomate' }],
+    ['lifeCycle=weekly', {}],
+    ['sowingMethod=air', {}],
+    ['lightType=moon', {}],
+    ['rootSystem=none', {}],
+    ['sowingMethod=%20direct%20', { sowingMethod: 'direct' }],
+    ['hemisphere=south', {}],
+    ['unknown=1&other=x', {}]
+  ])('%s → %j', (query, filters) => {
+    expect(parse(query).filters).toEqual(filters);
+  });
+
+  it('una URL con todo inválido no lanza y da la petición por defecto', () => {
+    expect(() =>
+      parse('limit=x&page=y&sortField=z&soilPh=1e3&family=no&sowingMonth=99')
+    ).not.toThrow();
+    expect(
+      parse('limit=x&page=y&sortField=z&soilPh=1e3&family=no&sowingMonth=99')
+    ).toEqual(parse(''));
+  });
+});

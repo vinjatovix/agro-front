@@ -21,7 +21,7 @@ function addFilter(
   key: string,
   value: FilterValue
 ): QueryBuilder {
-  if (typeof value === 'number' || Array.isArray(value)) {
+  if (Array.isArray(value)) {
     return query.addArray(key, value);
   }
   return query.add(key, value?.trim());

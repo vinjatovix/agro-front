@@ -4,15 +4,15 @@ export type PlantFilterParams = {
   identity?: string;
   family?: string;
   lifeCycle?: 'annual' | 'biennial' | 'perennial';
-  spacingCm?: number;
+  spacingCm?: string;
 
-  sowingMonths?: number | number[];
+  sowingMonths?: number[];
   sowingMethod?: 'direct' | 'starter';
 
-  soilPh?: number;
-  soilAvailableDepthCm?: number;
+  soilPh?: string;
+  soilAvailableDepthCm?: string;
 
-  lightHoursMin?: number;
+  lightHoursMin?: string;
   lightType?: 'full_sun' | 'partial_shade';
 
   rootSystem?:

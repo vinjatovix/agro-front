@@ -2,6 +2,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useCallback, useState, useMemo } from 'react';
 import { useSliderFilter } from './useSliderFilter';
 import { useDebouncedCallback } from './useDebouncedCallback';
+import { PLANT_LIST_URL_PARAMS } from '../../../../shared/constants/plantListUrlParams';
 
 type TextFilterKey = 'identity';
 
@@ -10,7 +11,7 @@ function useTextFilters(
   getParam: (key: string) => string
 ) {
   const [textState, setTextState] = useState<Record<TextFilterKey, string>>({
-    identity: getParam('identity')
+    identity: getParam(PLANT_LIST_URL_PARAMS.identity)
   });
 
   const setTextValue = useCallback((key: TextFilterKey, value: string) => {
@@ -21,7 +22,7 @@ function useTextFilters(
   }, []);
 
   const debouncedIdentity = useDebouncedCallback((value: string) => {
-    setParam('identity', value);
+    setParam(PLANT_LIST_URL_PARAMS.identity, value);
   }, 300);
 
   const debounceMap = useMemo(
@@ -51,21 +52,27 @@ function useTextFilters(
 }
 
 function useSliderFilters(getParam: (key: string) => string) {
-  const soilPh = useSliderFilter(getParam('soilPh'));
-  const lightHours = useSliderFilter(getParam('lightHoursMin'));
-  const spacing = useSliderFilter(getParam('spacingCm'));
-  const soilDepth = useSliderFilter(getParam('soilAvailableDepthCm'));
+  const soilPh = useSliderFilter(getParam(PLANT_LIST_URL_PARAMS.soilPh));
+  const lightHours = useSliderFilter(
+    getParam(PLANT_LIST_URL_PARAMS.lightHoursMin)
+  );
+  const spacing = useSliderFilter(getParam(PLANT_LIST_URL_PARAMS.spacingCm));
+  const soilDepth = useSliderFilter(
+    getParam(PLANT_LIST_URL_PARAMS.soilAvailableDepthCm)
+  );
 
   return { soilPh, lightHours, spacing, soilDepth };
 }
 
 function useSelectFilters(getParam: (key: string) => string) {
-  const lifeCycle = getParam('lifeCycle');
-  const sowingMethod = getParam('sowingMethod');
-  const lightType = getParam('lightType');
-  const rootSystem = getParam('rootSystem');
-  const sowingMonth = getParam('sowingMonth');
-  const hemisphere = (getParam('hemisphere') as 'north' | 'south') || 'north';
+  const lifeCycle = getParam(PLANT_LIST_URL_PARAMS.lifeCycle);
+  const sowingMethod = getParam(PLANT_LIST_URL_PARAMS.sowingMethod);
+  const lightType = getParam(PLANT_LIST_URL_PARAMS.lightType);
+  const rootSystem = getParam(PLANT_LIST_URL_PARAMS.rootSystem);
+  const sowingMonth = getParam(PLANT_LIST_URL_PARAMS.sowingMonth);
+  const hemisphere =
+    (getParam(PLANT_LIST_URL_PARAMS.hemisphere) as 'north' | 'south') ||
+    'north';
 
   return {
     lifeCycle,
@@ -88,8 +95,8 @@ export function usePlantFilters() {
         if (value && value.length > 0) next.set(key, value);
         else next.delete(key);
 
-        if (key !== 'page') {
-          next.delete('page');
+        if (key !== PLANT_LIST_URL_PARAMS.page) {
+          next.delete(PLANT_LIST_URL_PARAMS.page);
         }
 
         return next;
@@ -103,11 +110,11 @@ export function usePlantFilters() {
     [params]
   );
 
-  const family = getParam('family');
+  const family = getParam(PLANT_LIST_URL_PARAMS.family);
 
   const setFamily = useCallback(
     (value: string) => {
-      setParam('family', value);
+      setParam(PLANT_LIST_URL_PARAMS.family, value);
     },
     [setParam]
   );
@@ -137,7 +144,7 @@ export function usePlantFilters() {
 
   const setHemisphere = useCallback(
     (value: 'north' | 'south') => {
-      setParam('hemisphere', value);
+      setParam(PLANT_LIST_URL_PARAMS.hemisphere, value);
     },
     [setParam]
   );

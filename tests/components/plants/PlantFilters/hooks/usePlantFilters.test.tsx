@@ -138,4 +138,25 @@ describe('usePlantFilters', () => {
 
     expect(result.current.getParam('page')).toBe('');
   });
+
+  it.each([
+    ['changing', '?page=3&lifeCycle=annual', 'lifeCycle', 'perennial'],
+    ['adding', '?page=3', 'lifeCycle', 'annual'],
+    ['removing', '?page=3&lifeCycle=annual', 'lifeCycle', '']
+  ])('%s a filter removes page', (_, search, key, value) => {
+    const { result } = renderHook(() => usePlantFilters(), {
+      wrapper: ({ children }: { children: React.ReactNode }) => (
+        <MemoryRouter initialEntries={[`/plants${search}`]}>
+          {children}
+        </MemoryRouter>
+      )
+    });
+
+    act(() => {
+      result.current.setParam(key, value);
+    });
+
+    expect(result.current.getParam(key)).toBe(value);
+    expect(result.current.getParam('page')).toBe('');
+  });
 });
