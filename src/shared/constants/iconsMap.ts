@@ -41,6 +41,8 @@ export const iconsMap = {
   chart: '📊',
   alert: '🚨',
   ellipsis: '…',
+  edible: '🍽️',
+  toxic: '☠️',
   /** */
   mycology: '🍄',
   disease: '🦠',

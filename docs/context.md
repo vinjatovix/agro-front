@@ -157,6 +157,8 @@ Comportamientos transversales del contrato:
 | `phenology.flowering` / `harvest`                                              | requeridos                                    | requeridos en la respuesta, opcionales al crear                                | —                                                                                                        |
 | `Family.extra.subfamilies`                                                     | presente                                      | presente                                                                       | Se declara pero no se pinta                                                                              |
 
+Alineado con el contrato: `traits.ecological` (`edible`, `toxic`, `toxicityNotes`, todas opcionales; una clave ausente es "sin dato").
+
 ### 6.3 Divergencias en las peticiones (consultas de listado)
 
 | Parámetro enviado                                                                             | Contrato                                | Riesgo                                                                                                                                                             |

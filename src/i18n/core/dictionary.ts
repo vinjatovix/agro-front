@@ -72,6 +72,19 @@ export const dictionary = {
     }
   },
   plant: {
+    safety: {
+      title: 'Comestibilidad y toxicidad',
+      edible: 'Comestible',
+      toxic: 'Tóxica',
+      flagValues: {
+        yes: 'Sí',
+        no: 'No',
+        unknown: 'Sin dato'
+      },
+      toxicity_notes: 'Notas de toxicidad',
+      source: 'Fuente:',
+      source_name: 'Plants For A Future'
+    },
     plants: 'Plantas',
     empty: 'No hay plantas que coincidan con esta búsqueda.',
     filters: {

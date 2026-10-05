@@ -28,6 +28,12 @@ export const listPlantsResponse: PaginatedResponse<Plant> = {
         spacingCm: {
           min: 20,
           max: 20
+        },
+        ecological: {
+          edible: true,
+          toxic: true,
+          toxicityNotes:
+            'En grandes cantidades puede ser abortivo; evitar en el embarazo.'
         }
       },
       phenology: {
@@ -177,6 +183,11 @@ export const listPlantsResponse: PaginatedResponse<Plant> = {
         spacingCm: {
           min: 30,
           max: 40
+        },
+        ecological: {
+          toxic: true,
+          toxicityNotes:
+            'Contiene tiaminasa; no consumir cruda ni en grandes cantidades.'
         }
       },
       phenology: {
