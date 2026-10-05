@@ -76,6 +76,14 @@ describe('PlantFilters', () => {
     expect(screen.getByTestId('text-filter-identity')).toBeInTheDocument();
   });
 
+  it('limits the search input to the contract FilterText length', () => {
+    renderComponent();
+    expect(screen.getByTestId('text-filter-identity')).toHaveAttribute(
+      'maxlength',
+      '200'
+    );
+  });
+
   it('calls handleTextChange when identity input changes', () => {
     renderComponent();
 

@@ -73,6 +73,7 @@ export const dictionary = {
   },
   plant: {
     plants: 'Plantas',
+    empty: 'No hay plantas que coincidan con esta búsqueda.',
     filters: {
       clear: 'Borrar filtros',
       search_label: 'Buscar plantas',
