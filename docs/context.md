@@ -193,7 +193,7 @@ No hay analítica, Sentry, feature flags, CDN de fuentes ni service worker.
 - **Textos**: todo pasa por `t('a.b.c')` con claves tipadas. La regla ESLint propia `local/no-hardcoded-ui-text` (warning) **solo detecta `JSXText`**, así que no ve strings dentro de objetos ni template literals (por ejemplo, las etiquetas de `QuickFacts` o el texto `"al día"`).
 - **Iconos**: emojis vía `iconsMap.<clave>` interpolados en los textos de etiquetas. **Decidido: se sustituirán por iconos de Material Symbols** (ver 11.3 y `docs/design.md`). Hoy los emojis también aparecen en `BodySection` (y por tanto en su `data-testid`), en `ErrorResponse`, en `Pagination` y en los textos fijos de `FamilyInfo` (`📝`, `🌟`) y `SliderFilter` (`❌`).
 - **Imports**: rutas relativas (sin alias `@/`). Se usa `import type` (lo exige `verbatimModuleSyntax`).
-- **Hooks de datos**: `queryKey` en forma de array: `['plants', {pagination, filters, sort}]`, `['plant', id]`, `['families']`, `['family', id]`, `['family-plants', familyId]`.
+- **Hooks de datos**: `queryKey` en forma de array. El listado usa la factoría `plantKeys.list(request)` (`src/shared/reactQuery/plantKeys.ts`) → `['plants', 'list', request]`, con la petición ya saneada; el resto: `['plant', id]`, `['families']`, `['family', id]`, `['family-plants', familyId]`.
 - **`data-testid`** se usa ampliamente en componentes interactivos.
 - **Formato**: Prettier con `printWidth: 80`, `singleQuote: true`, `semi: true`, `trailingComma: 'none'` y `arrowParens: 'always'`.
 - **Commits**: Conventional Commits con scope por feature (`feat(plants): …`), validados por commitlint en local (husky) y en los PR. 42 commits en el historial.

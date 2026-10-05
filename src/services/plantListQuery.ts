@@ -1,3 +1,5 @@
+import type { PaginationParams } from '../types/Pagination';
+
 export type PlantFilterParams = {
   identity?: string;
   family?: string;
@@ -33,6 +35,12 @@ export type SortDirection = (typeof SORT_DIRECTIONS)[number];
 export type PlantSort = {
   readonly field: PlantsSortField;
   readonly direction: SortDirection;
+};
+
+export type PlantListRequest = {
+  readonly filters: PlantFilterParams;
+  readonly pagination: PaginationParams;
+  readonly sort: PlantSort;
 };
 
 export const DEFAULT_PLANT_SORT: PlantSort = {

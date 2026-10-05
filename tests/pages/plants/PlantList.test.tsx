@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { t } from '../../../src/i18n/core/t';
 import PlantList from '../../../src/pages/plants/PlantList';
@@ -14,6 +15,8 @@ import {
   stubFetchOk,
   type FetchMock
 } from '../../test-utils/stubFetch';
+
+const SORT_FIELD_LABEL = new RegExp(`^${t('plant.orders.field')}:?$`);
 
 const DEFAULT_REQUEST = `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[name]=asc`;
 
@@ -102,7 +105,7 @@ describe('PlantList', () => {
     renderPlantList('/plants?page=2');
     await waitForPlants();
 
-    fireEvent.change(screen.getByLabelText(/^orden/i), {
+    fireEvent.change(screen.getByLabelText(/^orden:?$/i), {
       target: { value: 'desc' }
     });
 
@@ -125,5 +128,50 @@ describe('PlantList', () => {
         `${API_URL}/api/v1/plants?pagination[page]=2&pagination[limit]=25&sort[name]=asc`
       );
     });
+  });
+
+  it('muestra los controles de orden con el valor de la URL', async () => {
+    const fetchMock = stubFetchOk(listPlantsResponse);
+
+    renderPlantList('/plants?sortField=scientificName&sortDirection=desc');
+
+    await waitForPlants();
+    expect(
+      screen.getByRole('combobox', { name: SORT_FIELD_LABEL })
+    ).toHaveDisplayValue(t('plant.orders.fields.scientificName'));
+    expect(screen.getByRole('combobox', { name: /^orden:?$/i })).toHaveValue(
+      'desc'
+    );
+    expect(lastUrl(fetchMock)).toContain('sort[scientificName]=desc');
+  });
+
+  it('elegir criterio y después sentido vuelve a la página 1 y combina ambos', async () => {
+    const fetchMock = stubFetchOk(listPlantsResponse);
+    renderPlantList('/plants?page=3');
+    await waitForPlants();
+
+    await userEvent.selectOptions(
+      screen.getByRole('combobox', { name: SORT_FIELD_LABEL }),
+      t('plant.orders.fields.scientificName')
+    );
+
+    await waitFor(() => {
+      expect(lastUrl(fetchMock)).toBe(
+        `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[scientificName]=asc`
+      );
+    });
+    expect(validateRequest('get', lastUrl(fetchMock))).toEqual([]);
+
+    await userEvent.selectOptions(
+      screen.getByRole('combobox', { name: /^orden:?$/i }),
+      'desc'
+    );
+
+    await waitFor(() => {
+      expect(lastUrl(fetchMock)).toBe(
+        `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[scientificName]=desc`
+      );
+    });
+    expect(validateRequest('get', lastUrl(fetchMock))).toEqual([]);
   });
 });
