@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { t } from '../../../src/i18n/core/t';
+import { lookup, t } from '../../../src/i18n/core/t';
 
 describe('t', () => {
   it('returns translated value for valid key', () => {
@@ -20,5 +20,19 @@ describe('t', () => {
     expect(t('family.invalid.key' as unknown as keyof typeof t)).toBe(
       'family.invalid.key'
     );
+  });
+});
+
+describe('lookup', () => {
+  it('returns the text of an existing path', () => {
+    expect(lookup('plant.calendar.seasonValues.spring')).toBe('Primavera');
+  });
+
+  it('returns undefined for a missing path', () => {
+    expect(lookup('plant.calendar.seasonValues.monsoon')).toBeUndefined();
+  });
+
+  it('returns undefined for a path that points to an object', () => {
+    expect(lookup('plant.calendar.seasonValues')).toBeUndefined();
   });
 });

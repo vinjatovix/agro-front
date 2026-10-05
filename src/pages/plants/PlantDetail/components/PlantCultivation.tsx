@@ -54,7 +54,7 @@ export default function PlantCultivation({ plant }: Props) {
             <PropagationMethodCard
               key={method}
               method={method}
-              season={data.season ?? ''}
+              seasons={data.seasons}
               bestPractices={data.bestPractices}
             />
           ))}
@@ -70,10 +70,10 @@ export default function PlantCultivation({ plant }: Props) {
           <div className="pruning-grid">
             {plant.knowledge.pruning.map((p) => (
               <PruningCard
-                key={`${p.type}-${p.season}`}
+                key={`${p.type}-${p.seasons.join('-')}`}
                 type={p.type}
                 intensity={p.intensity}
-                season={p.season}
+                seasons={p.seasons}
                 frequencyPerYear={p.frequencyPerYear}
                 bestPractices={p.bestPractices}
               />
