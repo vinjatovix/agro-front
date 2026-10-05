@@ -2,6 +2,12 @@ import type { Metadata } from '../Metadata';
 import type { Range } from '../Range';
 import type { Seasons } from '../Season';
 
+export type PlantEcologicalTraits = {
+  edible?: boolean;
+  toxic?: boolean;
+  toxicityNotes?: string;
+};
+
 export interface Plant {
   id: string;
 
@@ -30,6 +36,7 @@ export interface Plant {
       min: number;
       max: number;
     };
+    ecological?: PlantEcologicalTraits;
   };
 
   phenology: {

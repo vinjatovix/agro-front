@@ -8,7 +8,10 @@ import PlantDetail from '../../../../src/pages/plants/PlantDetail/PlantDetail';
 import { getPlantById } from '../../../../src/services/plants.service';
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import { listPlantsResponse } from '../../../fixtures/plants/listPlants';
-import { buildPlant } from '../../../fixtures/plants/buildPlant';
+import {
+  buildPlant,
+  buildPlantWithEcological
+} from '../../../fixtures/plants/buildPlant';
 
 vi.mock('../../../../src/services/plants.service', () => ({
   getPlantById: vi.fn()
@@ -127,6 +130,45 @@ describe('PlantDetail', () => {
     expect(within(pruningCard).getByText('Invierno')).toBeInTheDocument();
     expect(within(cuttingCard).queryByText(/Estación/)).not.toBeInTheDocument();
     expect(document.body).not.toHaveTextContent('plant.calendar');
+  });
+
+  it('shows edible and toxic data between quick facts and cultivation', async () => {
+    mockedGetPlantById.mockResolvedValue(
+      buildPlantWithEcological({
+        edible: true,
+        toxic: true,
+        toxicityNotes: 'Hojas tóxicas.'
+      })
+    );
+
+    renderPlantDetail();
+
+    const safety = await screen.findByTestId(
+      'section-comestibilidad y toxicidad'
+    );
+    const quickFacts = screen.getByTestId('section-⚡ datos rápidos');
+    const cultivation = screen.getByTestId('section-🌱 cultivo');
+
+    expect(screen.getByRole('img', { name: 'Comestible' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Tóxica' })).toBeInTheDocument();
+    expect(quickFacts.compareDocumentPosition(safety)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
+    expect(safety.compareDocumentPosition(cultivation)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
+  });
+
+  it('hides edible and toxic data when the plant has none', async () => {
+    mockedGetPlantById.mockResolvedValue(buildPlantWithEcological({}));
+
+    renderPlantDetail();
+
+    await screen.findByTestId('section-🌱 cultivo');
+
+    expect(screen.queryByText('Comestibilidad y toxicidad')).toBeNull();
+    expect(screen.queryByRole('img', { name: 'Comestible' })).toBeNull();
+    expect(screen.queryByRole('img', { name: 'Tóxica' })).toBeNull();
   });
 
   it('should render error when service fails', async () => {

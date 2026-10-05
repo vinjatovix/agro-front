@@ -1,0 +1,25 @@
+.plant-safety__row--warning {
+  padding-inline: var(--space-2);
+  border-radius: var(--space-1);
+  background: var(--color-error-container);
+  color: var(--color-on-error-container);
+}
+
+.plant-safety__row--warning .info-row__label,
+.plant-safety__row--warning .info-row__label::after {
+  color: inherit;
+}
+
+.plant-safety__subtitle {
+  margin: 0 0 var(--space-1);
+  font-size: 1rem;
+}
+
+.plant-safety__notes {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.plant-safety__source {
+  font-size: 0.875rem;
+}

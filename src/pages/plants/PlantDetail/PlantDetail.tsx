@@ -7,11 +7,13 @@ import { ErrorResponse } from '../../../shared/components/ErrorResponse/ErrorRes
 import { toUiError } from '../../../shared/errors/toUiError';
 
 import { usePlant } from '../hooks/usePlant';
+import { readPlantSafety } from '../utils/plantSafety';
 
 import { PlantDetailStickyHeader } from './components/PlantDetailStickyHeader';
 import PlantHero from './components/PlantHero';
 import QuickFacts from './components/QuickFacts';
 import PlantCalendar from './components/PlantCalendar';
+import PlantSafety from './components/PlantSafety';
 import PlantCultivation from './components/PlantCultivation';
 import PlantEcology from './components/PlantEcology';
 import PlantNotes from './components/PlantNotes';
@@ -55,6 +57,7 @@ export default function PlantDetail() {
         onHemisphereChange={setHemisphere}
       />
       <QuickFacts plant={plant} />
+      <PlantSafety safety={readPlantSafety(plant)} />
       <PlantCultivation plant={plant} />
       <PlantEcology plant={plant} />
       <PlantNotes plant={plant} />

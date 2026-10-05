@@ -1,0 +1,10 @@
+.plant-safety-indicators {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.plant-safety-indicators__item {
+  line-height: 1;
+}
