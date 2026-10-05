@@ -196,4 +196,15 @@ describe('PlantList', () => {
     expect(await screen.findByText(t('plant.empty'))).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
+
+  it('marca las plantas comestibles y tóxicas con una sola petición', async () => {
+    const fetchMock = stubFetchOk(listPlantsResponse);
+
+    renderPlantList();
+
+    await waitForPlants();
+    expect(screen.getAllByRole('img', { name: 'Tóxica' })).toHaveLength(2);
+    expect(screen.getAllByRole('img', { name: 'Comestible' })).toHaveLength(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
 });

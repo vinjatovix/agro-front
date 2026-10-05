@@ -16,8 +16,18 @@
   background-color: #e7f0e392;
 }
 
+.plant-card__heading {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+}
+
 .plant-card h3 {
   margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .plant-aliases {
   display: flex;
