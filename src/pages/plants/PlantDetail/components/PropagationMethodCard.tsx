@@ -3,16 +3,17 @@ import { tValue } from '../../../../i18n/core/tValue';
 import { iconsMap } from '../../../../shared/constants/iconsMap';
 
 import InfoRow from './InfoRow';
+import SeasonsRow from './SeasonsRow';
 
 interface Props {
   readonly method: string;
-  readonly season: string;
+  readonly seasons?: readonly string[];
   readonly bestPractices?: string[];
 }
 
 export default function PropagationMethodCard({
   method,
-  season,
+  seasons,
   bestPractices
 }: Props) {
   return (
@@ -22,10 +23,7 @@ export default function PropagationMethodCard({
         value={tValue('plant.cultivation.propagation.methodValues', method)}
       />
 
-      <InfoRow
-        label={`${iconsMap.calendar} ${t('plant.calendar.season')}`}
-        value={tValue('plant.calendar.seasonValues', season)}
-      />
+      <SeasonsRow seasons={seasons} />
 
       {bestPractices && bestPractices.length > 0 && (
         <InfoRow

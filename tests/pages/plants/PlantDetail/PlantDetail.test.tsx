@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router-dom';
 
@@ -8,6 +8,7 @@ import PlantDetail from '../../../../src/pages/plants/PlantDetail/PlantDetail';
 import { getPlantById } from '../../../../src/services/plants.service';
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import { listPlantsResponse } from '../../../fixtures/plants/listPlants';
+import { buildPlant } from '../../../fixtures/plants/buildPlant';
 
 vi.mock('../../../../src/services/plants.service', () => ({
   getPlantById: vi.fn()
@@ -91,6 +92,41 @@ describe('PlantDetail', () => {
     const pruningCard = await screen.findByTestId('pruning-maintenance');
 
     expect(pruningCard).toBeInTheDocument();
+  });
+
+  it('shows propagation and pruning seasons translated and ordered', async () => {
+    mockedGetPlantById.mockResolvedValue(
+      buildPlant({
+        knowledge: {
+          ...mockPlant.knowledge,
+          propagation: {
+            methods: {
+              seed: { seasons: ['summer', 'spring'] },
+              cutting: {}
+            }
+          },
+          pruning: [
+            {
+              type: 'maintenance',
+              intensity: 'light',
+              seasons: ['winter'],
+              frequencyPerYear: 1
+            }
+          ]
+        }
+      })
+    );
+
+    renderPlantDetail();
+
+    const seedCard = await screen.findByTestId('propagation-seed');
+    const cuttingCard = screen.getByTestId('propagation-cutting');
+    const pruningCard = screen.getByTestId('pruning-maintenance');
+
+    expect(within(seedCard).getByText('Primavera, Verano')).toBeInTheDocument();
+    expect(within(pruningCard).getByText('Invierno')).toBeInTheDocument();
+    expect(within(cuttingCard).queryByText(/Estación/)).not.toBeInTheDocument();
+    expect(document.body).not.toHaveTextContent('plant.calendar');
   });
 
   it('should render error when service fails', async () => {

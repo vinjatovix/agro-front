@@ -1,6 +1,7 @@
-import { t } from './t';
+import { reportMissingTranslation } from '../../shared/observability/reportMissingTranslation';
+import { lookup } from './t';
 
-type ValueGroup =
+export type ValueGroup =
   | 'plant.calendar.seasonValues'
   | 'plant.filters.lifeCycleValues'
   | 'plant.filters.sowingMethodValues'
@@ -11,6 +12,13 @@ type ValueGroup =
   | 'plant.cultivation.pruning.pruningIntensityValues';
 
 export function tValue(group: ValueGroup, value: string): string {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return t(`${group}.${value}` as any);
+  const path = `${group}.${value}`;
+  const translation = lookup(path);
+
+  if (translation === undefined) {
+    reportMissingTranslation(path);
+    return value;
+  }
+
+  return translation;
 }

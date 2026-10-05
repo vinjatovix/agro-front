@@ -81,7 +81,7 @@ export const listPlantsResponse: PaginatedResponse<Plant> = {
           {
             type: 'maintenance',
             intensity: 'moderate',
-            season: 'spring',
+            seasons: ['spring', 'summer'],
             frequencyPerYear: 6,
             bestPractices: [
               'Cortar hojas desde la base',
@@ -93,7 +93,7 @@ export const listPlantsResponse: PaginatedResponse<Plant> = {
         propagation: {
           methods: {
             seed: {
-              season: 'spring',
+              seasons: ['spring', 'summer'],
               bestPractices: [
                 'Semilla con germinación lenta',
                 'Macerar semillas 24h antes de siembra',
@@ -229,7 +229,7 @@ export const listPlantsResponse: PaginatedResponse<Plant> = {
           {
             type: 'maintenance',
             intensity: 'light',
-            season: 'summer',
+            seasons: ['summer'],
             frequencyPerYear: 1,
             bestPractices: ['Controlar la expansión por rizomas']
           }
@@ -237,7 +237,7 @@ export const listPlantsResponse: PaginatedResponse<Plant> = {
         propagation: {
           methods: {
             division: {
-              season: 'spring',
+              seasons: ['spring', 'summer'],
               bestPractices: [
                 'División de rizomas en primavera u otoño',
                 'Cultivar preferiblemente en maceta o con barreras físicas'

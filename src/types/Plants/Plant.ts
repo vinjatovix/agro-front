@@ -1,6 +1,6 @@
 import type { Metadata } from '../Metadata';
 import type { Range } from '../Range';
-import type { Seasons } from '../Seasons';
+import type { Seasons } from '../Season';
 
 export interface Plant {
   id: string;
@@ -86,9 +86,9 @@ export interface Plant {
       preference?: 'morning' | 'afternoon' | 'all_day';
     };
     pruning?: Array<{
-      type: 'maintenance' | 'rejuvenation' | 'shaping';
-      intensity: 'light' | 'moderate' | 'hard';
-      season: Seasons;
+      type: string;
+      intensity: string;
+      seasons: Seasons;
       frequencyPerYear: number;
       bestPractices?: string[];
     }>;
@@ -96,7 +96,7 @@ export interface Plant {
       methods: Record<
         string,
         {
-          season?: Seasons;
+          seasons?: Seasons;
           estimatedTimeWeeks?: Range;
           bestPractices?: string[];
         }

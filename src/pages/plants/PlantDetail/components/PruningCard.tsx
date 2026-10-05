@@ -3,11 +3,12 @@ import { tValue } from '../../../../i18n/core/tValue';
 import { iconsMap } from '../../../../shared/constants/iconsMap';
 
 import InfoRow from './InfoRow';
+import SeasonsRow from './SeasonsRow';
 
 interface Props {
   readonly type: string;
   readonly intensity: string;
-  readonly season: string;
+  readonly seasons?: readonly string[];
   readonly frequencyPerYear: number;
   readonly bestPractices?: string[];
 }
@@ -15,7 +16,7 @@ interface Props {
 export default function PruningCard({
   type,
   intensity,
-  season,
+  seasons,
   frequencyPerYear,
   bestPractices
 }: Props) {
@@ -34,10 +35,7 @@ export default function PruningCard({
         )}
       />
 
-      <InfoRow
-        label={`${iconsMap.calendar} ${t('plant.calendar.season')}`}
-        value={tValue('plant.calendar.seasonValues', season)}
-      />
+      <SeasonsRow seasons={seasons} />
 
       <InfoRow
         label={`${iconsMap.repeat} ${t('plant.cultivation.pruning.frequency')}`}
