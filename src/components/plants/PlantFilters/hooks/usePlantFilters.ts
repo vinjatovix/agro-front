@@ -3,6 +3,7 @@ import { useCallback, useState, useMemo } from 'react';
 import { useSliderFilter } from './useSliderFilter';
 import { useDebouncedCallback } from './useDebouncedCallback';
 import { PLANT_LIST_URL_PARAMS } from '../../../../shared/constants/plantListUrlParams';
+import { parseBooleanFilter } from '../../../../services/plantListQuery';
 
 type TextFilterKey = 'identity';
 
@@ -111,6 +112,10 @@ export function usePlantFilters() {
   );
 
   const family = getParam(PLANT_LIST_URL_PARAMS.family);
+  const edible = parseBooleanFilter(
+    params.getAll(PLANT_LIST_URL_PARAMS.edible)
+  );
+  const toxic = parseBooleanFilter(params.getAll(PLANT_LIST_URL_PARAMS.toxic));
 
   const setFamily = useCallback(
     (value: string) => {
@@ -163,6 +168,8 @@ export function usePlantFilters() {
     sowingMethod,
     lightType,
     rootSystem,
+    edible,
+    toxic,
 
     hemisphere,
     sowingMonth,

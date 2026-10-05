@@ -2,6 +2,7 @@ import {
   DEFAULT_PLANT_SORT,
   PLANT_SORT_FIELDS,
   SORT_DIRECTIONS,
+  parseBooleanFilter,
   type PlantFilterParams,
   type PlantListRequest,
   type PlantSort
@@ -106,6 +107,13 @@ function parseNumericFilters(
   };
 }
 
+function parseBooleanFilters(params: URLSearchParams): PlantFilterParams {
+  return {
+    edible: parseBooleanFilter(params.getAll(PLANT_LIST_URL_PARAMS.edible)),
+    toxic: parseBooleanFilter(params.getAll(PLANT_LIST_URL_PARAMS.toxic))
+  };
+}
+
 function withoutUndefined(filters: PlantFilterParams): PlantFilterParams {
   return Object.fromEntries(
     Object.entries(filters).filter(([, value]) => value !== undefined)
@@ -116,7 +124,8 @@ function parseFilters(params: URLSearchParams): PlantFilterParams {
   const read: Read = (name) => params.get(name);
   return withoutUndefined({
     ...parseTextFilters(read),
-    ...parseNumericFilters(read, params)
+    ...parseNumericFilters(read, params),
+    ...parseBooleanFilters(params)
   });
 }
 

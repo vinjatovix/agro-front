@@ -179,12 +179,45 @@ const VALID_FILTER_VALUES: Required<PlantFilterParams> = {
   spacingCm: '40',
   lightType: 'full_sun',
   lightHoursMin: '6',
-  rootSystem: 'taproot'
+  rootSystem: 'taproot',
+  edible: 'true',
+  toxic: 'false'
 };
 
 function formatFilterValue(value: string | number[]): string {
   return Array.isArray(value) ? value.join(',') : value;
 }
+
+describe('getPlants: filtros de comestible y tóxica', () => {
+  it.each([
+    [{ edible: 'true' as const }, 'filter[edible][eq]=true'],
+    [{ toxic: 'false' as const }, 'filter[toxic][eq]=false']
+  ])('%j envía %s', async (filters, query) => {
+    const fetchMock = stubFetchOk(listPlantsResponse);
+
+    await getPlants(filters);
+
+    const { url } = lastRequest(fetchMock);
+    expect(url).toBe(`${API_URL}/api/v1/plants?${query}&sort[name]=asc`);
+    expect(validateRequest('get', url)).toEqual([]);
+  });
+
+  it('se envían tras lifeCycle en el orden de PLANT_FILTER_QUERY_KEYS', async () => {
+    const fetchMock = stubFetchOk(listPlantsResponse);
+
+    await getPlants({ toxic: 'false', edible: 'true', lifeCycle: 'annual' });
+
+    expect(lastRequest(fetchMock).url).toBe(
+      `${API_URL}/api/v1/plants?` +
+        [
+          'filter[lifeCycle][eq]=annual',
+          'filter[edible][eq]=true',
+          'filter[toxic][eq]=false',
+          'sort[name]=asc'
+        ].join('&')
+    );
+  });
+});
 
 describe('getPlants: cada clave de filtro', () => {
   const fields = Object.keys(PLANT_FILTER_QUERY_KEYS) as Array<

@@ -9,6 +9,8 @@ export const PLANT_LIST_URL_PARAMS = {
   sowingMethod: 'sowingMethod',
   lightType: 'lightType',
   rootSystem: 'rootSystem',
+  edible: 'edible',
+  toxic: 'toxic',
   sowingMonth: 'sowingMonth',
   soilPh: 'soilPh',
   lightHoursMin: 'lightHoursMin',
