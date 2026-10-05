@@ -3,59 +3,42 @@ import type { PaginatedResponse } from '../types/api';
 import type { PaginationParams } from '../types/Pagination';
 import type { Plant } from '../types/Plants/Plant';
 import { apiFetch } from './api';
-import { DEFAULT_SORT_FIELD, isPlantsSortField } from './plantsSortFields';
+import {
+  DEFAULT_PLANT_SORT,
+  PAGINATION_QUERY_KEYS,
+  PLANT_FILTER_QUERY_KEYS,
+  sortQueryKey,
+  type PlantFilterParams,
+  type PlantSort
+} from './plantListQuery';
 
-export type PlantFilterParams = {
-  identity?: string;
-  family?: string;
-  lifeCycle?: 'annual' | 'biennial' | 'perennial';
-  spacingCm?: number;
+export type { PlantFilterParams };
 
-  sowingMonths?: number | number[];
-  sowingMethod?: 'direct' | 'starter';
+type FilterValue = PlantFilterParams[keyof PlantFilterParams];
 
-  soilPh?: number;
-  soilAvailableDepthCm?: number;
-
-  lightHoursMin?: number;
-  lightType?: 'full_sun' | 'partial_shade';
-
-  rootSystem?:
-    | 'fibrous'
-    | 'taproot'
-    | 'adventitious'
-    | 'rhizome'
-    | 'tuber'
-    | 'fasciculate';
-};
-
-type PlantSort = {
-  field: string;
-  direction: 'asc' | 'desc';
-};
-
-function resolveSortField(sort?: PlantSort): string {
-  return sort && isPlantsSortField(sort.field)
-    ? sort.field
-    : DEFAULT_SORT_FIELD;
+function addFilter(
+  query: QueryBuilder,
+  key: string,
+  value: FilterValue
+): QueryBuilder {
+  if (typeof value === 'number' || Array.isArray(value)) {
+    return query.addArray(key, value);
+  }
+  return query.add(key, value?.trim());
 }
 
 function addFilters(
   query: QueryBuilder,
   filters: PlantFilterParams
 ): QueryBuilder {
-  return query
-    .add('filter[identity][contains]', filters.identity?.trim())
-    .add('filter[family][eq]', filters.family)
-    .add('filter[lifeCycle][eq]', filters.lifeCycle)
-    .add('filter[sowingMethod][eq]', filters.sowingMethod)
-    .addArray('filter[sowingMonths][hasAny]', filters.sowingMonths)
-    .add('filter[soilPh][eq]', filters.soilPh)
-    .add('filter[soilAvailableDepthCm][eq]', filters.soilAvailableDepthCm)
-    .add('filter[spacingCm][eq]', filters.spacingCm)
-    .add('filter[lightType][eq]', filters.lightType)
-    .add('filter[lightHoursMin][eq]', filters.lightHoursMin)
-    .add('filter[rootSystem][eq]', filters.rootSystem);
+  const fields = Object.keys(PLANT_FILTER_QUERY_KEYS) as Array<
+    keyof PlantFilterParams
+  >;
+  return fields.reduce(
+    (built, field) =>
+      addFilter(built, PLANT_FILTER_QUERY_KEYS[field], filters[field]),
+    query
+  );
 }
 
 function addPagination(
@@ -63,20 +46,20 @@ function addPagination(
   pagination: Partial<PaginationParams>
 ): QueryBuilder {
   return query
-    .add('pagination[page]', pagination.page)
-    .add('pagination[limit]', pagination.limit);
+    .add(PAGINATION_QUERY_KEYS.page, pagination.page)
+    .add(PAGINATION_QUERY_KEYS.limit, pagination.limit);
 }
 
 export async function getPlants(
   filters: PlantFilterParams = {},
   pagination: Partial<PaginationParams> = {},
-  sort?: PlantSort
+  sort: PlantSort = DEFAULT_PLANT_SORT
 ): Promise<PaginatedResponse<Plant>> {
   const query = addPagination(
     addFilters(QueryBuilder.create(), filters),
     pagination
   )
-    .add(`sort[${resolveSortField(sort)}]`, sort?.direction ?? 'asc')
+    .add(sortQueryKey(sort.field), sort.direction)
     .build();
 
   return apiFetch(`/api/v1/plants?${query}`) as Promise<
