@@ -4,6 +4,7 @@
 
 No se edita aquí. Cuando el back entregue una versión nueva, se sustituye el archivo y se actualiza esta tabla.
 
-| Fecha de entrega | Origen en `agro-back`  | SHA-256 de `openapi.yaml`                                          | Cambios destacados                                                                                                                     |
-| ---------------- | ---------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| 2026-10-04       | Commit sin especificar | `f1a6017f6a26ddceb6c023f337e758a2d1cbfa237a87ca632fe033d9c3e2b22e` | `201` de `/auth/register` sin cuerpo; auth opcional en `GET /plants` y `GET /plants/{id}`; payload del JWT documentado en `bearerAuth` |
+| Fecha de entrega | Origen en `agro-back`  | SHA-256 de `openapi.yaml`                                          | Cambios destacados                                                                                                                                                                                  |
+| ---------------- | ---------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-10-04       | Commit sin especificar | `f1a6017f6a26ddceb6c023f337e758a2d1cbfa237a87ca632fe033d9c3e2b22e` | `201` de `/auth/register` sin cuerpo; auth opcional en `GET /plants` y `GET /plants/{id}`; payload del JWT documentado en `bearerAuth`                                                              |
+| 2026-10-05       | Commit sin especificar | `4e24c710b17c2320f311d57933f80007cfd0dc2d69e8849ad060e7da26d33b26` | `traits.ecological` (`edible`, `toxic`, `toxicityNotes`); filtros `filter[edible][eq]` y `filter[toxic][eq]`; `Family.distribution` pasa a `RequiredLongText`; notas de familia a `maxLength: 2000` |
