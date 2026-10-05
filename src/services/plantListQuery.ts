@@ -1,0 +1,75 @@
+export type PlantFilterParams = {
+  identity?: string;
+  family?: string;
+  lifeCycle?: 'annual' | 'biennial' | 'perennial';
+  spacingCm?: number;
+
+  sowingMonths?: number | number[];
+  sowingMethod?: 'direct' | 'starter';
+
+  soilPh?: number;
+  soilAvailableDepthCm?: number;
+
+  lightHoursMin?: number;
+  lightType?: 'full_sun' | 'partial_shade';
+
+  rootSystem?:
+    | 'fibrous'
+    | 'taproot'
+    | 'adventitious'
+    | 'rhizome'
+    | 'tuber'
+    | 'fasciculate';
+};
+
+export const PLANT_SORT_FIELDS = ['name', 'scientificName'] as const;
+
+export const SORT_DIRECTIONS = ['asc', 'desc'] as const;
+
+export type PlantsSortField = (typeof PLANT_SORT_FIELDS)[number];
+
+export type SortDirection = (typeof SORT_DIRECTIONS)[number];
+
+export type PlantSort = {
+  readonly field: PlantsSortField;
+  readonly direction: SortDirection;
+};
+
+export const DEFAULT_PLANT_SORT: PlantSort = {
+  field: 'name',
+  direction: 'asc'
+};
+
+export const PLANT_FILTER_QUERY_KEYS: Record<keyof PlantFilterParams, string> =
+  {
+    identity: 'filter[identity][contains]',
+    family: 'filter[family][eq]',
+    lifeCycle: 'filter[lifeCycle][eq]',
+    sowingMethod: 'filter[sowingMethod][eq]',
+    sowingMonths: 'filter[sowingMonths][hasAny]',
+    soilPh: 'filter[soilPh][eq]',
+    soilAvailableDepthCm: 'filter[soilAvailableDepthCm][eq]',
+    spacingCm: 'filter[spacingCm][eq]',
+    lightType: 'filter[lightType][eq]',
+    lightHoursMin: 'filter[lightHoursMin][eq]',
+    rootSystem: 'filter[rootSystem][eq]'
+  };
+
+export const PAGINATION_QUERY_KEYS = {
+  page: 'pagination[page]',
+  limit: 'pagination[limit]'
+} as const;
+
+export const PAGINATION_LIMIT_MAX = 100;
+
+export function sortQueryKey(field: PlantsSortField): string {
+  return `sort[${field}]`;
+}
+
+export function isPlantsSortField(value: string): value is PlantsSortField {
+  return (PLANT_SORT_FIELDS as readonly string[]).includes(value);
+}
+
+export function isSortDirection(value: string): value is SortDirection {
+  return (SORT_DIRECTIONS as readonly string[]).includes(value);
+}

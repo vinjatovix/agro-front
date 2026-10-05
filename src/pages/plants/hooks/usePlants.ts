@@ -2,7 +2,11 @@ import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 
 import { getPlants } from '../../../services/plants.service';
-import { DEFAULT_SORT_FIELD } from '../../../services/plantsSortFields';
+import {
+  DEFAULT_PLANT_SORT,
+  isSortDirection,
+  type SortDirection
+} from '../../../services/plantListQuery';
 import { QUERY_DEFAULTS } from '../../../shared/reactQuery/queryDefaults';
 import type { Plant } from '../../../types/Plants/Plant';
 import type { PaginatedResponse } from '../../../types/api';
@@ -15,8 +19,6 @@ import {
 } from '../../../components/plants/PlantFilters/utils/plantFilter.utils';
 import { safeNumber } from '../../../shared/utils/safeNumber';
 
-type SortDirection = 'asc' | 'desc';
-
 export function usePlants() {
   const [params, setParams] = useSearchParams();
 
@@ -25,9 +27,9 @@ export function usePlants() {
 
   const rawSortDirection = params.get('sortDirection');
   const sortDirection: SortDirection =
-    rawSortDirection === 'asc' || rawSortDirection === 'desc'
+    rawSortDirection && isSortDirection(rawSortDirection)
       ? rawSortDirection
-      : 'asc';
+      : DEFAULT_PLANT_SORT.direction;
 
   const rawLifeCycle = params.get('lifeCycle');
   const rawSowingMethod = params.get('sowingMethod');
@@ -71,7 +73,7 @@ export function usePlants() {
   };
 
   const sort = {
-    field: DEFAULT_SORT_FIELD,
+    field: DEFAULT_PLANT_SORT.field,
     direction: sortDirection
   };
 

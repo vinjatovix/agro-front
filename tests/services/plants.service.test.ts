@@ -2,6 +2,7 @@ import { getPlantById, getPlants } from '../../src/services/plants.service';
 import { ApiError } from '../../src/shared/errors/ApiError';
 import { buildPlant } from '../fixtures/plants/buildPlant';
 import { listPlantsResponse } from '../fixtures/plants/listPlants';
+import { validateRequest } from '../contract/openApiContract';
 import {
   API_URL,
   JSON_HEADERS,
@@ -20,7 +21,19 @@ afterEach(() => {
 });
 
 describe('getPlants: claves de orden del contrato', () => {
-  it('sin sort ordena por name ascendente', async () => {
+  it('la petición por defecto del listado es exacta y cumple el contrato', async () => {
+    const fetchMock = stubFetchOk(listPlantsResponse);
+
+    await getPlants({}, { page: 1, limit: 25 });
+
+    const { url } = lastRequest(fetchMock);
+    expect(url).toBe(
+      `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[name]=asc`
+    );
+    expect(validateRequest('get', url)).toEqual([]);
+  });
+
+  it('sin sort ni paginación ordena por name ascendente', async () => {
     const fetchMock = stubFetchOk(listPlantsResponse);
 
     await getPlants();
@@ -34,27 +47,21 @@ describe('getPlants: claves de orden del contrato', () => {
   it('con sort por scientificName usa esa clave y su dirección', async () => {
     const fetchMock = stubFetchOk(listPlantsResponse);
 
-    await getPlants(undefined, undefined, {
-      field: 'scientificName',
-      direction: 'desc'
-    });
-
-    expect(lastRequest(fetchMock).url).toBe(
-      `${API_URL}/api/v1/plants?sort[scientificName]=desc`
+    await getPlants(
+      {},
+      { page: 1, limit: 25 },
+      {
+        field: 'scientificName',
+        direction: 'desc'
+      }
     );
-  });
 
-  it('una clave de orden no permitida cae a name', async () => {
-    const fetchMock = stubFetchOk(listPlantsResponse);
-
-    await getPlants(undefined, undefined, {
-      field: 'identity.name.primary',
-      direction: 'asc'
-    });
-
-    expect(lastRequest(fetchMock).url).toBe(
-      `${API_URL}/api/v1/plants?sort[name]=asc`
+    const { url } = lastRequest(fetchMock);
+    expect(url).toBe(
+      `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[scientificName]=desc`
     );
+    expect(url.match(/sort\[/g)).toHaveLength(1);
+    expect(validateRequest('get', url)).toEqual([]);
   });
 });
 

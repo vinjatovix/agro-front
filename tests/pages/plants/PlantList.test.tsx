@@ -1,173 +1,129 @@
 import '@testing-library/jest-dom';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 
 import { t } from '../../../src/i18n/core/t';
 import PlantList from '../../../src/pages/plants/PlantList';
-import { usePlants } from '../../../src/pages/plants/hooks/usePlants';
-import { buildPaginationPages } from '../../../src/shared/utils/pagination/buildPaginationPages';
-import type { Plant } from '../../../src/types/Plants/Plant';
-import { ApiError } from '../../../src/shared/errors/ApiError';
 
+import { validateRequest } from '../../contract/openApiContract';
 import { listPlantsResponse } from '../../fixtures/plants/listPlants';
+import { renderWithProviders } from '../../test-utils/renderWithProviders';
+import {
+  API_URL,
+  lastRequest,
+  stubFetchError,
+  stubFetchOk,
+  type FetchMock
+} from '../../test-utils/stubFetch';
 
-vi.mock('../../../src/pages/plants/hooks/usePlants');
-vi.mock('../../../src/shared/utils/pagination/buildPaginationPages');
+const DEFAULT_REQUEST = `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[name]=asc`;
 
-vi.mock('../../../src/pages/plants/PlantCard/PlantCard', () => ({
-  default: ({ plant }: { plant: Plant }) => (
-    <div>{plant.identity.name.primary}</div>
-  )
-}));
+const [firstPlant, secondPlant] = listPlantsResponse.data;
 
-type UsePlantsReturn = ReturnType<typeof usePlants>;
-
-const mockedUsePlants = vi.mocked(usePlants);
-const mockedBuildPaginationPages = vi.mocked(buildPaginationPages);
-
-const plant = listPlantsResponse.data[0];
-const pagination = listPlantsResponse.pagination;
-
-function renderWithRoute(route: string) {
-  return render(
-    <MemoryRouter initialEntries={[route]}>
-      <Routes>
-        <Route path="*" element={<PlantList />} />
-      </Routes>
-    </MemoryRouter>
-  );
-}
-
-const baseHookResult: UsePlantsReturn = {
-  data: [plant],
-  pagination,
-  loading: false,
-  error: null,
-  page: 1,
-  limit: 25,
-  sortDirection: 'asc',
-  setPage: vi.fn(),
-  setLimit: vi.fn(),
-  setSortDirection: vi.fn()
+const MULTI_PAGE_RESPONSE = {
+  ...listPlantsResponse,
+  pagination: { ...listPlantsResponse.pagination, totalPages: 3 }
 };
 
+function renderPlantList(route = '/plants') {
+  return renderWithProviders(<PlantList />, { route });
+}
+
+async function waitForPlants() {
+  return screen.findByText(new RegExp(firstPlant.identity.name.primary, 'i'));
+}
+
+function lastUrl(fetchMock: FetchMock): string {
+  return lastRequest(fetchMock).url;
+}
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
 describe('PlantList', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+  it('pinta el estado de carga mientras llega la respuesta', () => {
+    stubFetchOk(listPlantsResponse);
 
-    mockedUsePlants.mockReturnValue(baseHookResult);
-    mockedBuildPaginationPages.mockReturnValue([1, 2, 3]);
-  });
-
-  it('renders loading state', () => {
-    mockedUsePlants.mockReturnValue({
-      ...baseHookResult,
-      loading: true,
-      data: [],
-      pagination: null
-    });
-
-    renderWithRoute('/plants');
+    renderPlantList();
 
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
-  it('renders title', () => {
-    renderWithRoute('/plants');
+  it('sin parámetros pide la página por defecto conforme al contrato y pinta las plantas', async () => {
+    const fetchMock = stubFetchOk(listPlantsResponse);
 
+    renderPlantList();
+
+    await waitForPlants();
     expect(screen.getByText(t('plant.plants'))).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(secondPlant.identity.name.primary, 'i'))
+    ).toBeInTheDocument();
+    expect(lastUrl(fetchMock)).toBe(DEFAULT_REQUEST);
+    expect(validateRequest('get', lastUrl(fetchMock))).toEqual([]);
   });
 
-  it('renders plants', () => {
-    renderWithRoute('/plants');
+  it('una clave de orden fuera del contrato en la URL no llega a la petición', async () => {
+    const fetchMock = stubFetchOk(listPlantsResponse);
 
-    expect(screen.getByText(plant.identity.name.primary)).toBeInTheDocument();
+    renderPlantList('/plants?sortField=identity.name.primary');
+
+    await waitForPlants();
+    expect(lastUrl(fetchMock)).toBe(DEFAULT_REQUEST);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('calls buildPaginationPages when pagination exists', () => {
-    renderWithRoute('/plants');
+  it('un 400 de la API pinta el estado de error', async () => {
+    stubFetchError(400, { message: 'Invalid sort key', errors: {} });
 
-    expect(mockedBuildPaginationPages).toHaveBeenCalledWith(
-      pagination.page,
-      pagination.totalPages
-    );
+    renderPlantList();
+
+    expect(await screen.findByText(/invalid sort key/i)).toBeInTheDocument();
   });
 
-  it('does not call buildPaginationPages when pagination is null', () => {
-    mockedUsePlants.mockReturnValue({
-      ...baseHookResult,
-      pagination: null
+  it('cambiar el límite pide la primera página con ese límite', async () => {
+    const fetchMock = stubFetchOk(listPlantsResponse);
+    renderPlantList('/plants?page=2');
+    await waitForPlants();
+
+    fireEvent.change(screen.getByLabelText(/resultados por página/i), {
+      target: { value: '50' }
     });
 
-    renderWithRoute('/plants');
-
-    expect(mockedBuildPaginationPages).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(lastUrl(fetchMock)).toBe(
+        `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=50&sort[name]=asc`
+      );
+    });
   });
 
-  it('renders error state', () => {
-    mockedUsePlants.mockReturnValue({
-      ...baseHookResult,
-      error: new ApiError('Failed to load plants', 500),
-      loading: false,
-      data: []
+  it('cambiar el sentido del orden pide la primera página en ese sentido', async () => {
+    const fetchMock = stubFetchOk(listPlantsResponse);
+    renderPlantList('/plants?page=2');
+    await waitForPlants();
+
+    fireEvent.change(screen.getByLabelText(/^orden/i), {
+      target: { value: 'desc' }
     });
 
-    renderWithRoute('/plants');
-
-    expect(screen.getByText(/failed to load plants/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(lastUrl(fetchMock)).toBe(
+        `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[name]=desc`
+      );
+    });
   });
 
-  it('calls setLimit when limit changes', () => {
-    const setLimit = vi.fn();
+  it('pulsar una página la pide', async () => {
+    const fetchMock = stubFetchOk(MULTI_PAGE_RESPONSE);
+    renderPlantList();
+    await waitForPlants();
 
-    mockedUsePlants.mockReturnValue({
-      ...baseHookResult,
-      setLimit
+    fireEvent.click(screen.getAllByTestId('pagination-button-2')[0]);
+
+    await waitFor(() => {
+      expect(lastUrl(fetchMock)).toBe(
+        `${API_URL}/api/v1/plants?pagination[page]=2&pagination[limit]=25&sort[name]=asc`
+      );
     });
-
-    renderWithRoute('/plants');
-
-    const select = screen.getByLabelText(/resultados por página/i);
-
-    fireEvent.change(select, { target: { value: '50' } });
-
-    expect(setLimit).toHaveBeenCalledWith(50);
-  });
-
-  it('calls setSortDirection when order changes', () => {
-    const setSortDirection = vi.fn();
-
-    mockedUsePlants.mockReturnValue({
-      ...baseHookResult,
-      setSortDirection
-    });
-
-    renderWithRoute('/plants');
-
-    const select = screen.getByLabelText(/orden/i);
-
-    fireEvent.change(select, { target: { value: 'desc' } });
-
-    expect(setSortDirection).toHaveBeenCalledWith('desc');
-  });
-
-  it('calls setPage when pagination is clicked', () => {
-    const setPage = vi.fn();
-
-    mockedUsePlants.mockReturnValue({
-      ...baseHookResult,
-      setPage
-    });
-
-    mockedBuildPaginationPages.mockReturnValue([1, 2, 3]);
-
-    renderWithRoute('/plants');
-
-    const buttons = screen.getAllByTestId(/pagination-button-2/i);
-
-    fireEvent.click(buttons[0]);
-
-    expect(setPage).toHaveBeenCalledWith(2);
   });
 });
