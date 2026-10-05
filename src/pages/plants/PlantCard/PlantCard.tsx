@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import type { Plant } from '../../../types/Plants/Plant';
 import { capitalizeFirstLetter } from '../../../shared/utils/capitalizeFirstLetter';
 import { findPlantImage } from '../utils/findPlantImage';
+import { readPlantSafety } from '../utils/plantSafety';
+import PlantSafetyIndicators from '../components/PlantSafetyIndicators/PlantSafetyIndicators';
 
 import './plantCard.css';
 import Badge from '../../../shared/components/Badge/Bagde';
@@ -16,7 +18,10 @@ export default function PlantCard({ plant }: PlantCardProps) {
   return (
     <Link to={`/plants/${plant.id}`}>
       <article className="plant-card">
-        <h3> {capitalizeFirstLetter(plant.identity.name.primary)}</h3>
+        <div className="plant-card__heading">
+          <h3> {capitalizeFirstLetter(plant.identity.name.primary)}</h3>
+          <PlantSafetyIndicators safety={readPlantSafety(plant)} />
+        </div>
         {imageUrl && <img src={imageUrl} alt={plant.identity.name.primary} />}
 
         {plant.identity.scientificName && (
