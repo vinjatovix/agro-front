@@ -1,9 +1,9 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 
 import { usePlants } from '../../../../src/pages/plants/hooks/usePlants';
+import { parsePlantListSearchParams } from '../../../../src/pages/plants/utils/parsePlantListSearchParams';
 import { getPlants } from '../../../../src/services/plants.service';
 import type { PaginatedResponse } from '../../../../src/types/api';
 import type { Plant } from '../../../../src/types/Plants/Plant';
@@ -17,165 +17,130 @@ vi.mock('../../../../src/services/plants.service', () => ({
 
 const mockedGetPlants = vi.mocked(getPlants);
 
-function createWrapper(initialEntries: string[] = ['/plants']) {
-  const queryClient = createTestQueryClient();
+function usePlantsWithLocation() {
+  return { plants: usePlants(), search: useLocation().search };
+}
 
-  return function Wrapper({ children }: { children: React.ReactNode }) {
-    return (
+function renderUsePlants(route = '/plants') {
+  const queryClient = createTestQueryClient();
+  return renderHook(() => usePlantsWithLocation(), {
+    wrapper: ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
+        <MemoryRouter initialEntries={[route]}>
           <Routes>
             <Route path="*" element={children} />
           </Routes>
         </MemoryRouter>
       </QueryClientProvider>
-    );
-  };
+    )
+  });
 }
 
-describe('usePlants', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+function searchParams(search: string) {
+  return new URLSearchParams(search);
+}
 
-  it('loads plants successfully', async () => {
-    mockedGetPlants.mockResolvedValue(listPlantsResponse);
+beforeEach(() => {
+  vi.clearAllMocks();
+  mockedGetPlants.mockResolvedValue(listPlantsResponse);
+});
 
-    const { result } = renderHook(() => usePlants(), {
-      wrapper: createWrapper()
-    });
-
-    await waitFor(() => {
-      expect(result.current.data.length).toBeGreaterThan(0);
-    });
-
-    expect(mockedGetPlants).toHaveBeenCalled();
-  });
-
-  it('calls API with filters from URL', async () => {
-    mockedGetPlants.mockResolvedValue(listPlantsResponse);
-
-    renderHook(() => usePlants(), {
-      wrapper: createWrapper(['/plants?family=rosaceae&identity=pepper'])
-    });
-
-    await waitFor(() => {
-      expect(mockedGetPlants).toHaveBeenCalledWith(
-        expect.objectContaining({
-          family: 'rosaceae',
-          identity: 'pepper'
-        }),
-        expect.any(Object),
-        expect.any(Object)
-      );
-    });
-  });
-
-  it('passes pagination and sort', async () => {
-    mockedGetPlants.mockResolvedValue(listPlantsResponse);
-
-    renderHook(() => usePlants(), {
-      wrapper: createWrapper(['/plants?page=2&limit=25&sortDirection=desc'])
-    });
-
-    await waitFor(() => {
-      expect(mockedGetPlants).toHaveBeenCalledWith(
-        expect.any(Object),
-        {
-          page: 2,
-          limit: 25
-        },
-        {
-          field: 'name',
-          direction: 'desc'
-        }
-      );
-    });
-  });
-
-  it('handles error state', async () => {
-    mockedGetPlants.mockRejectedValue(new Error('API error'));
-
-    const { result } = renderHook(() => usePlants(), {
-      wrapper: createWrapper()
-    });
-
-    await waitFor(() => {
-      expect(result.current.error).toBeTruthy();
-    });
-  });
-
-  it('exposes loading state', () => {
+describe('usePlants: query', () => {
+  it('expone la carga mientras no llega la respuesta', () => {
     mockedGetPlants.mockImplementation(
-      () => new Promise(() => {}) as Promise<PaginatedResponse<Plant>>
+      () => new Promise<PaginatedResponse<Plant>>(() => {})
     );
 
-    const { result } = renderHook(() => usePlants(), {
-      wrapper: createWrapper()
-    });
+    const { result } = renderUsePlants();
 
-    expect(result.current.loading).toBe(true);
+    expect(result.current.plants.query.isLoading).toBe(true);
   });
 
-  it('updates page search param when setPage is called', async () => {
-    mockedGetPlants.mockResolvedValue(listPlantsResponse);
-
-    const { result } = renderHook(() => usePlants(), {
-      wrapper: createWrapper(['/plants?page=1'])
-    });
+  it('expone los datos al llegar la respuesta', async () => {
+    const { result } = renderUsePlants();
 
     await waitFor(() => {
-      expect(mockedGetPlants).toHaveBeenCalled();
-    });
-
-    act(() => {
-      result.current.setPage(3);
-    });
-
-    await waitFor(() => {
-      expect(result.current.page).toBe(3);
+      expect(result.current.plants.query.data).toEqual(listPlantsResponse);
     });
   });
 
-  it('updates limit and resets page when setLimit is called', async () => {
-    mockedGetPlants.mockResolvedValue(listPlantsResponse);
+  it('expone el error de la API', async () => {
+    mockedGetPlants.mockRejectedValue(new Error('API error'));
 
-    const { result } = renderHook(() => usePlants(), {
-      wrapper: createWrapper(['/plants?page=4&limit=25'])
-    });
+    const { result } = renderUsePlants();
 
     await waitFor(() => {
-      expect(mockedGetPlants).toHaveBeenCalled();
-    });
-
-    act(() => {
-      result.current.setLimit(50);
-    });
-
-    await waitFor(() => {
-      expect(result.current.limit).toBe(50);
-      expect(result.current.page).toBe(1);
+      expect(result.current.plants.query.error).toBeInstanceOf(Error);
     });
   });
+});
 
-  it('updates sort direction and resets page when setSortDirection is called', async () => {
-    mockedGetPlants.mockResolvedValue(listPlantsResponse);
+describe('usePlants: petición', () => {
+  const route =
+    '/plants?page=2&limit=50&sortField=scientificName&sortDirection=desc&lifeCycle=annual';
 
-    const { result } = renderHook(() => usePlants(), {
-      wrapper: createWrapper(['/plants?page=4&sortDirection=asc'])
-    });
+  it('la petición es la de parsePlantListSearchParams sobre la URL', () => {
+    const { result } = renderUsePlants(route);
+
+    expect(result.current.plants.request).toEqual(
+      parsePlantListSearchParams(searchParams(route.split('?')[1]))
+    );
+  });
+
+  it('llama a getPlants con filtros, paginación y orden de la petición', async () => {
+    const { result } = renderUsePlants(route);
+    const { filters, pagination, sort } = result.current.plants.request;
 
     await waitFor(() => {
-      expect(mockedGetPlants).toHaveBeenCalled();
+      expect(mockedGetPlants).toHaveBeenCalledWith(filters, pagination, sort);
     });
+  });
+});
+
+describe('usePlants: setters', () => {
+  const route =
+    '/plants?page=3&limit=25&sortField=name&sortDirection=asc&lifeCycle=annual';
+
+  it.each([
+    ['setSortField', 'sortField', 'scientificName'],
+    ['setSortDirection', 'sortDirection', 'desc'],
+    ['setLimit', 'limit', '50']
+  ] as const)(
+    '%s escribe su parámetro, borra page y conserva el resto',
+    async (setter, param, expected) => {
+      const { result } = renderUsePlants(route);
+
+      act(() => {
+        const { plants } = result.current;
+        if (setter === 'setSortField') plants.setSortField('scientificName');
+        if (setter === 'setSortDirection') plants.setSortDirection('desc');
+        if (setter === 'setLimit') plants.setLimit(50);
+      });
+
+      await waitFor(() => {
+        const params = searchParams(result.current.search);
+        expect(params.get(param)).toBe(expected);
+        expect(params.has('page')).toBe(false);
+        expect(params.get('lifeCycle')).toBe('annual');
+      });
+      expect(result.current.plants.request.pagination.page).toBe(1);
+    }
+  );
+
+  it('setPage escribe page y conserva orden, límite y filtros', async () => {
+    const { result } = renderUsePlants(route);
 
     act(() => {
-      result.current.setSortDirection('desc');
+      result.current.plants.setPage(4);
     });
 
     await waitFor(() => {
-      expect(result.current.sortDirection).toBe('desc');
-      expect(result.current.page).toBe(1);
+      expect(result.current.plants.request.pagination.page).toBe(4);
     });
+    const params = searchParams(result.current.search);
+    expect(params.get('sortField')).toBe('name');
+    expect(params.get('sortDirection')).toBe('asc');
+    expect(params.get('limit')).toBe('25');
+    expect(params.get('lifeCycle')).toBe('annual');
   });
 });

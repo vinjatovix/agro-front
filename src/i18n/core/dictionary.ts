@@ -117,7 +117,12 @@ export const dictionary = {
     orders: {
       order: 'Orden',
       asc: 'Az',
-      desc: 'Za'
+      desc: 'Za',
+      field: 'Ordenar por',
+      fields: {
+        name: 'Nombre común',
+        scientificName: 'Nombre científico'
+      }
     },
     detail: {
       loading: 'Cargando planta...',

@@ -65,6 +65,26 @@ describe('getPlants: claves de orden del contrato', () => {
   });
 });
 
+describe('getPlants: combinaciones de orden', () => {
+  it.each([
+    ['name', 'asc'],
+    ['name', 'desc'],
+    ['scientificName', 'asc'],
+    ['scientificName', 'desc']
+  ] as const)('sort[%s]=%s', async (field, direction) => {
+    const fetchMock = stubFetchOk(listPlantsResponse);
+
+    await getPlants({}, { page: 1, limit: 25 }, { field, direction });
+
+    const { url } = lastRequest(fetchMock);
+    expect(url).toBe(
+      `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[${field}]=${direction}`
+    );
+    expect(url.match(/sort\[/g)).toHaveLength(1);
+    expect(validateRequest('get', url)).toEqual([]);
+  });
+});
+
 describe('getPlants: query completa', () => {
   it('envía filtros, paginación y orden en el orden de construcción', async () => {
     const fetchMock = stubFetchOk(listPlantsResponse);

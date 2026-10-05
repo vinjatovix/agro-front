@@ -14,13 +14,16 @@ vi.mock('../../../src/shared/hooks/useMediaQuery', () => ({
 
 vi.mock('../../../src/pages/plants/hooks/usePlants', () => ({
   usePlants: () => ({
-    data: [],
-    loading: false,
-    pagination: null,
-    page: 1,
-    limit: 25,
+    query: { isLoading: false, error: null, data: undefined },
+    request: {
+      filters: {},
+      pagination: { page: 1, limit: 25 },
+      sort: { field: 'name', direction: 'asc' }
+    },
     setPage: vi.fn(),
-    setLimit: vi.fn()
+    setLimit: vi.fn(),
+    setSortField: vi.fn(),
+    setSortDirection: vi.fn()
   })
 }));
 
