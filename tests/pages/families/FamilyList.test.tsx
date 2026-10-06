@@ -5,11 +5,11 @@ import { screen } from '@testing-library/react';
 import FamilyList from '../../../src/pages/families/FamilyList';
 import { renderWithProviders } from '../../test-utils/renderWithProviders';
 
-vi.mock('../../../src/pages/families/hooks/useFamilies', () => ({
+vi.mock('../../../src/shared/hooks/useFamilies', () => ({
   useFamilies: vi.fn()
 }));
 
-import { useFamilies } from '../../../src/pages/families/hooks/useFamilies';
+import { useFamilies } from '../../../src/shared/hooks/useFamilies';
 import { listFamiliesResponse } from '../../fixtures/families/listFamilies';
 
 const mockedUseFamilies = vi.mocked(useFamilies);

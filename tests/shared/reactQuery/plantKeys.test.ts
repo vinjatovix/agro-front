@@ -33,4 +33,12 @@ describe('plantKeys', () => {
 
     expect(key).toEqual(['plants', 'detail', plantId]);
   });
+
+  it('la key de familia incluye el identificador de la familia', () => {
+    const familyId = 'family-123';
+
+    const key = plantKeys.family(familyId);
+
+    expect(key).toEqual(['plants', 'family', familyId]);
+  });
 });

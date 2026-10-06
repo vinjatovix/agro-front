@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { t } from '../../i18n/core/t';
 import { Loader } from '../../shared/components/Loader/Loader';
 
-import { useFamilies } from './hooks/useFamilies';
+import { useFamilies } from '../../shared/hooks/useFamilies';
 
 export default function FamilyList() {
   const { data, loading } = useFamilies();

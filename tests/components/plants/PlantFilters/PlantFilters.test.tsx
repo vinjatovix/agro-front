@@ -14,12 +14,13 @@ const mockHandleTextChange = vi.fn();
 const mockSetFamily = vi.fn();
 const mockBooleans: { edible?: string; toxic?: string } = {};
 
-vi.mock('../../../../src/pages/families/hooks/useFamilies', () => ({
+vi.mock('../../../../src/shared/hooks/useFamilies', () => ({
   useFamilies: () => ({
     loading: false,
+    error: null,
     data: [
-      { id: 'family-id', slug: 'rosaceae' },
-      { id: 'family-id2', slug: 'lamiaceae' }
+      { id: 'family-id', slug: 'rosaceae', name: 'rosáceas' },
+      { id: 'family-id2', slug: 'lamiaceae', name: 'lamiáceas' }
     ]
   })
 }));

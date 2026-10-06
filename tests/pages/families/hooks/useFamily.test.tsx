@@ -87,4 +87,13 @@ describe('useFamily', () => {
 
     expect(mockedGetFamilyById).toHaveBeenCalledTimes(1);
   });
+
+  it('does not fetch family when id is undefined', () => {
+    const { result } = renderHook(() => useFamily(undefined), {
+      wrapper
+    });
+
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(mockedGetFamilyById).not.toHaveBeenCalled();
+  });
 });

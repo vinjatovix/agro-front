@@ -1,7 +1,8 @@
-import { useId } from 'react';
+import { useId, useMemo } from 'react';
 import { t } from '../../../../../i18n/core/t';
-import { useFamilies } from '../../../../../pages/families/hooks/useFamilies';
+import { useFamilies } from '../../../../../shared/hooks/useFamilies';
 import { iconsMap } from '../../../../../shared/constants/iconsMap';
+import { capitalizeFirstLetter } from '../../../../../shared/utils/capitalizeFirstLetter';
 
 interface Props {
   readonly value: string;
@@ -9,8 +10,16 @@ interface Props {
 }
 
 export default function FamilySelect({ value, onChange }: Props) {
-  const { data, loading } = useFamilies();
+  const { data, loading, error } = useFamilies();
   const selectId = useId();
+
+  const sortedFamilies = useMemo(
+    () =>
+      [...data].sort((a, b) =>
+        a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
+      ),
+    [data]
+  );
 
   return (
     <div className="plant-filters__group">
@@ -24,17 +33,18 @@ export default function FamilySelect({ value, onChange }: Props) {
         className="plant-filters__input"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        disabled={loading}
+        disabled={loading || Boolean(error)}
+        aria-invalid={Boolean(error)}
       >
-        {loading ? (
-          <option>{t('common.loading')}</option>
-        ) : (
+        {loading && <option value="">{t('common.loading')}</option>}
+        {error && <option value="">{t('common.unknown_error')}</option>}
+        {!loading && !error && (
           <>
             <option value="">{t('plant.filters.allFamilies')}</option>
 
-            {data.map((f) => (
+            {sortedFamilies.map((f) => (
               <option key={f.id} value={f.id}>
-                {f.slug}
+                {capitalizeFirstLetter(f.name)}
               </option>
             ))}
           </>

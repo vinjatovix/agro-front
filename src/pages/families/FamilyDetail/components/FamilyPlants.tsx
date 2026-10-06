@@ -9,30 +9,57 @@ import type { Plant } from '../../../../types/Plants/Plant';
 interface Props {
   readonly family: Family;
   readonly plants: Plant[];
+  readonly total?: number;
 }
 
-export default function FamilyPlants({ family, plants }: Props) {
+function getCountLabel(count: number, total: number): string {
+  const safeTotal = Math.max(total, count);
+  if (safeTotal > count) {
+    return t('family.plants.showing_count', { count, total: safeTotal });
+  }
+  if (safeTotal > 1) {
+    return t('family.plants.total_count', { total: safeTotal });
+  }
+  return t('family.plants.single_count');
+}
+
+export default function FamilyPlants({ family, plants, total }: Props) {
+  const effectiveTotal = Math.max(total ?? plants.length, plants.length);
+
   return (
     <BodySection title={`${iconsMap.gardening} ${t('family.plants.title')}`}>
-      <Link
-        to={`/plants?family=${family.id}`}
-        className="family-detail__cta-link"
-      >
-        {iconsMap.arrowRight} {t('family.plants.view_all')}
-      </Link>
+      {effectiveTotal === 0 ? (
+        <p className="family-plants__empty" data-testid="family-plants-empty">
+          {t('family.plants.empty')}
+        </p>
+      ) : (
+        <>
+          <p className="family-plants__count" data-testid="family-plants-count">
+            {getCountLabel(plants.length, effectiveTotal)}
+          </p>
 
-      <div className="plant-grid">
-        {plants.map((plant) => (
           <Link
-            key={plant.id}
-            to={`/plants/${plant.id}`}
-            className="plant-grid__item"
-            data-testid="family-plants-link"
+            to={`/plants?family=${family.id}`}
+            className="family-detail__cta-link"
+            data-testid="family-plants-view-all"
           >
-            {capitalizeFirstLetter(plant.identity.name.primary)}
+            {iconsMap.arrowRight} {t('family.plants.view_all')}
           </Link>
-        ))}
-      </div>
+
+          <div className="family-plants__grid">
+            {plants.map((plant) => (
+              <Link
+                key={plant.id}
+                to={`/plants/${plant.id}`}
+                className="family-plants__grid-item"
+                data-testid="family-plants-link"
+              >
+                {capitalizeFirstLetter(plant.identity.name.primary)}
+              </Link>
+            ))}
+          </div>
+        </>
+      )}
     </BodySection>
   );
 }

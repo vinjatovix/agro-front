@@ -148,4 +148,90 @@ describe('FamilyDetail', () => {
       expect(screen.getByTestId(/section-🌿 Plantas/i)).toBeInTheDocument();
     });
   });
+
+  it('propagates total plants count to family plants section', async () => {
+    mockedGetFamilyById.mockResolvedValue(mockFamily);
+    mockedGetPlants.mockResolvedValue({
+      data: mockPlants.data,
+      pagination: {
+        page: 1,
+        limit: 25,
+        totalPages: 2,
+        totalItems: 30
+      }
+    });
+
+    renderFamilyDetail();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('family-plants-count')).toHaveTextContent(
+        `Mostrando ${mockPlants.data.length} de 30 plantas`
+      );
+    });
+  });
+
+  it('renders CTA link to plants catalog prefiltered by family uuid when plants are available', async () => {
+    mockedGetFamilyById.mockResolvedValue(mockFamily);
+    mockedGetPlants.mockResolvedValue(mockPlants);
+
+    renderFamilyDetail();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('family-plants-view-all')).toHaveAttribute(
+        'href',
+        `/plants?family=${mockFamily.id}`
+      );
+    });
+  });
+
+  it('displays empty state message when family has zero plants', async () => {
+    mockedGetFamilyById.mockResolvedValue(mockFamily);
+    mockedGetPlants.mockResolvedValue({
+      data: [],
+      pagination: {
+        page: 1,
+        limit: 25,
+        totalPages: 0,
+        totalItems: 0
+      }
+    });
+
+    renderFamilyDetail();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('family-plants-empty')).toBeInTheDocument();
+    });
+  });
+
+  it('hides CTA link when family has zero plants', async () => {
+    mockedGetFamilyById.mockResolvedValue(mockFamily);
+    mockedGetPlants.mockResolvedValue({
+      data: [],
+      pagination: {
+        page: 1,
+        limit: 25,
+        totalPages: 0,
+        totalItems: 0
+      }
+    });
+
+    renderFamilyDetail();
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId('family-plants-view-all')
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it('renders error state when id param is missing', () => {
+    renderWithProviders(<FamilyDetail />, {
+      route: '/families',
+      path: '/families'
+    });
+
+    const alert = screen.getByRole('alert');
+
+    expect(alert).toHaveTextContent('Familia no encontrada');
+  });
 });

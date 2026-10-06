@@ -7,9 +7,8 @@ describe('t', () => {
   });
 
   it('returns key when translation does not exist', () => {
-    expect(t('non.existing.key' as unknown as keyof typeof t)).toBe(
-      'non.existing.key'
-    );
+    // @ts-expect-error -- verificación del fallback ante una clave no tipada en I18nKey
+    expect(t('non.existing.key')).toBe('non.existing.key');
   });
 
   it('supports nested keys', () => {
@@ -17,9 +16,65 @@ describe('t', () => {
   });
 
   it('returns key when intermediate path is invalid', () => {
-    expect(t('family.invalid.key' as unknown as keyof typeof t)).toBe(
-      'family.invalid.key'
-    );
+    // @ts-expect-error -- verificación del fallback ante una ruta intermedia inválida no tipada en I18nKey
+    expect(t('family.invalid.key')).toBe('family.invalid.key');
+  });
+
+  it.each([
+    [
+      'family.plants.showing_count' as const,
+      { count: 5, total: 20 } as Record<string, string | number>,
+      'Mostrando 5 de 20 plantas'
+    ],
+    [
+      'family.plants.total_count' as const,
+      { total: 10 } as Record<string, string | number>,
+      '10 plantas en total'
+    ],
+    [
+      'family.plants.single_count' as const,
+      {} as Record<string, string | number>,
+      '1 planta en total'
+    ]
+  ])('interpolates parameters for %s', (key, params, expected) => {
+    const result = t(key, params);
+
+    expect(result).toBe(expected);
+  });
+
+  it('leaves unreplaced placeholders when matching parameter is missing', () => {
+    const key = 'family.plants.showing_count';
+    const params = { count: 3 };
+
+    const result = t(key, params);
+
+    expect(result).toBe('Mostrando 3 de {total} plantas');
+  });
+
+  it('preserves backward compatibility when params is omitted', () => {
+    const key = 'family.plants.showing_count';
+
+    const result = t(key);
+
+    expect(result).toBe('Mostrando {count} de {total} plantas');
+  });
+
+  it('interpolates string and number parameters properly', () => {
+    const key = 'family.plants.showing_count';
+    const params = { count: 'diez', total: 50 };
+
+    const result = t(key, params);
+
+    expect(result).toBe('Mostrando diez de 50 plantas');
+  });
+
+  it('handles parameter values containing $ without regex corruption', () => {
+    const key = 'family.plants.showing_count';
+    const params = { count: '$10', total: '$100' };
+
+    const result = t(key, params);
+
+    expect(result).toBe('Mostrando $10 de $100 plantas');
   });
 });
 

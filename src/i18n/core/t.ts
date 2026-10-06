@@ -14,6 +14,17 @@ export function lookup(path: string): string | undefined {
   return typeof value === 'string' ? value : undefined;
 }
 
-export function t(key: I18nKey): string {
-  return lookup(key) ?? key;
+export function t(
+  key: I18nKey,
+  params?: Record<string, string | number>
+): string {
+  const text = lookup(key) ?? key;
+  if (!params) {
+    return text;
+  }
+  return Object.entries(params).reduce(
+    (result, [paramKey, paramValue]) =>
+      result.replaceAll(`{${paramKey}}`, () => String(paramValue)),
+    text
+  );
 }
