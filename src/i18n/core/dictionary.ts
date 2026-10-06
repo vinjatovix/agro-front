@@ -68,7 +68,11 @@ export const dictionary = {
     },
     plants: {
       title: 'Plantas',
-      view_all: 'Ver todas las plantas de esta familia'
+      view_all: 'Ver todas las plantas de esta familia',
+      showing_count: 'Mostrando {count} de {total} plantas',
+      total_count: '{total} plantas en total',
+      single_count: '1 planta en total',
+      empty: 'No hay plantas registradas para esta familia.'
     }
   },
   plant: {

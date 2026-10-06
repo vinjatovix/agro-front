@@ -127,4 +127,35 @@ describe('useFamilyPlants', () => {
 
     expect(result.current.loading).toBe(false);
   });
+
+  it('returns total items count from pagination', async () => {
+    mockedGetPlants.mockResolvedValue({
+      data: listPlantsResponse.data,
+      pagination: {
+        page: 1,
+        limit: 25,
+        totalPages: 2,
+        totalItems: 42
+      }
+    });
+
+    const { result } = renderHook(
+      () => useFamilyPlants('5a2380c4-1546-4511-a77b-ec9d3ebcb7cf'),
+      {
+        wrapper: createWrapper()
+      }
+    );
+
+    await waitFor(() => {
+      expect(result.current.total).toBe(42);
+    });
+  });
+
+  it('returns total as 0 when familyId is undefined', () => {
+    const { result } = renderHook(() => useFamilyPlants(undefined), {
+      wrapper: createWrapper()
+    });
+
+    expect(result.current.total).toBe(0);
+  });
 });

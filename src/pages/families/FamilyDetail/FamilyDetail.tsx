@@ -17,13 +17,14 @@ import './familyDetail.css';
 export default function FamilyDetail() {
   const { id } = useParams();
 
-  if (!id) {
-    throw new Error('Invalid route: missing family id');
-  }
-
   const familyQuery = useFamily(id);
-
   const plantsQuery = useFamilyPlants(familyQuery.data?.id);
+
+  if (!id) {
+    return (
+      <ErrorResponse {...toUiError(new Error(t('family.detail.not_found')))} />
+    );
+  }
 
   const isLoading = familyQuery.isLoading || plantsQuery.loading;
 
@@ -51,7 +52,11 @@ export default function FamilyDetail() {
     <div className="family-detail">
       <FamilyHero family={family} />
       <FamilyInfo family={family} />
-      <FamilyPlants family={family} plants={plantsQuery.data} />
+      <FamilyPlants
+        family={family}
+        plants={plantsQuery.data}
+        total={plantsQuery.total}
+      />
     </div>
   );
 }
