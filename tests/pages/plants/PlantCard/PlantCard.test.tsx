@@ -5,12 +5,22 @@ import { MemoryRouter } from 'react-router-dom';
 import { listPlantsResponse } from '../../../fixtures/plants/listPlants';
 import PlantCard from '../../../../src/pages/plants/PlantCard/PlantCard';
 import { capitalizeFirstLetter } from '../../../../src/shared/utils/capitalizeFirstLetter';
-import type { PlantEcologicalTraits } from '../../../../src/types/Plants/Plant';
-import { buildPlantWithEcological } from '../../../fixtures/plants/buildPlant';
+import type {
+  Plant,
+  PlantEcologicalTraits
+} from '../../../../src/types/Plants/Plant';
+import {
+  buildPlantListItem,
+  buildPlantListItemWithEcological
+} from '../../../fixtures/plants/buildPlantListItem';
+
+function toListItem({ id, identity, traits, knowledge }: Plant) {
+  return buildPlantListItem({ id, identity, traits, knowledge });
+}
 
 describe('PlantCard', () => {
-  const plantWithNoImage = listPlantsResponse.data[0];
-  const plantWithImage = listPlantsResponse.data[1];
+  const plantWithNoImage = toListItem(listPlantsResponse.data[0]);
+  const plantWithImage = toListItem(listPlantsResponse.data[1]);
 
   const renderComponent = (plant = plantWithNoImage) =>
     render(
@@ -138,7 +148,7 @@ describe('PlantCard', () => {
     [{ edible: false, toxic: false }, []],
     [{}, []]
   ])('shows safety indicators for %j', (ecological, expected) => {
-    renderComponent(buildPlantWithEcological(ecological));
+    renderComponent(buildPlantListItemWithEcological(ecological));
 
     expect(safetyIndicators()).toEqual(expected);
   });
@@ -151,4 +161,21 @@ describe('PlantCard', () => {
 
     expect(safetyIndicators()).toEqual([]);
   });
+
+  it('marks a deleted plant in the card heading', () => {
+    renderComponent(buildPlantListItem({ status: 'DELETED' }));
+
+    const heading = document.querySelector('.plant-card__heading');
+
+    expect(heading).toHaveTextContent('Borrada');
+  });
+
+  it.each(['ACTIVE', undefined] as const)(
+    'does not mark a plant with status %s',
+    (status) => {
+      renderComponent(buildPlantListItem({ status }));
+
+      expect(screen.queryByText('Borrada')).not.toBeInTheDocument();
+    }
+  );
 });

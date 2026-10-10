@@ -1,7 +1,11 @@
 import { QueryBuilder } from '../shared/api/QueryBuilder';
 import type { PaginatedResponse } from '../types/api';
 import type { PaginationParams } from '../types/Pagination';
-import type { FamilyPlantItem, Plant } from '../types/Plants/Plant';
+import type {
+  FamilyPlantItem,
+  Plant,
+  PlantListItem
+} from '../types/Plants/Plant';
 import { apiFetch } from './api';
 import {
   DEFAULT_PLANT_SORT,
@@ -9,9 +13,11 @@ import {
   PAGINATION_QUERY_KEYS,
   PLANT_FIELDS_QUERY_KEY,
   PLANT_FILTER_QUERY_KEYS,
+  PLANT_LIST_FIELDS,
   sortQueryKey,
   type PlantField,
   type PlantFilterParams,
+  type PlantListRequest,
   type PlantSort
 } from './plantListQuery';
 
@@ -80,21 +86,12 @@ export async function getFamilyPlants(
   return apiFetch(`/api/v1/plants?${query}`);
 }
 
-export async function getPlants(
-  filters: PlantFilterParams = {},
-  pagination: Partial<PaginationParams> = {},
-  sort: PlantSort = DEFAULT_PLANT_SORT
-): Promise<PaginatedResponse<Plant>> {
-  const query = addPagination(
-    addFilters(QueryBuilder.create(), filters),
-    pagination
-  )
-    .add(sortQueryKey(sort.field), sort.direction)
-    .build();
+export async function getPlantList(
+  request: PlantListRequest
+): Promise<PaginatedResponse<PlantListItem>> {
+  const query = buildPlantsQuery(request, PLANT_LIST_FIELDS);
 
-  return apiFetch(`/api/v1/plants?${query}`) as Promise<
-    PaginatedResponse<Plant>
-  >;
+  return apiFetch(`/api/v1/plants?${query}`);
 }
 
 export const PLANT_INCLUDE_QUERY_KEY = 'include';

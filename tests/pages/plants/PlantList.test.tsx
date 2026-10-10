@@ -16,9 +16,11 @@ import {
   type FetchMock
 } from '../../test-utils/stubFetch';
 
+const LIST_FIELDS = 'fields[plants]=identity,traits,knowledge,status';
+
 const SORT_FIELD_LABEL = new RegExp(`^${t('plant.orders.field')}:?$`);
 
-const DEFAULT_REQUEST = `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[name]=asc`;
+const DEFAULT_REQUEST = `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[name]=asc&${LIST_FIELDS}`;
 
 const [firstPlant, secondPlant] = listPlantsResponse.data;
 
@@ -95,7 +97,7 @@ describe('PlantList', () => {
 
     await waitFor(() => {
       expect(lastUrl(fetchMock)).toBe(
-        `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=50&sort[name]=asc`
+        `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=50&sort[name]=asc&${LIST_FIELDS}`
       );
     });
   });
@@ -111,7 +113,7 @@ describe('PlantList', () => {
 
     await waitFor(() => {
       expect(lastUrl(fetchMock)).toBe(
-        `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[name]=desc`
+        `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[name]=desc&${LIST_FIELDS}`
       );
     });
   });
@@ -125,7 +127,7 @@ describe('PlantList', () => {
 
     await waitFor(() => {
       expect(lastUrl(fetchMock)).toBe(
-        `${API_URL}/api/v1/plants?pagination[page]=2&pagination[limit]=25&sort[name]=asc`
+        `${API_URL}/api/v1/plants?pagination[page]=2&pagination[limit]=25&sort[name]=asc&${LIST_FIELDS}`
       );
     });
   });
@@ -143,6 +145,7 @@ describe('PlantList', () => {
       'desc'
     );
     expect(lastUrl(fetchMock)).toContain('sort[scientificName]=desc');
+    expect(lastUrl(fetchMock)).toContain(LIST_FIELDS);
   });
 
   it('elegir criterio y después sentido vuelve a la página 1 y combina ambos', async () => {
@@ -157,7 +160,7 @@ describe('PlantList', () => {
 
     await waitFor(() => {
       expect(lastUrl(fetchMock)).toBe(
-        `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[scientificName]=asc`
+        `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[scientificName]=asc&${LIST_FIELDS}`
       );
     });
     expect(validateRequest('get', lastUrl(fetchMock))).toEqual([]);
@@ -169,7 +172,7 @@ describe('PlantList', () => {
 
     await waitFor(() => {
       expect(lastUrl(fetchMock)).toBe(
-        `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[scientificName]=desc`
+        `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[scientificName]=desc&${LIST_FIELDS}`
       );
     });
     expect(validateRequest('get', lastUrl(fetchMock))).toEqual([]);
