@@ -1,4 +1,8 @@
-import { getPlantById, getPlants } from '../../src/services/plants.service';
+import {
+  getFamilyPlants,
+  getPlantById,
+  getPlants
+} from '../../src/services/plants.service';
 import { ApiError } from '../../src/shared/errors/ApiError';
 import { buildPlant } from '../fixtures/plants/buildPlant';
 import { listPlantsResponse } from '../fixtures/plants/listPlants';
@@ -235,6 +239,41 @@ describe('getPlants: cada clave de filtro', () => {
       `${API_URL}/api/v1/plants?${PLANT_FILTER_QUERY_KEYS[field]}=${formatFilterValue(value)}&sort[name]=asc`
     );
     expect(validateRequest('get', url)).toEqual([]);
+  });
+});
+
+const FAMILY_ID = '3f2504e0-4f89-41d3-9a0c-0305e82c3301';
+
+describe('getFamilyPlants', () => {
+  it('pide las plantas de la familia por nombre y solo identity y status', async () => {
+    const fetchMock = stubFetchOk(listPlantsResponse);
+
+    await getFamilyPlants(FAMILY_ID);
+
+    const { url, init } = lastRequest(fetchMock);
+    expect(url).toBe(
+      `${API_URL}/api/v1/plants?filter[family][eq]=${FAMILY_ID}&sort[name]=asc&fields[plants]=identity,status`
+    );
+    expect(init).toEqual({ headers: JSON_HEADERS });
+    expect(validateRequest('get', url)).toEqual([]);
+  });
+
+  it('devuelve los datos y la paginación de la respuesta', async () => {
+    stubFetchOk(listPlantsResponse);
+
+    await expect(getFamilyPlants(FAMILY_ID)).resolves.toEqual(
+      listPlantsResponse
+    );
+  });
+
+  it('rechaza con ApiError si la API responde con error', async () => {
+    stubFetchError(404, NOT_FOUND_BODY);
+
+    const error = await getFamilyPlants(FAMILY_ID).catch(
+      (caught: unknown) => caught
+    );
+
+    expect(error).toBeInstanceOf(ApiError);
   });
 });
 

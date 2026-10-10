@@ -171,6 +171,16 @@ describe('las URL inválidas producen peticiones corregidas y conformes', () => 
   });
 });
 
+describe('petición de las plantas de la ficha de familia', () => {
+  it('cumple el contrato', () => {
+    const url = expected(
+      `filter[family][eq]=${UUID}&sort[name]=asc&fields[plants]=identity,status`
+    );
+
+    expect(validateRequest('get', url)).toEqual([]);
+  });
+});
+
 describe('las plantas parciales de los listados cumplen PlantFieldset', () => {
   it.each(['ACTIVE', 'DELETED', undefined] as const)(
     'planta de la ficha de familia con status %s',
