@@ -9,6 +9,8 @@ export type PlantEcologicalTraits = {
   toxicityNotes?: string;
 };
 
+export type PlantStatus = 'ACTIVE' | 'DELETED';
+
 export interface Plant {
   id: string;
 
@@ -123,9 +125,16 @@ export interface Plant {
     notes?: string[];
   };
   metadata: Metadata;
-  status: 'ACTIVE' | 'INACTIVE' | 'DELETED';
+  status: PlantStatus;
   deletedAt: Date | null;
 }
+
+export type FamilyPlantItem = Pick<Plant, 'id' | 'identity'> & {
+  status?: PlantStatus;
+};
+
+export type PlantListItem = FamilyPlantItem &
+  Pick<Plant, 'traits' | 'knowledge'>;
 
 export type PlantLifecycle = Plant['traits']['lifecycle'];
 

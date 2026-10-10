@@ -44,4 +44,14 @@ describe('readPlantSafety', () => {
       hasData: false
     });
   });
+
+  it('reads a plant that only carries its traits', () => {
+    const { traits } = buildPlantWithEcological({ edible: true, toxic: false });
+
+    expect(readPlantSafety({ traits })).toEqual({
+      edible: 'yes',
+      toxic: 'no',
+      hasData: true
+    });
+  });
 });

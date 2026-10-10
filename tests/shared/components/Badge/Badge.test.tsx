@@ -19,4 +19,10 @@ describe('Badge', () => {
 
     expect(badgeContent).toBeInTheDocument();
   });
+
+  it('applies the deleted variant class', () => {
+    render(<Badge variant="deleted">Borrada</Badge>);
+
+    expect(screen.getByText('Borrada')).toHaveClass('badge', 'badge--deleted');
+  });
 });

@@ -80,6 +80,34 @@ export const PAGINATION_QUERY_KEYS = {
 
 export const PAGINATION_LIMIT_MAX = 100;
 
+export const PLANT_FIELDS_QUERY_KEY = 'fields[plants]';
+
+export const PLANT_FIELDS = [
+  'id',
+  'identity',
+  'traits',
+  'phenology',
+  'knowledge',
+  'metadata',
+  'status',
+  'deletedAt',
+  'version'
+] as const;
+
+export type PlantField = (typeof PLANT_FIELDS)[number];
+
+export const PLANT_LIST_FIELDS: readonly PlantField[] = [
+  'identity',
+  'traits',
+  'knowledge',
+  'status'
+];
+
+export const FAMILY_PLANTS_FIELDS: readonly PlantField[] = [
+  'identity',
+  'status'
+];
+
 export function sortQueryKey(field: PlantsSortField): string {
   return `sort[${field}]`;
 }
