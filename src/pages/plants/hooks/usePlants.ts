@@ -1,7 +1,7 @@
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 
-import { getPlants } from '../../../services/plants.service';
+import { getPlantList } from '../../../services/plants.service';
 import type {
   PlantsSortField,
   SortDirection
@@ -9,7 +9,7 @@ import type {
 import { QUERY_DEFAULTS } from '../../../shared/reactQuery/queryDefaults';
 import { plantKeys } from '../../../shared/reactQuery/plantKeys';
 import { PLANT_LIST_URL_PARAMS } from '../../../shared/constants/plantListUrlParams';
-import type { Plant } from '../../../types/Plants/Plant';
+import type { PlantListItem } from '../../../types/Plants/Plant';
 import type { PaginatedResponse } from '../../../types/api';
 import { parsePlantListSearchParams } from '../utils/parsePlantListSearchParams';
 
@@ -17,9 +17,9 @@ export function usePlants() {
   const [params, setParams] = useSearchParams();
   const request = parsePlantListSearchParams(params);
 
-  const query = useQuery<PaginatedResponse<Plant>>({
+  const query = useQuery<PaginatedResponse<PlantListItem>>({
     queryKey: plantKeys.list(request),
-    queryFn: () => getPlants(request.filters, request.pagination, request.sort),
+    queryFn: () => getPlantList(request),
     ...QUERY_DEFAULTS
   });
 

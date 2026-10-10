@@ -4,18 +4,18 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 
 import { usePlants } from '../../../../src/pages/plants/hooks/usePlants';
 import { parsePlantListSearchParams } from '../../../../src/pages/plants/utils/parsePlantListSearchParams';
-import { getPlants } from '../../../../src/services/plants.service';
+import { getPlantList } from '../../../../src/services/plants.service';
 import type { PaginatedResponse } from '../../../../src/types/api';
-import type { Plant } from '../../../../src/types/Plants/Plant';
+import type { PlantListItem } from '../../../../src/types/Plants/Plant';
 
 import { listPlantsResponse } from '../../../fixtures/plants/listPlants';
 import { createTestQueryClient } from '../../../test-utils/createTestQueryClient';
 
 vi.mock('../../../../src/services/plants.service', () => ({
-  getPlants: vi.fn()
+  getPlantList: vi.fn()
 }));
 
-const mockedGetPlants = vi.mocked(getPlants);
+const mockedGetPlantList = vi.mocked(getPlantList);
 
 function usePlantsWithLocation() {
   return { plants: usePlants(), search: useLocation().search };
@@ -42,13 +42,13 @@ function searchParams(search: string) {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockedGetPlants.mockResolvedValue(listPlantsResponse);
+  mockedGetPlantList.mockResolvedValue(listPlantsResponse);
 });
 
 describe('usePlants: query', () => {
   it('expone la carga mientras no llega la respuesta', () => {
-    mockedGetPlants.mockImplementation(
-      () => new Promise<PaginatedResponse<Plant>>(() => {})
+    mockedGetPlantList.mockImplementation(
+      () => new Promise<PaginatedResponse<PlantListItem>>(() => {})
     );
 
     const { result } = renderUsePlants();
@@ -65,7 +65,7 @@ describe('usePlants: query', () => {
   });
 
   it('expone el error de la API', async () => {
-    mockedGetPlants.mockRejectedValue(new Error('API error'));
+    mockedGetPlantList.mockRejectedValue(new Error('API error'));
 
     const { result } = renderUsePlants();
 
@@ -87,12 +87,12 @@ describe('usePlants: petición', () => {
     );
   });
 
-  it('llama a getPlants con filtros, paginación y orden de la petición', async () => {
+  it('llama a getPlantList con la petición completa', async () => {
     const { result } = renderUsePlants(route);
-    const { filters, pagination, sort } = result.current.plants.request;
+    const { request } = result.current.plants;
 
     await waitFor(() => {
-      expect(mockedGetPlants).toHaveBeenCalledWith(filters, pagination, sort);
+      expect(mockedGetPlantList).toHaveBeenCalledWith(request);
     });
   });
 });
