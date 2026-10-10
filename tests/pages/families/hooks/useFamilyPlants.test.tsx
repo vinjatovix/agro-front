@@ -91,7 +91,7 @@ describe('useFamilyPlants', () => {
 
   it('exposes loading state', () => {
     mockedGetFamilyPlants.mockImplementation(
-      () => new Promise(() => {}) as Promise<PaginatedResponse<FamilyPlantItem>>
+      () => new Promise<PaginatedResponse<FamilyPlantItem>>(() => {})
     );
 
     const { result } = renderHook(
