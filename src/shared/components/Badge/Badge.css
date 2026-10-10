@@ -38,3 +38,8 @@
   background: transparent;
   border: 1px dashed var(--color-outline-variant);
 }
+.badge--deleted {
+  color: var(--color-on-error-container);
+  background: var(--color-error-container);
+  border-color: var(--color-on-error-container);
+}

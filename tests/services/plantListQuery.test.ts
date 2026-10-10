@@ -1,8 +1,12 @@
 import {
   DEFAULT_PLANT_SORT,
+  FAMILY_PLANTS_FIELDS,
   PAGINATION_LIMIT_MAX,
   PAGINATION_QUERY_KEYS,
+  PLANT_FIELDS,
+  PLANT_FIELDS_QUERY_KEY,
   PLANT_FILTER_QUERY_KEYS,
+  PLANT_LIST_FIELDS,
   PLANT_SORT_FIELDS,
   SORT_DIRECTIONS,
   isPlantsSortField,
@@ -49,5 +53,34 @@ describe('plantListQuery', () => {
     expect(isPlantsSortField('identity.name.primary')).toBe(false);
     expect(isSortDirection('desc')).toBe(true);
     expect(isSortDirection('up')).toBe(false);
+  });
+
+  it('declara la clave y los campos de primer nivel de fields[plants]', () => {
+    expect(PLANT_FIELDS_QUERY_KEY).toBe('fields[plants]');
+    expect([...PLANT_FIELDS].sort()).toEqual(
+      [
+        'id',
+        'identity',
+        'traits',
+        'phenology',
+        'knowledge',
+        'metadata',
+        'status',
+        'deletedAt',
+        'version'
+      ].sort()
+    );
+  });
+
+  it('declara la selección de cada listado en orden y sin id', () => {
+    expect(PLANT_LIST_FIELDS).toEqual([
+      'identity',
+      'traits',
+      'knowledge',
+      'status'
+    ]);
+    expect(FAMILY_PLANTS_FIELDS).toEqual(['identity', 'status']);
+    expect(PLANT_LIST_FIELDS).not.toContain('id');
+    expect(FAMILY_PLANTS_FIELDS).not.toContain('id');
   });
 });

@@ -2,6 +2,7 @@ import { Ajv, type ErrorObject, type ValidateFunction } from 'ajv';
 import addFormats from 'ajv-formats';
 import { parse } from 'yaml';
 import source from '../../contracts/openapi.yaml?raw';
+import { convertBooleanExclusiveBounds } from './booleanExclusiveBounds';
 
 export type ContractViolation = {
   readonly location: string;
@@ -49,6 +50,7 @@ const DEEP_OBJECT_KEY = /^([^[\]]+)((?:\[[^[\]]*\])+)$/;
 const BRACKET_SEGMENT = /\[([^[\]]*)\]/g;
 
 const contract = parse(source) as OpenApiDocument;
+convertBooleanExclusiveBounds(contract);
 const ajv = new Ajv({ strict: false, coerceTypes: true, allErrors: true });
 addFormats(ajv);
 ajv.addSchema(contract, DOCUMENT_ID);

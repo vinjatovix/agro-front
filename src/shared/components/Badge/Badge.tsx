@@ -7,7 +7,8 @@ interface Props {
     | 'family'
     | 'scientific'
     | 'alias'
-    | 'unavailable';
+    | 'unavailable'
+    | 'deleted';
   readonly icon?: string;
 }
 

@@ -31,4 +31,10 @@ describe('tValue', () => {
     expect(tValue('plant.calendar.seasonValues', '')).toBe('');
     expect(reportMissingTranslation).toHaveBeenCalledOnce();
   });
+
+  it('translates the plant status values', () => {
+    expect(tValue('plant.statusValues', 'ACTIVE')).toBe('Activa');
+    expect(tValue('plant.statusValues', 'DELETED')).toBe('Borrada');
+    expect(reportMissingTranslation).not.toHaveBeenCalled();
+  });
 });

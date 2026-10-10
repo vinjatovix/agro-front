@@ -4,6 +4,7 @@ import { lookup } from './t';
 export type ValueGroup =
   | 'plant.calendar.seasonValues'
   | 'plant.safety.flagValues'
+  | 'plant.statusValues'
   | 'plant.filters.booleanValues'
   | 'plant.filters.lifeCycleValues'
   | 'plant.filters.sowingMethodValues'

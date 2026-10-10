@@ -89,6 +89,10 @@ export const dictionary = {
       source: 'Fuente:',
       source_name: 'Plants For A Future'
     },
+    statusValues: {
+      ACTIVE: 'Activa',
+      DELETED: 'Borrada'
+    },
     plants: 'Plantas',
     empty: 'No hay plantas que coincidan con esta búsqueda.',
     filters: {

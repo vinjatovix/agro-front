@@ -2,10 +2,12 @@ import { screen } from '@testing-library/react';
 
 import PlantList from '../../src/pages/plants/PlantList';
 
+import { buildFamilyPlantItem } from '../fixtures/plants/buildFamilyPlantItem';
+import { buildPlantListItem } from '../fixtures/plants/buildPlantListItem';
 import { listPlantsResponse } from '../fixtures/plants/listPlants';
 import { renderWithProviders } from '../test-utils/renderWithProviders';
 import { lastRequest, stubFetchOk, API_URL } from '../test-utils/stubFetch';
-import { validateRequest } from './openApiContract';
+import { validateRequest, validateSchema } from './openApiContract';
 
 const UUID = '3f2504e0-4f89-41d3-9a0c-0305e82c3301';
 const LONG_TEXT = 'a'.repeat(201);
@@ -167,4 +169,24 @@ describe('las URL inválidas producen peticiones corregidas y conformes', () => 
     expect(validateRequest('get', url)).toEqual([]);
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
+});
+
+describe('las plantas parciales de los listados cumplen PlantFieldset', () => {
+  it.each(['ACTIVE', 'DELETED', undefined] as const)(
+    'planta de la ficha de familia con status %s',
+    (status) => {
+      const item = buildFamilyPlantItem({ status });
+
+      expect(validateSchema('PlantFieldset', item)).toEqual([]);
+    }
+  );
+
+  it.each(['ACTIVE', 'DELETED', undefined] as const)(
+    'planta del listado con status %s',
+    (status) => {
+      const item = buildPlantListItem({ status });
+
+      expect(validateSchema('PlantFieldset', item)).toEqual([]);
+    }
+  );
 });

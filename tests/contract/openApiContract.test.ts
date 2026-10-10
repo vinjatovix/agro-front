@@ -131,4 +131,23 @@ describe('validateSchema', () => {
 
     expect(violations.length).toBeGreaterThan(0);
   });
+
+  it.each([
+    [0.5, true],
+    [0, false]
+  ])(
+    'lee exclusiveMinimum booleano de OpenAPI 3.0: frequencyPerYear %s válido = %s',
+    (frequencyPerYear, isValid) => {
+      const pruning = {
+        type: 'formación',
+        intensity: 'ligera',
+        seasons: ['winter'],
+        frequencyPerYear
+      };
+
+      const violations = validateSchema('PruningEntry', pruning);
+
+      expect(violations.length === 0).toBe(isValid);
+    }
+  );
 });
