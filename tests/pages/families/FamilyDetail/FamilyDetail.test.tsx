@@ -4,7 +4,7 @@ import { screen, waitFor } from '@testing-library/react';
 
 import FamilyDetail from '../../../../src/pages/families/FamilyDetail/FamilyDetail';
 import { getFamilyById } from '../../../../src/services/families.service';
-import { getPlants } from '../../../../src/services/plants.service';
+import { getFamilyPlants } from '../../../../src/services/plants.service';
 
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import { listFamiliesResponse } from '../../../fixtures/families/listFamilies';
@@ -15,11 +15,11 @@ vi.mock('../../../../src/services/families.service', () => ({
 }));
 
 vi.mock('../../../../src/services/plants.service', () => ({
-  getPlants: vi.fn()
+  getFamilyPlants: vi.fn()
 }));
 
 const mockedGetFamilyById = vi.mocked(getFamilyById);
-const mockedGetPlants = vi.mocked(getPlants);
+const mockedGetFamilyPlants = vi.mocked(getFamilyPlants);
 
 const mockFamily = listFamiliesResponse.data[0];
 const mockPlants = listPlantsResponse;
@@ -38,7 +38,7 @@ describe('FamilyDetail', () => {
 
   it('should render loading state', () => {
     mockedGetFamilyById.mockImplementation(() => new Promise(() => {}));
-    mockedGetPlants.mockImplementation(() => new Promise(() => {}));
+    mockedGetFamilyPlants.mockImplementation(() => new Promise(() => {}));
 
     renderFamilyDetail();
 
@@ -47,7 +47,7 @@ describe('FamilyDetail', () => {
 
   it('should render family information and plants', async () => {
     mockedGetFamilyById.mockResolvedValue(mockFamily);
-    mockedGetPlants.mockResolvedValue(mockPlants);
+    mockedGetFamilyPlants.mockResolvedValue(mockPlants);
 
     renderFamilyDetail();
 
@@ -70,7 +70,7 @@ describe('FamilyDetail', () => {
 
   it('should render plants list links', async () => {
     mockedGetFamilyById.mockResolvedValue(mockFamily);
-    mockedGetPlants.mockResolvedValue(mockPlants);
+    mockedGetFamilyPlants.mockResolvedValue(mockPlants);
 
     renderFamilyDetail();
 
@@ -82,7 +82,7 @@ describe('FamilyDetail', () => {
   it('should render error state', async () => {
     mockedGetFamilyById.mockRejectedValue(new Error('Family not found'));
 
-    mockedGetPlants.mockResolvedValue({
+    mockedGetFamilyPlants.mockResolvedValue({
       ...mockPlants,
       data: []
     });
@@ -97,7 +97,7 @@ describe('FamilyDetail', () => {
   it('should render plants error state', async () => {
     mockedGetFamilyById.mockResolvedValue(mockFamily);
 
-    mockedGetPlants.mockRejectedValue(new Error('Plants failed'));
+    mockedGetFamilyPlants.mockRejectedValue(new Error('Plants failed'));
 
     renderFamilyDetail();
 
@@ -109,7 +109,7 @@ describe('FamilyDetail', () => {
   it('should keep loading while plants are loading even if family is ready', async () => {
     mockedGetFamilyById.mockResolvedValue(mockFamily);
 
-    mockedGetPlants.mockImplementation(() => new Promise(() => {}));
+    mockedGetFamilyPlants.mockImplementation(() => new Promise(() => {}));
 
     renderFamilyDetail();
 
@@ -121,7 +121,7 @@ describe('FamilyDetail', () => {
 
   it('loads plants with family uuid when accessed by slug', async () => {
     mockedGetFamilyById.mockResolvedValue(mockFamily);
-    mockedGetPlants.mockResolvedValue(mockPlants);
+    mockedGetFamilyPlants.mockResolvedValue(mockPlants);
 
     renderWithProviders(<FamilyDetail />, {
       route: `/families/${mockFamily.slug}`,
@@ -129,15 +129,13 @@ describe('FamilyDetail', () => {
     });
 
     await waitFor(() => {
-      expect(mockedGetPlants).toHaveBeenCalledWith({
-        family: mockFamily.id
-      });
+      expect(mockedGetFamilyPlants).toHaveBeenCalledWith(mockFamily.id);
     });
   });
 
   it('displays plants when accessed by slug', async () => {
     mockedGetFamilyById.mockResolvedValue(mockFamily);
-    mockedGetPlants.mockResolvedValue(mockPlants);
+    mockedGetFamilyPlants.mockResolvedValue(mockPlants);
 
     renderWithProviders(<FamilyDetail />, {
       route: `/families/${mockFamily.slug}`,
@@ -151,7 +149,7 @@ describe('FamilyDetail', () => {
 
   it('propagates total plants count to family plants section', async () => {
     mockedGetFamilyById.mockResolvedValue(mockFamily);
-    mockedGetPlants.mockResolvedValue({
+    mockedGetFamilyPlants.mockResolvedValue({
       data: mockPlants.data,
       pagination: {
         page: 1,
@@ -172,7 +170,7 @@ describe('FamilyDetail', () => {
 
   it('renders CTA link to plants catalog prefiltered by family uuid when plants are available', async () => {
     mockedGetFamilyById.mockResolvedValue(mockFamily);
-    mockedGetPlants.mockResolvedValue(mockPlants);
+    mockedGetFamilyPlants.mockResolvedValue(mockPlants);
 
     renderFamilyDetail();
 
@@ -186,7 +184,7 @@ describe('FamilyDetail', () => {
 
   it('displays empty state message when family has zero plants', async () => {
     mockedGetFamilyById.mockResolvedValue(mockFamily);
-    mockedGetPlants.mockResolvedValue({
+    mockedGetFamilyPlants.mockResolvedValue({
       data: [],
       pagination: {
         page: 1,
@@ -205,7 +203,7 @@ describe('FamilyDetail', () => {
 
   it('hides CTA link when family has zero plants', async () => {
     mockedGetFamilyById.mockResolvedValue(mockFamily);
-    mockedGetPlants.mockResolvedValue({
+    mockedGetFamilyPlants.mockResolvedValue({
       data: [],
       pagination: {
         page: 1,

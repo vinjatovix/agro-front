@@ -3,19 +3,19 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { useFamilyPlants } from '../../../../src/pages/families/hooks/useFamilyPlants';
-import { getPlants } from '../../../../src/services/plants.service';
+import { getFamilyPlants } from '../../../../src/services/plants.service';
 
 import type { PaginatedResponse } from '../../../../src/types/api';
-import type { Plant } from '../../../../src/types/Plants/Plant';
+import type { FamilyPlantItem } from '../../../../src/types/Plants/Plant';
 
 import { listPlantsResponse } from '../../../fixtures/plants/listPlants';
 import { createTestQueryClient } from '../../../test-utils/createTestQueryClient';
 
 vi.mock('../../../../src/services/plants.service', () => ({
-  getPlants: vi.fn()
+  getFamilyPlants: vi.fn()
 }));
 
-const mockedGetPlants = vi.mocked(getPlants);
+const mockedGetFamilyPlants = vi.mocked(getFamilyPlants);
 
 function createWrapper() {
   const queryClient = createTestQueryClient();
@@ -33,7 +33,7 @@ describe('useFamilyPlants', () => {
   });
 
   it('loads family plants successfully', async () => {
-    mockedGetPlants.mockResolvedValue(listPlantsResponse);
+    mockedGetFamilyPlants.mockResolvedValue(listPlantsResponse);
 
     const { result } = renderHook(
       () => useFamilyPlants('5a2380c4-1546-4511-a77b-ec9d3ebcb7cf'),
@@ -46,13 +46,13 @@ describe('useFamilyPlants', () => {
       expect(result.current.data).toEqual(listPlantsResponse.data);
     });
 
-    expect(mockedGetPlants).toHaveBeenCalledWith({
-      family: '5a2380c4-1546-4511-a77b-ec9d3ebcb7cf'
-    });
+    expect(mockedGetFamilyPlants).toHaveBeenCalledExactlyOnceWith(
+      '5a2380c4-1546-4511-a77b-ec9d3ebcb7cf'
+    );
   });
 
   it('returns empty array when API returns no data', async () => {
-    mockedGetPlants.mockResolvedValue({
+    mockedGetFamilyPlants.mockResolvedValue({
       data: [],
       pagination: {
         page: 1,
@@ -75,7 +75,7 @@ describe('useFamilyPlants', () => {
   });
 
   it('handles error state', async () => {
-    mockedGetPlants.mockRejectedValue(new Error('API error'));
+    mockedGetFamilyPlants.mockRejectedValue(new Error('API error'));
 
     const { result } = renderHook(
       () => useFamilyPlants('5a2380c4-1546-4511-a77b-ec9d3ebcb7cf'),
@@ -90,8 +90,8 @@ describe('useFamilyPlants', () => {
   });
 
   it('exposes loading state', () => {
-    mockedGetPlants.mockImplementation(
-      () => new Promise(() => {}) as Promise<PaginatedResponse<Plant>>
+    mockedGetFamilyPlants.mockImplementation(
+      () => new Promise(() => {}) as Promise<PaginatedResponse<FamilyPlantItem>>
     );
 
     const { result } = renderHook(
@@ -104,12 +104,12 @@ describe('useFamilyPlants', () => {
     expect(result.current.loading).toBe(true);
   });
 
-  it('does not call getPlants when familyId is undefined', () => {
+  it('does not call getFamilyPlants when familyId is undefined', () => {
     renderHook(() => useFamilyPlants(undefined), {
       wrapper: createWrapper()
     });
 
-    expect(mockedGetPlants).not.toHaveBeenCalled();
+    expect(mockedGetFamilyPlants).not.toHaveBeenCalled();
   });
 
   it('returns empty data when familyId is undefined', () => {
@@ -129,7 +129,7 @@ describe('useFamilyPlants', () => {
   });
 
   it('returns total items count from pagination', async () => {
-    mockedGetPlants.mockResolvedValue({
+    mockedGetFamilyPlants.mockResolvedValue({
       data: listPlantsResponse.data,
       pagination: {
         page: 1,

@@ -1,14 +1,15 @@
 import { Link } from 'react-router-dom';
+import PlantStatusBadge from '../../../../components/plants/PlantStatusBadge/PlantStatusBadge';
 import { t } from '../../../../i18n/core/t';
 import BodySection from '../../../../shared/components/BodySection/BodySection';
 import { iconsMap } from '../../../../shared/constants/iconsMap';
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
 import type { Family } from '../../../../types/Family';
-import type { Plant } from '../../../../types/Plants/Plant';
+import type { FamilyPlantItem } from '../../../../types/Plants/Plant';
 
 interface Props {
   readonly family: Family;
-  readonly plants: Plant[];
+  readonly plants: FamilyPlantItem[];
   readonly total?: number;
 }
 
@@ -55,6 +56,7 @@ export default function FamilyPlants({ family, plants, total }: Props) {
                 data-testid="family-plants-link"
               >
                 {capitalizeFirstLetter(plant.identity.name.primary)}
+                <PlantStatusBadge status={plant.status} />
               </Link>
             ))}
           </div>

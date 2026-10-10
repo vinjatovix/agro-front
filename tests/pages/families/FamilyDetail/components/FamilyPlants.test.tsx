@@ -5,15 +5,18 @@ import { describe, it, expect } from 'vitest';
 
 import FamilyPlants from '../../../../../src/pages/families/FamilyDetail/components/FamilyPlants';
 import { listFamiliesResponse } from '../../../../fixtures/families/listFamilies';
+import { buildFamilyPlantItem } from '../../../../fixtures/plants/buildFamilyPlantItem';
 import { listPlantsResponse } from '../../../../fixtures/plants/listPlants';
-import type { Plant } from '../../../../../src/types/Plants/Plant';
+import type { FamilyPlantItem } from '../../../../../src/types/Plants/Plant';
 
 const mockFamily = listFamiliesResponse.data[0];
-const mockPlants = listPlantsResponse.data;
+const mockPlants = listPlantsResponse.data.map(({ id, identity }) =>
+  buildFamilyPlantItem({ id, identity })
+);
 
 function renderFamilyPlants(props: {
   family?: typeof mockFamily;
-  plants?: Plant[];
+  plants?: FamilyPlantItem[];
   total?: number;
 }) {
   return render(
@@ -164,5 +167,43 @@ describe('FamilyPlants', () => {
     const plantLinks = screen.getAllByTestId('family-plants-link');
 
     expect(plantLinks[0]).toHaveTextContent('Perejil');
+  });
+
+  it('marks a deleted plant inside its link', () => {
+    const plants = [
+      mockPlants[0],
+      buildFamilyPlantItem({ ...mockPlants[1], status: 'DELETED' })
+    ];
+
+    renderFamilyPlants({ plants, total: 2 });
+
+    const plantLinks = screen.getAllByTestId('family-plants-link');
+
+    expect(plantLinks[1]).toHaveTextContent('Borrada');
+    expect(plantLinks[0]).not.toHaveTextContent('Borrada');
+  });
+
+  it('does not mark active plants or plants without status', () => {
+    const plants = [
+      mockPlants[0],
+      buildFamilyPlantItem({ ...mockPlants[1], status: undefined })
+    ];
+
+    renderFamilyPlants({ plants, total: 2 });
+
+    expect(screen.queryByText('Borrada')).not.toBeInTheDocument();
+  });
+
+  it('keeps the count when a plant is deleted', () => {
+    const plants = [
+      mockPlants[0],
+      buildFamilyPlantItem({ ...mockPlants[1], status: 'DELETED' })
+    ];
+
+    renderFamilyPlants({ plants, total: 10 });
+
+    expect(screen.getByTestId('family-plants-count')).toHaveTextContent(
+      'Mostrando 2 de 10 plantas'
+    );
   });
 });
