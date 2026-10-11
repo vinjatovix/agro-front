@@ -29,8 +29,40 @@ GitHub y destino de observabilidad en producción.
 - 12 → 10 · 13 → 10 · 14 → 4, 10 · 15 → 6, 10
 - Se recomienda cerrar 1 y 2 antes que las demás, para que ya se verifiquen con los gates.
 
+## Estado a 2026-10-10
+
+Verificado con `npm run lint`, `npm run typecheck` y `npm run test` (54 ficheros, 515 tests en
+verde) y revisando el código y el historial de commits. Los prompts de cada iteración describen el
+problema de partida y no se reescriben.
+
+| It. | Título                                     | Estado               | Evidencia / pendiente                                                                                           |
+| --- | ------------------------------------------ | -------------------- | --------------------------------------------------------------------------------------------------------------- |
+| 1   | Gates de tipado y lint                     | Parcial              | `strict` y lint con 0 warnings hechos. Faltan `complexity`, `max-lines`, `no-console`, capas                    |
+| 2   | Gates de tests, build y dependencias       | Pendiente            | Sin umbrales de cobertura, sin `.env.example`, sin gate de bundle ni de `npm audit`                             |
+| 3   | Listado de plantas que respeta el contrato | Hecha (salvo umbral) | Orden y límite corregidos. Falta el umbral del 95 % en `services/` (depende de la 2)                            |
+| 4   | Ficha de planta fiel al modelo             | Parcial              | Tipos y estaciones hechos. Las fixtures no se validan contra el schema                                          |
+| 5   | Nombre de la familia en las plantas        | Hecha                | Commit `a8c6866`                                                                                                |
+| 6   | Familias robustas                          | Hecha                | Commit `e1f528a`. Riesgo abierto: el selector pide una sola página de 100 familias                              |
+| 7   | Peticiones ligeras en los listados         | Hecha                | Spec 007. Familia −94,5 %, listado −82,6 % ([medición](../specs/007-lightweight-list-requests/measurements.md)) |
+| 8   | Errores, rutas inválidas y vacíos          | Parcial              | Existen `not_found`, `empty` y `ErrorResponse`. Falta error boundary y verificar la página 404                  |
+| 9   | Toda la interfaz en castellano             | Sin verificar        | No revisado en esta pasada                                                                                      |
+| 10  | Tokens de diseño                           | Pendiente            | No se cargan Newsreader ni Manrope en `index.html`                                                              |
+| 11  | Iconos en lugar de emojis                  | Parcial              | `iconsMap` centraliza los iconos (`b06caf5`). Quedan emojis en 5 ficheros de `src/`                             |
+| 12  | Estructura de la aplicación                | Pendiente            | No se detecta una barra superior global                                                                         |
+| 13  | Catálogo de plantas con el nuevo diseño    | Pendiente            | No iniciada según el historial                                                                                  |
+| 14  | Ficha de planta con el nuevo diseño        | Pendiente            | No iniciada según el historial                                                                                  |
+| 15  | Familias con el nuevo diseño               | Pendiente            | No iniciada según el historial                                                                                  |
+| 16  | Accesibilidad base                         | Parcial              | El `Drawer` ya usa botón (`e27af5c`). Falta el resto del DoD                                                    |
+
+Specs de trabajo en `specs/`: 001 (It. 1), 002 (It. 2), 003 (It. 3), 004 (edición de comestibles y
+tóxicas, y estaciones; no estaba en el DoD original), 005 (It. 5) y 006 (It. 6) y 007 (It. 7).
+
 ## Iteración 1: Gates de tipado y lint
 
+- **Estado (2026-10-10)**: parcial. Hecho: `typecheck` sobre `src/` con `strict` y lint con
+  `--max-warnings=0`. Pendiente: regla `complexity` ≤ 10 con sus excepciones, `max-lines` de 250,
+  `no-console` fuera de observabilidad y restricciones de capas. Ninguna de estas reglas está en
+  `eslint.config.js` ni en `.eslint/`.
 - **Valor entregado**: el CI pasa a comprobar de verdad los tipos (hoy el script `typecheck` no
   comprueba ningún archivo) y deja de admitir warnings, violaciones de capas o complejidad nueva.
 - **Definition of Done**:
@@ -61,6 +93,11 @@ GitHub y destino de observabilidad en producción.
   ```
 
 ## Iteración 2: Gates de tests, build y dependencias
+
+- **Estado (2026-10-10)**: pendiente. Hecho: la suite corre con `test:coverage`. Pendiente:
+  umbrales en `vite.config.ts` (hoy no hay ninguno), gate de JS y CSS, `npm audit` en CI, y
+  `.env.example` (no existe; la única `VITE_*` usada es `VITE_API_URL`). No hay `.only` ni `.skip`,
+  pero nada lo impide.
 
 - **Valor entregado**: la cobertura, el tamaño del bundle, las vulnerabilidades y las variables
   de entorno quedan vigiladas en cada PR, con los umbrales de la constitución.
@@ -96,6 +133,10 @@ GitHub y destino de observabilidad en producción.
 
 ## Iteración 3: Listado de plantas que respeta el contrato
 
+- **Estado (2026-10-10)**: hecha salvo el umbral del 95 % en `services/`, que depende de la 2. Hecho:
+  orden por `sort[name]` y `sort[scientificName]`, límite máximo de 100 (`PAGINATION_LIMIT_MAX`) y
+  tests de contrato en `tests/contract/`. Quedan abiertas tareas de `specs/002` (T013a, T033, T057).
+
 - **Valor entregado**: el listado de plantas deja de pedir un orden que el contrato rechaza con
   400 y permite ordenar por nombre común o científico.
 - **Definition of Done**:
@@ -123,6 +164,14 @@ GitHub y destino de observabilidad en producción.
   ```
 
 ## Iteración 4: Ficha de planta fiel al modelo del contrato
+
+- **Estado (2026-10-10)**: parcial. Hecho: tipos de `Plant` con `seasons[]`, `pollination` y campos
+  opcionales (`src/types/Plants/Plant.ts`), estaciones de poda y propagación (`7dacb1f`) y las
+  claves `family_unavailable` y `not_found`. Además se hizo la spec 004 (comestibles, tóxicas,
+  filtros y marcas), que no estaba en el DoD original. Pendiente: las fixtures de `tests/fixtures/`
+  no se validan contra el schema (`validateSchema` solo se usa en `tests/contract/`), así que CI no
+  lo comprueba. Sin verificar: el render con solo campos obligatorios, y la prueba manual de la
+  spec 004 (T062).
 
 - **Valor entregado**: la ficha muestra bien las estaciones de poda y propagación y no se rompe
   cuando faltan datos opcionales. Las fixtures pasan a validarse contra el contrato.
@@ -157,6 +206,9 @@ GitHub y destino de observabilidad en producción.
 
 ## Iteración 5: Nombre de la familia en las plantas
 
+- **Estado (2026-10-10)**: hecha (`a8c6866`). La ficha muestra el nombre de la familia con enlace por
+  slug y, si no se resuelve, «Familia no disponible» sin enlace.
+
 - **Valor entregado**: la ficha de planta muestra el nombre de su familia, que hoy aparece como
   un UUID, y enlaza a su ficha.
 - **Definition of Done**:
@@ -182,6 +234,11 @@ GitHub y destino de observabilidad en producción.
 
 ## Iteración 6: Familias robustas
 
+- **Estado (2026-10-10)**: hecha (`e1f528a`). La ficha resuelve la familia por id o slug y pide sus
+  plantas con el id real. Muestra «Mostrando X de Y plantas» o «Y plantas en total» con enlace al
+  listado filtrado. El selector muestra nombres ordenados. Riesgo abierto: el selector pide una sola
+  página de 100 familias (`families.service.ts`), así que con más familias faltarían opciones.
+
 - **Valor entregado**: las fichas de familia funcionan tanto por id como por slug, y el selector
   de familias muestra nombres legibles en lugar de slugs.
 - **Definition of Done**:
@@ -206,6 +263,12 @@ GitHub y destino de observabilidad en producción.
 
 ## Iteración 7: Peticiones ligeras en los listados
 
+- **Estado (2026-10-10)**: hecha (spec 007). El listado pide
+  `fields[plants]=identity,traits,image,status` y la ficha de familia
+  `fields[plants]=identity,status`. Medición en
+  [measurements.md](../specs/007-lightweight-list-requests/measurements.md), hecha contra el back
+  local porque no hay URL de dev documentada: la familia baja un 94,5 % y el listado un 82,6 %.
+  El riesgo de `knowledge` se resolvió con el campo `image` del contrato (2026-10-10).
 - **Valor entregado**: los listados descargan solo los campos que pintan, en lugar de la planta
   completa, lo que reduce de forma apreciable el tamaño de las respuestas.
 - **Definition of Done**:

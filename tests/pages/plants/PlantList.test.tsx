@@ -16,7 +16,7 @@ import {
   type FetchMock
 } from '../../test-utils/stubFetch';
 
-const LIST_FIELDS = 'fields[plants]=identity,traits,knowledge,status';
+const LIST_FIELDS = 'fields[plants]=identity,traits,image,status';
 
 const SORT_FIELD_LABEL = new RegExp(`^${t('plant.orders.field')}:?$`);
 

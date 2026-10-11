@@ -12,7 +12,7 @@ import { validateRequest, validateSchema } from './openApiContract';
 const UUID = '3f2504e0-4f89-41d3-9a0c-0305e82c3301';
 const LONG_TEXT = 'a'.repeat(201);
 const DEFAULT_TAIL = 'pagination[page]=1&pagination[limit]=25&sort[name]=asc';
-const LIST_FIELDS = 'fields[plants]=identity,traits,knowledge,status';
+const LIST_FIELDS = 'fields[plants]=identity,traits,image,status';
 const firstPlantName = listPlantsResponse.data[0].identity.name.primary;
 
 async function requestFor(pageUrl: string): Promise<string> {
@@ -198,4 +198,19 @@ describe('las plantas parciales de los listados cumplen PlantFieldset', () => {
       expect(validateSchema('PlantFieldset', item)).toEqual([]);
     }
   );
+});
+
+describe('la imagen principal cumple PlantImage', () => {
+  it.each(listPlantsResponse.data)(
+    'imagen de $identity.name.primary',
+    ({ image }) => {
+      expect(validateSchema('PlantImage', image)).toEqual([]);
+    }
+  );
+
+  it('una planta del listado sin imagen no cumple PlantFieldset', () => {
+    const item = { ...buildPlantListItem(), image: null };
+
+    expect(validateSchema('PlantFieldset', item)).not.toEqual([]);
+  });
 });

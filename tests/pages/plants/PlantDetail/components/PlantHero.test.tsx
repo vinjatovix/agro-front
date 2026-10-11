@@ -4,7 +4,10 @@ import { describe, expect, it } from 'vitest';
 
 import PlantHero from '../../../../../src/pages/plants/PlantDetail/components/PlantHero';
 import { buildFamilySummary } from '../../../../fixtures/families/buildFamilySummary';
-import { buildPlantWithFamily } from '../../../../fixtures/plants/buildPlant';
+import {
+  buildPlant,
+  buildPlantWithFamily
+} from '../../../../fixtures/plants/buildPlant';
 
 describe('PlantHero: linked family', () => {
   it('renders family name as a link pointing to the family slug', () => {
@@ -119,5 +122,23 @@ describe('PlantHero: unavailable and missing family', () => {
     );
 
     expect(screen.queryByText('Familia no disponible')).not.toBeInTheDocument();
+  });
+});
+
+describe('PlantHero: image', () => {
+  it('renders the primary image sent by the API', () => {
+    const plant = buildPlant({
+      image: { url: 'https://example.org/plants/primary.jpg' }
+    });
+
+    render(
+      <MemoryRouter>
+        <PlantHero plant={plant} />
+      </MemoryRouter>
+    );
+
+    expect(
+      screen.getByRole('img', { name: plant.identity.name.primary })
+    ).toHaveAttribute('src', 'https://example.org/plants/primary.jpg');
   });
 });

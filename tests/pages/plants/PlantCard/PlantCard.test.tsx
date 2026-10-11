@@ -14,15 +14,15 @@ import {
   buildPlantListItemWithEcological
 } from '../../../fixtures/plants/buildPlantListItem';
 
-function toListItem({ id, identity, traits, knowledge }: Plant) {
-  return buildPlantListItem({ id, identity, traits, knowledge });
+function toListItem({ id, identity, traits, image }: Plant) {
+  return buildPlantListItem({ id, identity, traits, image });
 }
 
 describe('PlantCard', () => {
-  const plantWithNoImage = toListItem(listPlantsResponse.data[0]);
-  const plantWithImage = toListItem(listPlantsResponse.data[1]);
+  const defaultPlant = toListItem(listPlantsResponse.data[0]);
+  const otherPlant = toListItem(listPlantsResponse.data[1]);
 
-  const renderComponent = (plant = plantWithNoImage) =>
+  const renderComponent = (plant = defaultPlant) =>
     render(
       <MemoryRouter>
         <PlantCard plant={plant} />
@@ -37,37 +37,25 @@ describe('PlantCard', () => {
     );
   });
 
-  it('renders image when available', () => {
-    renderComponent(plantWithImage);
+  it.each([defaultPlant, otherPlant])(
+    'renders the primary image of $identity.name.primary',
+    (plant) => {
+      renderComponent(plant);
 
-    const image = screen.getByRole('img', {
-      name: plantWithImage.identity.name.primary
-    });
+      const image = screen.getByRole('img', {
+        name: plant.identity.name.primary
+      });
 
-    expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute(
-      'src',
-      plantWithImage.knowledge.resources![0].url
-    );
-    expect(image).toHaveAttribute('alt', plantWithImage.identity.name.primary);
-  });
-
-  it('does not render image when unavailable', () => {
-    renderComponent(plantWithNoImage);
-
-    expect(
-      screen.queryByRole('img', {
-        name: plantWithNoImage.identity.name.primary
-      })
-    ).not.toBeInTheDocument();
-  });
+      expect(image).toHaveAttribute('src', plant.image.url);
+    }
+  );
 
   it('renders scientific name badge', () => {
     renderComponent();
 
     expect(
       screen.getByText(
-        capitalizeFirstLetter(plantWithNoImage.identity.scientificName!)
+        capitalizeFirstLetter(defaultPlant.identity.scientificName!)
       )
     ).toBeInTheDocument();
   });
@@ -75,7 +63,7 @@ describe('PlantCard', () => {
   it('renders all aliases', () => {
     renderComponent();
 
-    plantWithNoImage.identity.name.aliases.forEach((alias) => {
+    defaultPlant.identity.name.aliases.forEach((alias) => {
       expect(
         screen.getByText(capitalizeFirstLetter(alias))
       ).toBeInTheDocument();
@@ -87,15 +75,15 @@ describe('PlantCard', () => {
 
     expect(screen.getByRole('link')).toHaveAttribute(
       'href',
-      `/plants/${plantWithNoImage.id}`
+      `/plants/${defaultPlant.id}`
     );
   });
 
   it('does not render scientific name when absent', () => {
     const plantWithoutScientific = {
-      ...plantWithNoImage,
+      ...defaultPlant,
       identity: {
-        ...plantWithNoImage.identity,
+        ...defaultPlant.identity,
         scientificName: undefined
       }
     };
@@ -108,18 +96,18 @@ describe('PlantCard', () => {
 
     expect(
       screen.queryByText(
-        capitalizeFirstLetter(plantWithNoImage.identity.scientificName!)
+        capitalizeFirstLetter(defaultPlant.identity.scientificName!)
       )
     ).not.toBeInTheDocument();
   });
 
   it('does not render aliases container when aliases are empty', () => {
     const plantWithoutAliases = {
-      ...plantWithNoImage,
+      ...defaultPlant,
       identity: {
-        ...plantWithNoImage.identity,
+        ...defaultPlant.identity,
         name: {
-          ...plantWithNoImage.identity.name,
+          ...defaultPlant.identity.name,
           aliases: []
         }
       }
@@ -155,8 +143,8 @@ describe('PlantCard', () => {
 
   it('shows no safety indicators without ecological data', () => {
     renderComponent({
-      ...plantWithNoImage,
-      traits: { ...plantWithNoImage.traits, ecological: undefined }
+      ...defaultPlant,
+      traits: { ...defaultPlant.traits, ecological: undefined }
     });
 
     expect(safetyIndicators()).toEqual([]);

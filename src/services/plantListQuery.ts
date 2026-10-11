@@ -88,6 +88,7 @@ export const PLANT_FIELDS = [
   'traits',
   'phenology',
   'knowledge',
+  'image',
   'metadata',
   'status',
   'deletedAt',
@@ -99,7 +100,7 @@ export type PlantField = (typeof PLANT_FIELDS)[number];
 export const PLANT_LIST_FIELDS: readonly PlantField[] = [
   'identity',
   'traits',
-  'knowledge',
+  'image',
   'status'
 ];
 
