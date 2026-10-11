@@ -64,6 +64,7 @@ describe('plantListQuery', () => {
         'traits',
         'phenology',
         'knowledge',
+        'image',
         'metadata',
         'status',
         'deletedAt',
@@ -76,7 +77,7 @@ describe('plantListQuery', () => {
     expect(PLANT_LIST_FIELDS).toEqual([
       'identity',
       'traits',
-      'knowledge',
+      'image',
       'status'
     ]);
     expect(FAMILY_PLANTS_FIELDS).toEqual(['identity', 'status']);

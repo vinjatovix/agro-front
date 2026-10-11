@@ -11,6 +11,12 @@ export type PlantEcologicalTraits = {
 
 export type PlantStatus = 'ACTIVE' | 'DELETED';
 
+export type PlantImage = {
+  url: string;
+  title?: string;
+  source?: string;
+};
+
 export interface Plant {
   id: string;
 
@@ -124,6 +130,7 @@ export interface Plant {
     }>;
     notes?: string[];
   };
+  image: PlantImage;
   metadata: Metadata;
   status: PlantStatus;
   deletedAt: Date | null;
@@ -133,8 +140,7 @@ export type FamilyPlantItem = Pick<Plant, 'id' | 'identity'> & {
   status?: PlantStatus;
 };
 
-export type PlantListItem = FamilyPlantItem &
-  Pick<Plant, 'traits' | 'knowledge'>;
+export type PlantListItem = FamilyPlantItem & Pick<Plant, 'traits' | 'image'>;
 
 export type PlantLifecycle = Plant['traits']['lifecycle'];
 

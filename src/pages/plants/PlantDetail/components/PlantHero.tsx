@@ -5,7 +5,6 @@ import { iconsMap } from '../../../../shared/constants/iconsMap';
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
 import type { Plant } from '../../../../types/Plants/Plant';
 
-import { findPlantImage } from '../../utils/findPlantImage';
 import { readPlantFamily } from '../../utils/plantFamily';
 
 import './plantHero.css';
@@ -15,18 +14,15 @@ interface Props {
 }
 
 export default function PlantHero({ plant }: Props) {
-  const imageUrl = findPlantImage(plant);
   const familyView = readPlantFamily(plant.identity?.family);
 
   return (
     <header className="plant-hero">
-      {imageUrl && (
-        <img
-          className="plant-hero__image"
-          src={imageUrl}
-          alt={plant.identity.name.primary}
-        />
-      )}
+      <img
+        className="plant-hero__image"
+        src={plant.image.url}
+        alt={plant.identity.name.primary}
+      />
 
       {familyView?.kind === 'linked' && (
         <Link

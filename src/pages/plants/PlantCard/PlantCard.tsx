@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import type { PlantListItem } from '../../../types/Plants/Plant';
 import PlantStatusBadge from '../../../components/plants/PlantStatusBadge/PlantStatusBadge';
 import { capitalizeFirstLetter } from '../../../shared/utils/capitalizeFirstLetter';
-import { findPlantImage } from '../utils/findPlantImage';
 import { readPlantSafety } from '../utils/plantSafety';
 import PlantSafetyIndicators from '../components/PlantSafetyIndicators/PlantSafetyIndicators';
 
@@ -15,7 +14,6 @@ export interface PlantCardProps {
 }
 
 export default function PlantCard({ plant }: PlantCardProps) {
-  const imageUrl = findPlantImage(plant);
   return (
     <Link to={`/plants/${plant.id}`}>
       <article className="plant-card">
@@ -24,7 +22,7 @@ export default function PlantCard({ plant }: PlantCardProps) {
           <PlantSafetyIndicators safety={readPlantSafety(plant)} />
           <PlantStatusBadge status={plant.status} />
         </div>
-        {imageUrl && <img src={imageUrl} alt={plant.identity.name.primary} />}
+        <img src={plant.image.url} alt={plant.identity.name.primary} />
 
         {plant.identity.scientificName && (
           <p className="plant-scientific-name">

@@ -137,6 +137,12 @@ export const listPlantsResponse: PaginatedResponse<Plant> = {
             max: 40
           }
         },
+        resources: [
+          {
+            type: 'image',
+            url: 'https://example.org/plants/perejil.jpg'
+          }
+        ],
         rootSystem: {
           type: 'taproot',
           depthCm: {
@@ -148,6 +154,9 @@ export const listPlantsResponse: PaginatedResponse<Plant> = {
             max: 25
           }
         }
+      },
+      image: {
+        url: 'https://example.org/plants/perejil.jpg'
       },
       metadata: {
         createdAt: new Date('2026-05-12T00:56:03.658Z'),
@@ -310,6 +319,9 @@ export const listPlantsResponse: PaginatedResponse<Plant> = {
             max: 40
           }
         }
+      },
+      image: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Equisetum_arvense_stems.jpg/300px-Equisetum_arvense_stems.jpg'
       },
       metadata: {
         createdAt: new Date('2026-05-15T02:43:14.809Z'),
