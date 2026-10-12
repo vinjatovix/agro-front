@@ -2,7 +2,7 @@
 
 > Extraído el 2026-10-04 de los prototipos de Stitch ("Botanical Precision"). Los prototipos no se versionan en el repo.
 > **Solo valen los colores, la tipografía y la distribución.** El contenido y los componentes de los prototipos **no son correctos** y no se usan como especificación funcional ni de datos.
-> Hoy el front no aplica nada de esto: usa `system-ui`, fondo `#f5f5f5`, texto `#222` y grises sueltos, sin tokens de color (ver `docs/context.md`).
+> Paleta, tipografía, radios, espaciado, sombras y anillo de foco están definidos como custom properties en `src/styles/tokens.css` (feature 009); la base global (`body`, titulares, foco) ya los usa. Las hojas de componentes se migran a los tokens en los PR siguientes de la feature.
 
 ## Decisiones
 
@@ -46,7 +46,9 @@ Equivalencias para quien lea el texto original de Stitch: el verde "Deep Forest 
 
 Usos de referencia: `primary-container` para acciones principales, estado activo de navegación, toggles activos, página activa de la paginación y relleno de sliders; `secondary-container` para fondos suaves y filtros activos; `tertiary-fixed-dim` como acento puntual (avisos, siembra, fotoperiodo).
 
-Trasladados a custom properties en `src/index.css`: `--color-error-container` y `--color-on-error-container` (spec 004). El resto de la paleta sigue pendiente.
+Todos los tokens están en `src/styles/tokens.css` como `--color-<token>`, con el valor de esta tabla. Es el único archivo del front con colores literales.
+
+Derivados (colores de la paleta con transparencia, no colores nuevos): `--color-scrim` = `color-mix(in srgb, var(--color-on-surface) 40%, transparent)` para el overlay del drawer, y `--color-surface-translucent` = `color-mix(in srgb, var(--color-surface) 80%, transparent)` para la cabecera sticky de la ficha.
 
 ## Tipografía
 
@@ -66,6 +68,8 @@ Trasladados a custom properties en `src/index.css`: `--color-error-container` y 
 
 Newsreader para titulares, nombres comunes destacados y nombres científicos (en cursiva). Manrope para toda la interfaz, etiquetas, meses, métricas e inputs.
 
+Cada estilo es un token shorthand de `font` (`--type-<estilo>`, por ejemplo `--type-label-lg: 600 0.875rem/1.25rem var(--font-ui)`) más `--tracking-<estilo>` cuando tiene tracking; `headline-xl` cambia a su tamaño móvil con `max-width: 768px`. Las fuentes se sirven desde el propio origen con Fontsource (`@fontsource/manrope` y `@fontsource/newsreader`, solo subconjunto latin): Manrope 400/600/700 y Newsreader 500/600/400 cursiva/600 cursiva, con `font-display: swap` y fuentes de respaldo con métricas ajustadas (`src/styles/fonts.css`). Los nombres científicos usan el componente `ScientificName` (`taxonomy-scientific`, o la variante `title` que hereda el tamaño del titular).
+
 ## Forma, espaciado y elevación
 
 - **Radios**: `sm` 0.125rem · `DEFAULT` 0.25rem (inputs, chips de mes, thumbs de slider) · `md` 0.375rem · `lg` 0.5rem (tarjetas, media, menús, botones) · `xl` 0.75rem (paneles de filtros, diálogos) · `full` 9999px (solo badges, etiquetas y toggles tipo pill).
@@ -74,6 +78,8 @@ Newsreader para titulares, nombres comunes destacados y nombres científicos (en
   - Nivel 1 (tarjetas): `0 1px 3px rgba(19,62,43,0.04), 0 6px 16px rgba(19,62,43,0.03)`; hover `0 8px 24px rgba(19,62,43,0.08)`.
   - Nivel 2 (drawers, menús, modales): `0 12px 32px rgba(19,62,43,0.12)`.
   - Bordes finos de 1px con `outline-variant`.
+- **Tokens**: `--radius-sm|default|md|lg|xl|full`, `--space-xs|sm|md|lg|xl`, `--gutter`, `--margin-inline` (1rem; 2rem desde 769px) y `--margin-inline-desktop` (3rem, definido sin conectar porque el front aún no tiene el breakpoint de 1200px), `--elevation-1`, `--elevation-1-hover` y `--elevation-2`.
+- **Foco**: anillo común de 2px `primary` con separación de 2px en `:focus-visible` (`src/index.css`), sin estilos de foco propios por componente.
 
 ## Distribución
 
