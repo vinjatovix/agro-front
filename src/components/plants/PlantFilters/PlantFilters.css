@@ -1,6 +1,6 @@
 .plant-filters {
   display: grid;
-  gap: 5px;
+  gap: var(--space-xs);
 }
 
 .plant-filters__group {
@@ -11,12 +11,20 @@
   min-inline-size: 0;
 }
 
+.plant-filters__group-label,
+.plant-filters__label {
+  font: var(--type-label-lg);
+  color: var(--color-on-surface-variant);
+}
+
 .plant-filters__input {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+  padding: var(--space-sm);
+  border: 1px solid var(--color-outline);
+  border-radius: var(--radius-default);
+  background: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  font: var(--type-body-lg);
 }
 
 .plant-filters__buttons {
@@ -24,53 +32,57 @@
   flex-wrap: wrap;
 }
 
-.plant-filters__toggle {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background: white;
-  color: rgb(0, 0, 0);
+.plant-filters__toggle,
+.plant-filters__clear {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-outline);
+  background: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  font: var(--type-label-lg);
   cursor: pointer;
 }
 
-.plant-filters__toggle--active {
-  background: #0e7528;
-  color: rgb(237, 229, 229);
+.plant-filters__toggle {
+  padding: var(--space-xs) var(--space-sm);
 }
 
 .plant-filters__clear {
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background: #f3f3f3;
-  cursor: pointer;
+  padding: var(--space-sm);
+}
+
+.plant-filters__toggle:hover,
+.plant-filters__clear:hover {
+  background: var(--color-surface-container-high);
+}
+
+.plant-filters__toggle--active,
+.plant-filters__toggle--active:hover {
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
 }
 
 .plant-filters__label-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-}
-
-.plant-filters__label {
-  font-weight: 500;
+  gap: var(--space-sm);
 }
 
 .plant-filters__slider-clear {
   border: none;
   background: transparent;
-  color: #777;
+  color: var(--color-surface-tint);
   cursor: pointer;
-  font-size: 12px;
+  font: var(--type-body-sm);
   padding: 0;
 }
 
 .plant-filters__slider-clear:hover {
-  color: #111;
+  color: var(--color-primary);
 }
 
 .plant-filters__hint {
   margin: 0;
-  font-size: 0.875rem;
+  font: var(--type-body-sm);
+  color: var(--color-on-surface-variant);
 }

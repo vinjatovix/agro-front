@@ -25,7 +25,7 @@
   top: 10px;
   width: 60px;
   height: 25px;
-  background: #94a3b8;
+  background: var(--color-surface-dim);
   border-radius: 20px;
   animation: cloudCycle 8s infinite;
 }
@@ -34,7 +34,7 @@
 .cloud::after {
   content: '';
   position: absolute;
-  background: #94a3b8;
+  background: var(--color-surface-dim);
   border-radius: 50%;
 }
 
@@ -74,7 +74,7 @@
   top: 10px;
   width: 28px;
   height: 28px;
-  background: #facc15;
+  background: var(--color-tertiary-fixed-dim);
   border-radius: 50%;
   opacity: 0;
   animation: sunCycle 8s infinite;
@@ -120,7 +120,7 @@
   position: absolute;
   width: 2px;
   height: 10px;
-  background: #38bdf8;
+  background: var(--color-secondary-fixed-dim);
   opacity: 0.7;
   animation: drop 1s infinite linear;
 }
@@ -159,7 +159,7 @@
 .soil {
   width: 70px;
   height: 10px;
-  background: #5b3a29;
+  background: var(--color-tertiary-container);
   border-radius: 6px;
   position: absolute;
   bottom: 0;
@@ -177,7 +177,7 @@
 .seed {
   width: 6px;
   height: 6px;
-  background: #8b5a2b;
+  background: var(--color-on-tertiary-fixed-variant);
   border-radius: 50%;
   position: absolute;
   left: 50%;
@@ -218,7 +218,7 @@
   bottom: 0;
   width: 4px;
   height: 0;
-  background: #22c55e;
+  background: var(--color-secondary);
   border-radius: 2px;
   transform: translateX(-50%);
   animation: grow 8s infinite;
@@ -243,7 +243,7 @@
 .leaf {
   width: 14px;
   height: 14px;
-  background: #16a34a;
+  background: var(--color-surface-tint);
   position: absolute;
   opacity: 0;
   border-radius: 0 100% 0 100%;
@@ -301,7 +301,7 @@
 
   25% {
     opacity: 0.8;
-    background: #16a34a;
+    background: var(--color-surface-tint);
   }
 
   45% {
@@ -309,7 +309,7 @@
     right: -2px;
     bottom: 15px;
     transform: rotate(120deg) scale(1);
-    background: #facc15;
+    background: var(--color-tertiary-fixed-dim);
   }
 
   85% {
@@ -321,7 +321,7 @@
     right: -2px;
     bottom: 0;
     transform: rotate(180deg) scale(0.8);
-    background: #5b3a29;
+    background: var(--color-tertiary-container);
   }
 }
 
@@ -360,7 +360,7 @@
   position: absolute;
   width: 10px;
   height: 14px;
-  background: #f472b6;
+  background: var(--color-tertiary-fixed);
   border-radius: 50%;
 }
 
@@ -392,7 +392,7 @@
 .center {
   width: 8px;
   height: 8px;
-  background: #facc15;
+  background: var(--color-tertiary-fixed-dim);
   border-radius: 50%;
   position: absolute;
   top: 2px;
@@ -403,7 +403,7 @@
   position: absolute;
   width: 6px;
   height: 6px;
-  background: #8b5a2b;
+  background: var(--color-on-tertiary-fixed-variant);
   border-radius: 50%;
   left: 50%;
   bottom: 46px;
