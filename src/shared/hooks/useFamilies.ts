@@ -1,20 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
-import { getFamilies } from '../../services/families.service';
-import type { Family } from '../../types/Family';
-import type { PaginatedResponse } from '../../types/api';
+import { getFamilyList } from '../../services/families.service';
+import type { FamilyListItem } from '../../types/Family';
+import { familyKeys } from '../reactQuery/familyKeys';
 import { QUERY_DEFAULTS } from '../reactQuery/queryDefaults';
 
-type FamiliesResponse = PaginatedResponse<Family>;
-
 export function useFamilies() {
-  const query = useQuery<FamiliesResponse>({
-    queryKey: ['families'],
-    queryFn: getFamilies,
+  const query = useQuery({
+    queryKey: familyKeys.list(),
+    queryFn: getFamilyList,
     ...QUERY_DEFAULTS
   });
 
+  const data: FamilyListItem[] = query.data ?? [];
+
   return {
-    data: query.data?.data ?? [],
+    data,
     loading: query.isLoading,
     error: query.error
   };

@@ -5,7 +5,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useFamily } from '../../../../src/pages/families/hooks/useFamily';
 import { getFamilyById } from '../../../../src/services/families.service';
+import { familyKeys } from '../../../../src/shared/reactQuery/familyKeys';
+import { buildFamily } from '../../../fixtures/families/buildFamily';
 import { listFamiliesResponse } from '../../../fixtures/families/listFamilies';
+import { listFamilyItems } from '../../../fixtures/families/listFamilyItems';
 
 vi.mock('../../../../src/services/families.service', () => ({
   getFamilyById: vi.fn()
@@ -95,5 +98,20 @@ describe('useFamily', () => {
 
     expect(result.current.fetchStatus).toBe('idle');
     expect(mockedGetFamilyById).not.toHaveBeenCalled();
+  });
+
+  it('requests the full family even when the partial list is cached', async () => {
+    const family = buildFamily();
+    queryClient.setQueryData(familyKeys.list(), listFamilyItems);
+    mockedGetFamilyById.mockResolvedValue(family);
+
+    const { result } = renderHook(() => useFamily(family.id), {
+      wrapper
+    });
+
+    await waitFor(() => {
+      expect(result.current.data).toEqual(family);
+    });
+    expect(mockedGetFamilyById).toHaveBeenCalledExactlyOnceWith(family.id);
   });
 });

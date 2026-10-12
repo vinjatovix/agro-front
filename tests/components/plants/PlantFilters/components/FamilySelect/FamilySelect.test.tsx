@@ -1,65 +1,81 @@
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import FamilySelect from '../../../../../../src/components/plants/PlantFilters/components/FamilySelect/FamilySelect';
+import { getFamilyList } from '../../../../../../src/services/families.service';
+import type { FamilyListItem } from '../../../../../../src/types/Family';
+import { buildFamilyListItem } from '../../../../../fixtures/families/buildFamilyListItem';
+import { listFamilyItems } from '../../../../../fixtures/families/listFamilyItems';
+import { createTestQueryClient } from '../../../../../test-utils/createTestQueryClient';
 
-const mockUseFamilies = vi.fn();
-
-vi.mock('../../../../../../src/shared/hooks/useFamilies', () => ({
-  useFamilies: () => mockUseFamilies()
+vi.mock('../../../../../../src/services/families.service', () => ({
+  getFamilyList: vi.fn()
 }));
+
+const mockedGetFamilyList = vi.mocked(getFamilyList);
+
+function resolveFamilies(data: FamilyListItem[]) {
+  mockedGetFamilyList.mockResolvedValue(data);
+}
+
+function renderFamilySelect(onChange = vi.fn()) {
+  return render(
+    <QueryClientProvider client={createTestQueryClient()}>
+      <FamilySelect value="" onChange={onChange} />
+    </QueryClientProvider>
+  );
+}
+
+async function findOptionTexts(): Promise<Array<string | null>> {
+  await screen.findByRole('option', { name: 'Todas las familias' });
+  return screen.getAllByRole('option').map((option) => option.textContent);
+}
 
 describe('FamilySelect', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseFamilies.mockReturnValue({
-      loading: false,
-      data: [
-        { id: 'f-1', name: 'amarilidáceas', slug: 'amaryllidaceae' },
-        { id: 'f-2', name: 'solanáceas', slug: 'solanaceae' }
-      ]
-    });
+    mockedGetFamilyList.mockResolvedValue(listFamilyItems);
   });
 
-  it('renders initial reset option with empty value and all families label', () => {
-    render(<FamilySelect value="" onChange={vi.fn()} />);
+  it('renders initial reset option with empty value and all families label', async () => {
+    renderFamilySelect();
 
-    const options = screen.getAllByRole('option');
-    expect(options[0]).toHaveValue('');
-    expect(options[0]).toHaveTextContent('Todas las familias');
+    const resetOption = await screen.findByRole('option', {
+      name: 'Todas las familias'
+    });
+    expect(screen.getAllByRole('option')[0]).toBe(resetOption);
+    expect(resetOption).toHaveValue('');
   });
 
   it.each([
     { name: 'amarilidáceas', expected: 'Amarilidáceas' },
     { name: 'apiáceas', expected: 'Apiáceas' },
     { name: 'solanáceas', expected: 'Solanáceas' }
-  ])('displays capitalized Spanish name for $name', ({ name, expected }) => {
-    mockUseFamilies.mockReturnValue({
-      loading: false,
-      data: [{ id: 'test-id', name, slug: 'test-slug' }]
-    });
+  ])(
+    'displays capitalized Spanish name for $name',
+    async ({ name, expected }) => {
+      resolveFamilies([buildFamilyListItem({ id: 'test-id', name })]);
 
-    render(<FamilySelect value="" onChange={vi.fn()} />);
+      renderFamilySelect();
 
-    expect(screen.getByRole('option', { name: expected })).toBeInTheDocument();
-  });
+      expect(
+        await screen.findByRole('option', { name: expected })
+      ).toBeInTheDocument();
+    }
+  );
 
-  it('sorts family options alphabetically using Spanish locale collation', () => {
-    mockUseFamilies.mockReturnValue({
-      loading: false,
-      data: [
-        { id: 'f-3', name: 'solanáceas', slug: 'solanaceae' },
-        { id: 'f-1', name: 'amarilidáceas', slug: 'amaryllidaceae' },
-        { id: 'f-4', name: 'ásteres', slug: 'asteraceae' },
-        { id: 'f-2', name: 'brassicáceas', slug: 'brassicaceae' }
-      ]
-    });
+  it('sorts family options alphabetically using Spanish locale collation', async () => {
+    resolveFamilies([
+      buildFamilyListItem({ id: 'f-3', name: 'solanáceas' }),
+      buildFamilyListItem({ id: 'f-1', name: 'amarilidáceas' }),
+      buildFamilyListItem({ id: 'f-4', name: 'ásteres' }),
+      buildFamilyListItem({ id: 'f-2', name: 'brassicáceas' })
+    ]);
 
-    render(<FamilySelect value="" onChange={vi.fn()} />);
+    renderFamilySelect();
 
-    const options = screen.getAllByRole('option');
-    const optionTexts = options.map((opt) => opt.textContent);
-    expect(optionTexts).toEqual([
+    expect(await findOptionTexts()).toEqual([
       'Todas las familias',
       'Amarilidáceas',
       'Ásteres',
@@ -68,97 +84,88 @@ describe('FamilySelect', () => {
     ]);
   });
 
-  it('maintains family UUID id as option value', () => {
-    mockUseFamilies.mockReturnValue({
-      loading: false,
-      data: [
-        {
-          id: 'd0a3b923-c1ac-4796-afa4-1c801ff1a4a3',
-          name: 'amarilidáceas',
-          slug: 'amaryllidaceae'
-        }
-      ]
-    });
+  it('maintains family UUID id as option value', async () => {
+    const [family] = listFamilyItems;
 
-    render(<FamilySelect value="" onChange={vi.fn()} />);
+    renderFamilySelect();
 
-    expect(screen.getByRole('option', { name: 'Amarilidáceas' })).toHaveValue(
-      'd0a3b923-c1ac-4796-afa4-1c801ff1a4a3'
-    );
+    expect(
+      await screen.findByRole('option', { name: 'Amarilidáceas' })
+    ).toHaveValue(family.id);
   });
 
-  it('calls onChange callback with family id when user selects an option', () => {
+  it('calls onChange callback with family id when user selects an option', async () => {
     const handleChange = vi.fn();
-    render(<FamilySelect value="" onChange={handleChange} />);
+    const [, family] = listFamilyItems;
+    renderFamilySelect(handleChange);
+    await screen.findByRole('option', { name: 'Apiáceas' });
 
-    const select = screen.getByTestId('family-select');
-    fireEvent.change(select, { target: { value: 'f-2' } });
+    fireEvent.change(screen.getByTestId('family-select'), {
+      target: { value: family.id }
+    });
 
-    expect(handleChange).toHaveBeenCalledWith('f-2');
+    expect(handleChange).toHaveBeenCalledWith(family.id);
   });
 
-  it('disables the select input while families are loading', () => {
-    mockUseFamilies.mockReturnValue({
-      loading: true,
-      data: []
-    });
+  it('keeps the select enabled with only the reset option when there are no families', async () => {
+    resolveFamilies([]);
 
-    render(<FamilySelect value="" onChange={vi.fn()} />);
+    renderFamilySelect();
 
-    expect(screen.getByTestId('family-select')).toBeDisabled();
+    expect(await findOptionTexts()).toEqual(['Todas las familias']);
+    expect(screen.getByTestId('family-select')).toBeEnabled();
   });
 
-  it('renders loading option while families are loading', () => {
-    mockUseFamilies.mockReturnValue({
-      loading: true,
-      data: []
+  describe('while families are loading', () => {
+    beforeEach(() => {
+      mockedGetFamilyList.mockImplementation(
+        () => new Promise<FamilyListItem[]>(() => {})
+      );
     });
 
-    render(<FamilySelect value="" onChange={vi.fn()} />);
+    it('disables the select input', () => {
+      renderFamilySelect();
 
-    const loadingOption = screen.getByRole('option', { name: 'Cargando...' });
-    expect(loadingOption).toHaveValue('');
+      expect(screen.getByTestId('family-select')).toBeDisabled();
+    });
+
+    it('renders loading option', () => {
+      renderFamilySelect();
+
+      expect(screen.getByRole('option', { name: 'Cargando...' })).toHaveValue(
+        ''
+      );
+    });
   });
 
-  it('disables the select input when families query fails', () => {
-    mockUseFamilies.mockReturnValue({
-      loading: false,
-      error: new Error('Network error'),
-      data: []
+  describe('when families query fails', () => {
+    beforeEach(() => {
+      mockedGetFamilyList.mockRejectedValue(new Error('Network error'));
     });
 
-    render(<FamilySelect value="" onChange={vi.fn()} />);
+    it('renders unknown error option', async () => {
+      renderFamilySelect();
 
-    expect(screen.getByTestId('family-select')).toBeDisabled();
-  });
-
-  it('indicates invalid state via aria-invalid when families query fails', () => {
-    mockUseFamilies.mockReturnValue({
-      loading: false,
-      error: new Error('Network error'),
-      data: []
+      expect(
+        await screen.findByRole('option', { name: 'Error desconocido' })
+      ).toHaveValue('');
     });
 
-    render(<FamilySelect value="" onChange={vi.fn()} />);
+    it('disables the select input', async () => {
+      renderFamilySelect();
+      await screen.findByRole('option', { name: 'Error desconocido' });
 
-    expect(screen.getByTestId('family-select')).toHaveAttribute(
-      'aria-invalid',
-      'true'
-    );
-  });
-
-  it('renders unknown error option when families query fails', () => {
-    mockUseFamilies.mockReturnValue({
-      loading: false,
-      error: new Error('Network error'),
-      data: []
+      expect(screen.getByTestId('family-select')).toBeDisabled();
     });
 
-    render(<FamilySelect value="" onChange={vi.fn()} />);
+    it('indicates invalid state via aria-invalid', async () => {
+      renderFamilySelect();
+      await screen.findByRole('option', { name: 'Error desconocido' });
 
-    const errorOption = screen.getByRole('option', {
-      name: 'Error desconocido'
+      expect(screen.getByTestId('family-select')).toHaveAttribute(
+        'aria-invalid',
+        'true'
+      );
     });
-    expect(errorOption).toHaveValue('');
   });
 });

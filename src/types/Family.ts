@@ -16,3 +16,5 @@ export interface Family {
   };
   metadata?: Metadata;
 }
+
+export type FamilyListItem = Pick<Family, 'id' | 'name' | 'scientificName'>;

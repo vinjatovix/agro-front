@@ -7,10 +7,10 @@ import type {
   PlantListItem
 } from '../types/Plants/Plant';
 import { apiFetch } from './api';
+import { PAGINATION_QUERY_KEYS } from './listQuery';
 import {
   DEFAULT_PLANT_SORT,
   FAMILY_PLANTS_FIELDS,
-  PAGINATION_QUERY_KEYS,
   PLANT_FIELDS_QUERY_KEY,
   PLANT_FILTER_QUERY_KEYS,
   PLANT_LIST_FIELDS,

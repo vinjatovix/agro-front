@@ -2,10 +2,8 @@ import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 
 import { getPlantList } from '../../../services/plants.service';
-import type {
-  PlantsSortField,
-  SortDirection
-} from '../../../services/plantListQuery';
+import type { SortDirection } from '../../../services/listQuery';
+import type { PlantsSortField } from '../../../services/plantListQuery';
 import { QUERY_DEFAULTS } from '../../../shared/reactQuery/queryDefaults';
 import { plantKeys } from '../../../shared/reactQuery/plantKeys';
 import { PLANT_LIST_URL_PARAMS } from '../../../shared/constants/plantListUrlParams';

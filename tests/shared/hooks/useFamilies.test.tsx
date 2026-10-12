@@ -1,28 +1,36 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { render, renderHook, screen, waitFor } from '@testing-library/react';
 import React from 'react';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
 
+import FamilySelect from '../../../src/components/plants/PlantFilters/components/FamilySelect/FamilySelect';
+import FamilyList from '../../../src/pages/families/FamilyList';
 import { useFamilies } from '../../../src/shared/hooks/useFamilies';
-import { getFamilies } from '../../../src/services/families.service';
-import type { Family } from '../../../src/types/Family';
+import { getFamilyList } from '../../../src/services/families.service';
+import type { FamilyListItem } from '../../../src/types/Family';
 
-import { listFamiliesResponse } from '../../fixtures/families/listFamilies';
+import { listFamilyItems } from '../../fixtures/families/listFamilyItems';
 import { createTestQueryClient } from '../../test-utils/createTestQueryClient';
 
 vi.mock('../../../src/services/families.service', () => ({
-  getFamilies: vi.fn()
+  getFamilyList: vi.fn()
 }));
 
-const mockedGetFamilies = vi.mocked(getFamilies);
-const familiesMock: Family[] = listFamiliesResponse.data;
+const mockedGetFamilyList = vi.mocked(getFamilyList);
 
-function wrapper({ children }: { children: React.ReactNode }) {
-  const queryClient = createTestQueryClient();
+function createWrapper(queryClient: QueryClient) {
+  return function Wrapper({ children }: { children: React.ReactNode }) {
+    return (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+  };
+}
 
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+function renderUseFamilies(queryClient = createTestQueryClient()) {
+  return renderHook(() => useFamilies(), {
+    wrapper: createWrapper(queryClient)
+  });
 }
 
 describe('useFamilies', () => {
@@ -30,39 +38,100 @@ describe('useFamilies', () => {
     vi.clearAllMocks();
   });
 
-  it('returns initial state', () => {
-    mockedGetFamilies.mockResolvedValue({
-      data: [],
-      pagination: {
-        page: 1,
-        limit: 10,
-        totalPages: 0,
-        totalItems: 0
-      }
-    });
+  it('expone loading mientras la petición está pendiente', () => {
+    mockedGetFamilyList.mockImplementation(
+      () => new Promise<FamilyListItem[]>(() => {})
+    );
 
-    const { result } = renderHook(() => useFamilies(), { wrapper });
+    const { result } = renderUseFamilies();
 
-    expect(result.current.data).toEqual([]);
+    expect(result.current).toEqual({ data: [], loading: true, error: null });
   });
 
-  it('loads families successfully', async () => {
-    mockedGetFamilies.mockResolvedValue(listFamiliesResponse);
+  it('devuelve las familias del listado y pide una sola vez', async () => {
+    mockedGetFamilyList.mockResolvedValue(listFamilyItems);
 
-    const { result } = renderHook(() => useFamilies(), { wrapper });
+    const { result } = renderUseFamilies();
 
     await waitFor(() => {
-      expect(result.current.data).toEqual(familiesMock);
+      expect(result.current).toEqual({
+        data: listFamilyItems,
+        loading: false,
+        error: null
+      });
     });
+    expect(mockedGetFamilyList).toHaveBeenCalledOnce();
   });
 
-  it('exposes error state when query fails', async () => {
-    mockedGetFamilies.mockRejectedValue(new Error('Failed to load families'));
+  it('expone el error y datos vacíos si la petición falla', async () => {
+    mockedGetFamilyList.mockRejectedValue(new Error('Failed to load families'));
 
-    const { result } = renderHook(() => useFamilies(), { wrapper });
+    const { result } = renderUseFamilies();
 
     await waitFor(() => {
       expect(result.current.error).toBeTruthy();
     });
+    expect(result.current.data).toEqual([]);
+    expect(result.current.loading).toBe(false);
+  });
+});
+
+describe('caché compartida', () => {
+  const [firstFamily] = listFamilyItems;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockedGetFamilyList.mockResolvedValue(listFamilyItems);
+  });
+
+  function renderWithClient(queryClient: QueryClient, ui: React.ReactNode) {
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>{ui}</MemoryRouter>
+      </QueryClientProvider>
+    );
+  }
+
+  async function expectSelectWithFamilies() {
+    expect(
+      await screen.findByRole('option', { name: 'Amarilidáceas' })
+    ).toHaveValue(firstFamily.id);
+  }
+
+  async function expectListWithFamilies() {
+    expect(
+      await screen.findByRole('link', {
+        name: new RegExp(firstFamily.scientificName)
+      })
+    ).toHaveAttribute('href', `/families/${firstFamily.id}`);
+  }
+
+  it('el selector y el listado montados a la vez hacen una sola petición', async () => {
+    renderWithClient(
+      createTestQueryClient(),
+      <>
+        <FamilySelect value="" onChange={vi.fn()} />
+        <FamilyList />
+      </>
+    );
+
+    await expectSelectWithFamilies();
+    await expectListWithFamilies();
+    expect(mockedGetFamilyList).toHaveBeenCalledOnce();
+  });
+
+  it('navegar del selector al listado reutiliza la petición', async () => {
+    const queryClient = createTestQueryClient();
+    const { unmount } = renderWithClient(
+      queryClient,
+      <FamilySelect value="" onChange={vi.fn()} />
+    );
+    await expectSelectWithFamilies();
+    unmount();
+
+    renderWithClient(queryClient, <FamilyList />);
+
+    await expectListWithFamilies();
+    expect(mockedGetFamilyList).toHaveBeenCalledOnce();
   });
 });
