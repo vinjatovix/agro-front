@@ -1,12 +1,12 @@
 import {
   DEFAULT_PLANT_SORT,
   PLANT_SORT_FIELDS,
-  SORT_DIRECTIONS,
   parseBooleanFilter,
   type PlantFilterParams,
   type PlantListRequest,
   type PlantSort
 } from '../../../services/plantListQuery';
+import { SORT_DIRECTIONS } from '../../../services/listQuery';
 import type { PaginationParams } from '../../../types/Pagination';
 import { SUPPORTED_LIMITS } from '../../../shared/components/constants';
 import { FILTER_TEXT_MAX_LENGTH } from '../../../shared/constants/filterText';

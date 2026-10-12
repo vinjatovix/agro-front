@@ -3,8 +3,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
+import { QueryClientProvider } from '@tanstack/react-query';
 
 import PlantFilters from '../../../../src/components/plants/PlantFilters/PlantFilters';
+import { getFamilyList } from '../../../../src/services/families.service';
+import { listFamilyItems } from '../../../fixtures/families/listFamilyItems';
+import { createTestQueryClient } from '../../../test-utils/createTestQueryClient';
 
 const mockSetParam = vi.fn();
 const mockGetParam = vi.fn();
@@ -14,16 +18,11 @@ const mockHandleTextChange = vi.fn();
 const mockSetFamily = vi.fn();
 const mockBooleans: { edible?: string; toxic?: string } = {};
 
-vi.mock('../../../../src/shared/hooks/useFamilies', () => ({
-  useFamilies: () => ({
-    loading: false,
-    error: null,
-    data: [
-      { id: 'family-id', slug: 'rosaceae', name: 'rosáceas' },
-      { id: 'family-id2', slug: 'lamiaceae', name: 'lamiáceas' }
-    ]
-  })
+vi.mock('../../../../src/services/families.service', () => ({
+  getFamilyList: vi.fn()
 }));
+
+const mockedGetFamilyList = vi.mocked(getFamilyList);
 
 vi.mock(
   '../../../../src/components/plants/PlantFilters/hooks/usePlantFilters',
@@ -66,15 +65,18 @@ describe('PlantFilters', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetParam.mockReturnValue('');
+    mockedGetFamilyList.mockResolvedValue(listFamilyItems);
     mockBooleans.edible = undefined;
     mockBooleans.toxic = undefined;
   });
 
   function renderComponent() {
     return render(
-      <MemoryRouter>
-        <PlantFilters />
-      </MemoryRouter>
+      <QueryClientProvider client={createTestQueryClient()}>
+        <MemoryRouter>
+          <PlantFilters />
+        </MemoryRouter>
+      </QueryClientProvider>
     );
   }
 
@@ -109,16 +111,16 @@ describe('PlantFilters', () => {
     expect(mockClearFilters).toHaveBeenCalled();
   });
 
-  it('calls setFamily from FamilySelect', () => {
+  it('calls setFamily from FamilySelect', async () => {
+    const [, family] = listFamilyItems;
     renderComponent();
+    await screen.findByRole('option', { name: 'Apiáceas' });
 
-    const select = screen.getByTestId('family-select');
-
-    fireEvent.change(select, {
-      target: { value: 'family-id2' }
+    fireEvent.change(screen.getByTestId('family-select'), {
+      target: { value: family.id }
     });
 
-    expect(mockSetFamily).toHaveBeenCalledWith('family-id2');
+    expect(mockSetFamily).toHaveBeenCalledWith(family.id);
   });
 
   it('calls setHemisphere', () => {

@@ -1,5 +1,6 @@
 import type { PaginationParams } from '../types/Pagination';
 import { pickAllowed } from '../shared/utils/pickAllowed';
+import type { SortDirection } from './listQuery';
 
 export const BOOLEAN_FILTER_VALUES = ['true', 'false'] as const;
 
@@ -34,11 +35,7 @@ export type PlantFilterParams = {
 
 export const PLANT_SORT_FIELDS = ['name', 'scientificName'] as const;
 
-export const SORT_DIRECTIONS = ['asc', 'desc'] as const;
-
 export type PlantsSortField = (typeof PLANT_SORT_FIELDS)[number];
-
-export type SortDirection = (typeof SORT_DIRECTIONS)[number];
 
 export type PlantSort = {
   readonly field: PlantsSortField;
@@ -72,13 +69,6 @@ export const PLANT_FILTER_QUERY_KEYS: Record<keyof PlantFilterParams, string> =
     lightHoursMin: 'filter[lightHoursMin][eq]',
     rootSystem: 'filter[rootSystem][eq]'
   };
-
-export const PAGINATION_QUERY_KEYS = {
-  page: 'pagination[page]',
-  limit: 'pagination[limit]'
-} as const;
-
-export const PAGINATION_LIMIT_MAX = 100;
 
 export const PLANT_FIELDS_QUERY_KEY = 'fields[plants]';
 
@@ -115,10 +105,6 @@ export function sortQueryKey(field: PlantsSortField): string {
 
 export function isPlantsSortField(value: string): value is PlantsSortField {
   return (PLANT_SORT_FIELDS as readonly string[]).includes(value);
-}
-
-export function isSortDirection(value: string): value is SortDirection {
-  return (SORT_DIRECTIONS as readonly string[]).includes(value);
 }
 
 export function parseBooleanFilter(

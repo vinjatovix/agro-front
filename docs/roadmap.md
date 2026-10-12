@@ -35,27 +35,27 @@ Verificado con `npm run lint`, `npm run typecheck` y `npm run test` (54 ficheros
 verde) y revisando el código y el historial de commits. Los prompts de cada iteración describen el
 problema de partida y no se reescriben.
 
-| It. | Título                                     | Estado               | Evidencia / pendiente                                                                                           |
-| --- | ------------------------------------------ | -------------------- | --------------------------------------------------------------------------------------------------------------- |
-| 1   | Gates de tipado y lint                     | Parcial              | `strict` y lint con 0 warnings hechos. Faltan `complexity`, `max-lines`, `no-console`, capas                    |
-| 2   | Gates de tests, build y dependencias       | Pendiente            | Sin umbrales de cobertura, sin `.env.example`, sin gate de bundle ni de `npm audit`                             |
-| 3   | Listado de plantas que respeta el contrato | Hecha (salvo umbral) | Orden y límite corregidos. Falta el umbral del 95 % en `services/` (depende de la 2)                            |
-| 4   | Ficha de planta fiel al modelo             | Parcial              | Tipos y estaciones hechos. Las fixtures no se validan contra el schema                                          |
-| 5   | Nombre de la familia en las plantas        | Hecha                | Commit `a8c6866`                                                                                                |
-| 6   | Familias robustas                          | Hecha                | Commit `e1f528a`. Riesgo abierto: el selector pide una sola página de 100 familias                              |
-| 7   | Peticiones ligeras en los listados         | Hecha                | Spec 007. Familia −94,5 %, listado −82,6 % ([medición](../specs/007-lightweight-list-requests/measurements.md)) |
-| 8   | Errores, rutas inválidas y vacíos          | Parcial              | Existen `not_found`, `empty` y `ErrorResponse`. Falta error boundary y verificar la página 404                  |
-| 9   | Toda la interfaz en castellano             | Sin verificar        | No revisado en esta pasada                                                                                      |
-| 10  | Tokens de diseño                           | Pendiente            | No se cargan Newsreader ni Manrope en `index.html`                                                              |
-| 11  | Iconos en lugar de emojis                  | Parcial              | `iconsMap` centraliza los iconos (`b06caf5`). Quedan emojis en 5 ficheros de `src/`                             |
-| 12  | Estructura de la aplicación                | Pendiente            | No se detecta una barra superior global                                                                         |
-| 13  | Catálogo de plantas con el nuevo diseño    | Pendiente            | No iniciada según el historial                                                                                  |
-| 14  | Ficha de planta con el nuevo diseño        | Pendiente            | No iniciada según el historial                                                                                  |
-| 15  | Familias con el nuevo diseño               | Pendiente            | No iniciada según el historial                                                                                  |
-| 16  | Accesibilidad base                         | Parcial              | El `Drawer` ya usa botón (`e27af5c`). Falta el resto del DoD                                                    |
+| It. | Título                                     | Estado               | Evidencia / pendiente                                                                                                                                                                                                     |
+| --- | ------------------------------------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Gates de tipado y lint                     | Parcial              | `strict` y lint con 0 warnings hechos. Faltan `complexity`, `max-lines`, `no-console`, capas                                                                                                                              |
+| 2   | Gates de tests, build y dependencias       | Pendiente            | Sin umbrales de cobertura, sin `.env.example`, sin gate de bundle ni de `npm audit`                                                                                                                                       |
+| 3   | Listado de plantas que respeta el contrato | Hecha (salvo umbral) | Orden y límite corregidos. Falta el umbral del 95 % en `services/` (depende de la 2)                                                                                                                                      |
+| 4   | Ficha de planta fiel al modelo             | Parcial              | Tipos y estaciones hechos. Las fixtures no se validan contra el schema                                                                                                                                                    |
+| 5   | Nombre de la familia en las plantas        | Hecha                | Commit `a8c6866`                                                                                                                                                                                                          |
+| 6   | Familias robustas                          | Hecha                | Commit `e1f528a`. Riesgo de una sola página de 100 familias resuelto en la spec 008                                                                                                                                       |
+| 7   | Peticiones ligeras en los listados         | Hecha                | Spec 007. Familia −94,5 %, listado −82,6 % ([medición](../specs/007-lightweight-list-requests/measurements.md)). Spec 008. Listado de familias −95,7 % ([medición](../specs/008-lightweight-family-list/measurements.md)) |
+| 8   | Errores, rutas inválidas y vacíos          | Parcial              | Existen `not_found`, `empty` y `ErrorResponse`. Falta error boundary y verificar la página 404                                                                                                                            |
+| 9   | Toda la interfaz en castellano             | Sin verificar        | No revisado en esta pasada                                                                                                                                                                                                |
+| 10  | Tokens de diseño                           | Pendiente            | No se cargan Newsreader ni Manrope en `index.html`                                                                                                                                                                        |
+| 11  | Iconos en lugar de emojis                  | Parcial              | `iconsMap` centraliza los iconos (`b06caf5`). Quedan emojis en 5 ficheros de `src/`                                                                                                                                       |
+| 12  | Estructura de la aplicación                | Pendiente            | No se detecta una barra superior global                                                                                                                                                                                   |
+| 13  | Catálogo de plantas con el nuevo diseño    | Pendiente            | No iniciada según el historial                                                                                                                                                                                            |
+| 14  | Ficha de planta con el nuevo diseño        | Pendiente            | No iniciada según el historial                                                                                                                                                                                            |
+| 15  | Familias con el nuevo diseño               | Pendiente            | No iniciada según el historial                                                                                                                                                                                            |
+| 16  | Accesibilidad base                         | Parcial              | El `Drawer` ya usa botón (`e27af5c`). Falta el resto del DoD                                                                                                                                                              |
 
 Specs de trabajo en `specs/`: 001 (It. 1), 002 (It. 2), 003 (It. 3), 004 (edición de comestibles y
-tóxicas, y estaciones; no estaba en el DoD original), 005 (It. 5) y 006 (It. 6) y 007 (It. 7).
+tóxicas, y estaciones; no estaba en el DoD original), 005 (It. 5), 006 (It. 6), 007 (It. 7) y 008 (It. 7).
 
 ## Iteración 1: Gates de tipado y lint
 
@@ -236,8 +236,8 @@ tóxicas, y estaciones; no estaba en el DoD original), 005 (It. 5) y 006 (It. 6)
 
 - **Estado (2026-10-10)**: hecha (`e1f528a`). La ficha resuelve la familia por id o slug y pide sus
   plantas con el id real. Muestra «Mostrando X de Y plantas» o «Y plantas en total» con enlace al
-  listado filtrado. El selector muestra nombres ordenados. Riesgo abierto: el selector pide una sola
-  página de 100 familias (`families.service.ts`), así que con más familias faltarían opciones.
+  listado filtrado. El selector muestra nombres ordenados. Riesgo resuelto en la spec 008: `getFamilyList`
+  pide todas las páginas de 100 familias hasta `totalPages`.
 
 - **Valor entregado**: las fichas de familia funcionan tanto por id como por slug, y el selector
   de familias muestra nombres legibles en lugar de slugs.
@@ -247,7 +247,7 @@ tóxicas, y estaciones; no estaba en el DoD original), 005 (It. 5) y 006 (It. 6)
   - El selector de familia del listado de plantas muestra nombres ordenados.
   - CI en verde.
 - **Dependencias**: ninguna.
-- **Riesgos**: si hay más de 100 familias, una sola página no basta para el selector.
+- **Riesgos**: resuelto en la spec 008 (`getFamilyList` pide todas las páginas).
 - **Prompt para /speckit.specify**:
   ```
   Las pantallas de familias de agro-front tienen comportamientos incorrectos frente al contrato
@@ -269,6 +269,9 @@ tóxicas, y estaciones; no estaba en el DoD original), 005 (It. 5) y 006 (It. 6)
   [measurements.md](../specs/007-lightweight-list-requests/measurements.md), hecha contra el back
   local porque no hay URL de dev documentada: la familia baja un 94,5 % y el listado un 82,6 %.
   El riesgo de `knowledge` se resolvió con el campo `image` del contrato (2026-10-10).
+  Spec 008 (2026-10-11): el listado de familias que comparten el selector de `/plants` y
+  `/families` pide `fields[families]=name,scientificName` y baja un 95,7 % (161 336 B → 6 887 B;
+  [measurements.md](../specs/008-lightweight-family-list/measurements.md)).
 - **Valor entregado**: los listados descargan solo los campos que pintan, en lugar de la planta
   completa, lo que reduce de forma apreciable el tamaño de las respuestas.
 - **Definition of Done**:

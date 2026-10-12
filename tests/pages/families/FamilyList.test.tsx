@@ -1,75 +1,85 @@
 import '@testing-library/jest-dom';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { screen } from '@testing-library/react';
 
 import FamilyList from '../../../src/pages/families/FamilyList';
+import { getFamilyList } from '../../../src/services/families.service';
+import type { FamilyListItem } from '../../../src/types/Family';
+import { listFamilyItems } from '../../fixtures/families/listFamilyItems';
 import { renderWithProviders } from '../../test-utils/renderWithProviders';
 
-vi.mock('../../../src/shared/hooks/useFamilies', () => ({
-  useFamilies: vi.fn()
+vi.mock('../../../src/services/families.service', () => ({
+  getFamilyList: vi.fn()
 }));
 
-import { useFamilies } from '../../../src/shared/hooks/useFamilies';
-import { listFamiliesResponse } from '../../fixtures/families/listFamilies';
+const mockedGetFamilyList = vi.mocked(getFamilyList);
+const [firstFamily, secondFamily] = listFamilyItems;
 
-const mockedUseFamilies = vi.mocked(useFamilies);
+function resolveFamilies(data: FamilyListItem[]) {
+  mockedGetFamilyList.mockResolvedValue(data);
+}
+
+async function findFamilyLinks(): Promise<HTMLElement[]> {
+  return screen.findAllByRole('link');
+}
 
 describe('FamilyList', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockedGetFamilyList.mockResolvedValue(listFamilyItems);
+  });
+
   it('shows loading state', () => {
-    mockedUseFamilies.mockReturnValue({
-      data: [],
-      loading: true,
-      error: null
-    });
+    mockedGetFamilyList.mockImplementation(
+      () => new Promise<FamilyListItem[]>(() => {})
+    );
 
     renderWithProviders(<FamilyList />);
 
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
-  it('renders families', () => {
-    mockedUseFamilies.mockReturnValue({
-      loading: false,
-      data: listFamiliesResponse.data,
-      error: null
-    });
-
+  it('renders each family with its scientific name as title and name below', async () => {
     renderWithProviders(<FamilyList />);
 
-    expect(
-      screen.getByText(listFamiliesResponse.data[0].name)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(listFamiliesResponse.data[0].scientificName)
-    ).toBeInTheDocument();
+    const links = await findFamilyLinks();
 
-    expect(
-      screen.getByText(listFamiliesResponse.data[1].scientificName)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(listFamiliesResponse.data[1].name)
-    ).toBeInTheDocument();
+    expect(links).toHaveLength(2);
+    links.forEach((link, index) => {
+      const family = listFamilyItems[index];
+      expect(link.querySelector('h3')).toHaveTextContent(family.scientificName);
+      expect(link.querySelector('p')).toHaveTextContent(family.name);
+    });
   });
 
-  it('creates links to family detail', () => {
-    mockedUseFamilies.mockReturnValue({
-      loading: false,
-      data: listFamiliesResponse.data,
-      error: null
-    });
+  it('creates links to family detail', async () => {
+    renderWithProviders(<FamilyList />);
+
+    const links = await findFamilyLinks();
+
+    expect(links[0]).toHaveAttribute('href', `/families/${firstFamily.id}`);
+    expect(links[1]).toHaveAttribute('href', `/families/${secondFamily.id}`);
+  });
+
+  it('renders the error response when the families request fails', async () => {
+    mockedGetFamilyList.mockRejectedValue('network down');
 
     renderWithProviders(<FamilyList />);
 
-    const links = screen.getAllByRole('link');
-
-    expect(links[0]).toHaveAttribute(
-      'href',
-      `/families/${listFamiliesResponse.data[0].id}`
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Error desconocido'
     );
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+  });
 
-    expect(links[1]).toHaveAttribute(
-      'href',
-      `/families/${listFamiliesResponse.data[1].id}`
-    );
+  it('renders the empty state when there are no families', async () => {
+    resolveFamilies([]);
+
+    renderWithProviders(<FamilyList />);
+
+    expect(
+      await screen.findByText('No hay familias registradas.')
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 });

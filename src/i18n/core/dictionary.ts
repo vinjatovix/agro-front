@@ -51,6 +51,7 @@ export const dictionary = {
 
   family: {
     families: 'Familias',
+    empty: 'No hay familias registradas.',
     detail: {
       loading: 'Cargando familia...',
       not_found: 'Familia no encontrada'
