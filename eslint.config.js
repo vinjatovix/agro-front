@@ -21,6 +21,12 @@ export default defineConfig([
     }
   },
   {
+    files: ['scripts/**/*.ts'],
+    languageOptions: {
+      globals: globals.node
+    }
+  },
+  {
     files: ['src/**/*.{ts,tsx}'],
     plugins: {
       local: localRules
