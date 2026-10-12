@@ -1,7 +1,7 @@
 .plant-detail {
   max-width: 900px;
   margin: 0 auto;
-  padding: 0.2rem;
+  padding: var(--space-xs);
 }
 
 .plant-list {
@@ -13,14 +13,14 @@
 .plant-list li {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-sm);
 
-  padding: 0.5rem 0.625rem;
-  border-radius: 0.625rem;
-  background: #f7fbf7;
-  border: 1px solid #e3eee3;
+  padding: var(--space-sm);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-low);
+  border: 1px solid var(--color-outline-variant);
 
-  font-size: 0.8125rem;
+  font: var(--type-body-md);
 }
 
 .plant-list li:last-child {

@@ -1,19 +1,20 @@
 .plant-card {
-  background: white;
-  border-radius: 12px;
-  border: 5px double #5c3d06;
-  padding: 0.5rem 1rem 1rem;
+  background: var(--color-surface-container-lowest);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-outline-variant);
+  box-shadow: var(--elevation-1);
+  padding: var(--space-sm) var(--space-md) var(--space-md);
 
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-sm);
   height: 100%;
+
+  transition: box-shadow 0.15s ease;
 }
 
 .plant-card:hover {
-  border-color: #999;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.279);
-  background-color: #e7f0e392;
+  box-shadow: var(--elevation-1-hover);
 }
 
 .plant-card__heading {
@@ -32,15 +33,13 @@
 .plant-aliases {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 4px;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
 }
 .plant-card img {
   width: 100%;
   height: 180px;
   object-fit: cover;
   border-radius: var(--radius-lg);
-  border: 5px double #5c3d06;
   display: block;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.434);
 }

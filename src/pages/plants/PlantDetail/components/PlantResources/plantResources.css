@@ -1,7 +1,7 @@
 .plant-resources__tabs {
   display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
 }
 
 .plant-resources__content {
@@ -12,53 +12,54 @@
 .plant-resources__videos {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 12px;
+  gap: var(--space-sm);
 }
 
 .plant-video {
   width: 100%;
   aspect-ratio: 16 / 9;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   border: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--elevation-1);
 }
 
 .plant-resources__tabs button {
-  padding: 6px 12px;
-  border: 1px solid #ddd;
-  background: white;
-  border-radius: 8px;
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--color-outline);
+  background: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  font-size: 14px;
+  font: var(--type-label-lg);
   transition:
     background 0.15s ease,
     border-color 0.15s ease;
 }
 
 .plant-resources__tabs button:hover {
-  background: #f5f5f5;
+  background: var(--color-surface-container-high);
 }
 
-.plant-resources__tabs button.active {
-  background: #eaf5ea;
-  border-color: #9ccc9c;
-  font-weight: 600;
+.plant-resources__tabs button.active,
+.plant-resources__tabs button.active:hover {
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
 }
 
 .plant-resources__articles {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-sm);
 }
 
 .plant-article {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-sm);
 
-  padding: 10px 12px;
-  border: 1px solid #eee;
-  border-radius: 8px;
+  padding: var(--space-sm);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-lg);
 
   text-decoration: none;
   color: inherit;
@@ -69,6 +70,6 @@
 }
 
 .plant-article:hover {
-  background: #f7f7f7;
-  border-color: #ddd;
+  background: var(--color-surface-container-high);
+  border-color: var(--color-outline);
 }

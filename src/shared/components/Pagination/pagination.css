@@ -34,6 +34,7 @@
 
 .pagination__button--active,
 .pagination__button--active:hover {
+  opacity: 1;
   border-radius: var(--radius-full);
   background: var(--color-primary-container);
   color: var(--color-on-primary-container);

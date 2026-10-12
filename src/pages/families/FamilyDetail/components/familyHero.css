@@ -1,8 +1,8 @@
 .family-hero {
   display: grid;
-  gap: 0.75rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #1f7515;
+  gap: var(--space-sm);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-outline-variant);
 }
 .family-hero h1 {
   margin: 0;
@@ -16,20 +16,25 @@
   align-items: start;
 }
 .family-hero__scientific {
-  color: #666;
+  font: var(--type-body-lg);
+  color: var(--color-on-surface);
   margin: 0;
+}
+
+.family-hero__scientific strong {
+  font: var(--type-label-lg);
+  color: var(--color-on-surface-variant);
 }
 
 .family-hero__aliases {
   display: flex;
-  gap: 0.375rem;
+  gap: var(--space-xs);
   flex-wrap: wrap;
   align-items: baseline;
-  margin-top: 0.25rem;
+  margin-top: var(--space-xs);
 }
 .family-hero__label {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #666;
-  margin-right: 4px;
+  font: var(--type-label-lg);
+  color: var(--color-on-surface-variant);
+  margin-right: var(--space-xs);
 }

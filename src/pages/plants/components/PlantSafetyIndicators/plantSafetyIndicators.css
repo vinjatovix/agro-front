@@ -4,7 +4,3 @@
   gap: var(--space-xs);
   align-items: center;
 }
-
-.plant-safety-indicators__item {
-  line-height: 1;
-}
