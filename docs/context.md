@@ -212,12 +212,14 @@ No hay analítica, Sentry, feature flags, CDN de fuentes ni service worker. Las 
 
 ### 8.3 CI/CD (`.github/workflows/`)
 
-| Workflow             | Disparador                           | Pasos                                                                                                  |
-| -------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| `ci.yml`             | PR (todos) y push a `develop`/`main` | Matriz Node 22.x y 24.x: `npm ci`, lint, format:check, typecheck, check-circular, test:coverage, build |
-| `commitlint.yml`     | PR                                   | `wagoid/commitlint-github-action@v6`                                                                   |
-| `sonarqube.yml`      | push a `main`/`develop` y PR         | test:coverage y SonarQube scan (actions fijadas por SHA)                                               |
-| `release-please.yml` | push a `main`                        | `release-please-action@v4`, `release-type: node` (changelog y tag). `version` sigue en `0.0.0`         |
+| Workflow             | Disparador                           | Pasos                                                                                                                |
+| -------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `ci.yml`             | PR (todos) y push a `develop`/`main` | Matriz Node 22.x y 24.x: `npm ci`, lint, format:check, check:colors, typecheck, check-circular, test:coverage, build |
+| `commitlint.yml`     | PR                                   | `wagoid/commitlint-github-action@v6`                                                                                 |
+| `sonarqube.yml`      | push a `main`/`develop` y PR         | test:coverage y SonarQube scan (actions fijadas por SHA)                                                             |
+| `release-please.yml` | push a `main`                        | `release-please-action@v4`, `release-type: node` (changelog y tag). `version` sigue en `0.0.0`                       |
+
+**Colores literales** (feature 009): `npm run check:colors` ejecuta `scripts/checkColorLiterals.ts` con Node (type stripping, sin compilar) y recorre `src/**/*.{css,ts,tsx}` e `index.html`, excepto `src/styles/tokens.css`. Señala hex de 3/4/6/8 dígitos, `rgb()`/`rgba()`/`hsl()`/`hsla()` y los 148 nombres de color CSS: en CSS solo en valores de declaraciones (no en selectores, comentarios, cadenas ni `url()`); en TS/TSX recorre los literales de cadena y de plantilla con la API de `typescript` (ignora el texto JSX, los comentarios y las anclas de `href`/`to`/`src`), y los nombres solo cuando son el literal completo o el valor de un objeto `style`/`CSSProperties`; en `index.html`, los atributos `style`, los bloques `<style>` y `<meta name="theme-color">`. Imprime `ruta:línea:columna  literal` por `stderr` y sale con 1. Las reglas son puras (`scripts/colorLiterals.ts`, `scripts/colorCheckFiles.ts`) y tienen tests en `tests/scripts/`. El paso "Color literals" del CI va justo después de "Format check".
 
 **Deploy**: en **Railway**, fuera de GitHub Actions; no hay ningún workflow ni archivo de configuración de deploy en el repo. Hay dos entornos:
 
