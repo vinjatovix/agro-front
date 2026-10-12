@@ -4,13 +4,15 @@
   align-items: baseline;
   margin-bottom: var(--space-xs);
   flex-wrap: wrap;
+  font: var(--type-body-md);
 }
 
 .plant-controls select {
   padding: var(--space-sm);
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: white;
-  font-size: 14px;
+  border: 1px solid var(--color-outline);
+  border-radius: var(--radius-default);
+  background: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  font: var(--type-body-lg);
   cursor: pointer;
 }

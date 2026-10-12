@@ -1,19 +1,19 @@
 .family-detail {
   max-width: 900px;
   margin: 0 auto;
-  padding: 0.2rem;
+  padding: var(--space-xs);
 }
 .family-detail__cta-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-xs);
 
-  font-weight: 600;
+  font: var(--type-label-lg);
   text-decoration: none;
-  color: var(--color-surface-tint, #3d6751);
+  color: var(--color-surface-tint);
 
-  padding: 6px 10px;
-  border-radius: 6px;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-lg);
 
   transition:
     background 0.15s ease,
@@ -21,7 +21,7 @@
 }
 
 .family-detail__cta-link:hover {
-  background: var(--color-surface-container-high, #e2eae5);
+  background: var(--color-surface-container-high);
   transform: translateX(2px);
 }
 
@@ -34,14 +34,14 @@
 .family-list li {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-sm);
 
-  padding: 0.5rem 0.625rem;
-  border-radius: 0.625rem;
-  background: #ddebdd;
-  border: 1px solid #e3eee3;
+  padding: var(--space-sm);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-low);
+  border: 1px solid var(--color-outline-variant);
 
-  font-size: 0.8125rem;
+  font: var(--type-body-md);
 }
 
 .family-list li:last-child {
@@ -51,34 +51,34 @@
 .family-plants__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 12px;
+  gap: var(--space-sm);
 }
 
 .family-plants__grid-item {
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: #f5f5f5;
+  padding: var(--space-sm);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-lowest);
   text-decoration: none;
   color: inherit;
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--elevation-1);
 }
 
 .family-plants__grid-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--elevation-1-hover);
 }
 
 .family-plants__count {
   margin: 0 0 var(--space-sm) 0;
-  font-size: 0.875rem;
+  font: var(--type-body-md);
   color: var(--color-on-surface-variant);
 }
 
 .family-plants__empty {
   margin: var(--space-sm) 0;
-  font-size: 0.875rem;
+  font: var(--type-body-md);
   color: var(--color-on-surface-variant);
 }
