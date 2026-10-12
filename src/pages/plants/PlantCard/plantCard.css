@@ -18,7 +18,7 @@
 
 .plant-card__heading {
   display: flex;
-  gap: var(--space-2);
+  gap: var(--space-sm);
   align-items: center;
   justify-content: space-between;
   min-width: 0;
@@ -39,7 +39,7 @@
   width: 100%;
   height: 180px;
   object-fit: cover;
-  border-radius: var(--space-2);
+  border-radius: var(--radius-lg);
   border: 5px double #5c3d06;
   display: block;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.434);

@@ -1,14 +1,13 @@
 .plant-controls {
   display: flex;
-  gap: var(--space-3);
+  gap: var(--space-sm);
   align-items: baseline;
-  margin-bottom: var(--space-1);
+  margin-bottom: var(--space-xs);
   flex-wrap: wrap;
 }
 
 .plant-controls select {
-  height: var(--space-6);
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-sm);
   border: 1px solid #ddd;
   border-radius: 6px;
   background: white;

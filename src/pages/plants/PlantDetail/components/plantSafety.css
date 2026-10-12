@@ -1,6 +1,6 @@
 .plant-safety__row--warning {
-  padding-inline: var(--space-2);
-  border-radius: var(--space-1);
+  padding-inline: var(--space-sm);
+  border-radius: var(--radius-default);
   background: var(--color-error-container);
   color: var(--color-on-error-container);
 }
@@ -11,7 +11,7 @@
 }
 
 .plant-safety__subtitle {
-  margin: 0 0 var(--space-1);
+  margin: 0 0 var(--space-xs);
   font-size: 1rem;
 }
 

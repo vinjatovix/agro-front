@@ -1,22 +1,8 @@
+@import './styles/tokens.css';
+@import './styles/fonts.css';
+
 * {
   box-sizing: border-box;
-}
-
-:root {
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.5rem;
-  --space-6: 2rem;
-  --space-7: 2.5rem;
-  --space-8: 3rem;
-  --space-9: 3.5rem;
-
-  --color-error-container: #ffdad6;
-  --color-on-error-container: #93000a;
-  --color-on-surface-variant: #414943;
-  --color-outline-variant: #c1c8c1;
 }
 
 html,
@@ -28,9 +14,37 @@ body,
 }
 
 body {
-  font-family: system-ui, sans-serif;
-  background: #f5f5f5;
-  color: #222;
+  font: var(--type-body-lg);
+  background: var(--color-background);
+  color: var(--color-on-background);
+}
+
+h1 {
+  font: var(--type-headline-xl);
+}
+
+h2 {
+  font: var(--type-headline-md);
+}
+
+h3 {
+  font: var(--type-headline-sm);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
 a {
@@ -83,12 +97,11 @@ a {
 .plant-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: var(--space-2);
-  margin: var(--space-4) 0;
+  gap: var(--space-sm);
+  margin: var(--space-md) 0;
 }
 
 .plant-scientific-name {
-  font-style: italic;
   color: #666;
 }
 
