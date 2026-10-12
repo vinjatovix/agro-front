@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { t } from '../../i18n/core/t';
 import { ErrorResponse } from '../../shared/components/ErrorResponse/ErrorResponse';
 import { Loader } from '../../shared/components/Loader/Loader';
+import ScientificName from '../../shared/components/ScientificName/ScientificName';
 import { toUiError } from '../../shared/errors/toUiError';
 
 import { useFamilies } from '../../shared/hooks/useFamilies';
@@ -19,7 +20,11 @@ function FamilyCards({ families }: { readonly families: FamilyListItem[] }) {
           to={`/families/${family.id}`}
           className="family-card"
         >
-          <h3>{family.scientificName}</h3>
+          <h3>
+            <ScientificName variant="title">
+              {family.scientificName}
+            </ScientificName>
+          </h3>
           <p>{family.name}</p>
         </Link>
       ))}

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { t } from '../../../../i18n/core/t';
 import Badge from '../../../../shared/components/Badge/Badge';
+import ScientificName from '../../../../shared/components/ScientificName/ScientificName';
 import { iconsMap } from '../../../../shared/constants/iconsMap';
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
 import type { Plant } from '../../../../types/Plants/Plant';
@@ -46,7 +47,9 @@ export default function PlantHero({ plant }: Props) {
           <strong>
             {iconsMap.research} {t('plant.hero.scientific_name')}:{' '}
           </strong>
-          {capitalizeFirstLetter(plant.identity.scientificName)}
+          <ScientificName>
+            {capitalizeFirstLetter(plant.identity.scientificName)}
+          </ScientificName>
         </p>
       )}
     </header>

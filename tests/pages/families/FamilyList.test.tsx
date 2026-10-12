@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 
 import FamilyList from '../../../src/pages/families/FamilyList';
 import { getFamilyList } from '../../../src/services/families.service';
@@ -50,6 +50,20 @@ describe('FamilyList', () => {
       expect(link.querySelector('h3')).toHaveTextContent(family.scientificName);
       expect(link.querySelector('p')).toHaveTextContent(family.name);
     });
+  });
+
+  it('renders the scientific name title with the scientific name title style', async () => {
+    renderWithProviders(<FamilyList />);
+
+    const heading = await screen.findByRole('heading', {
+      level: 3,
+      name: firstFamily.scientificName
+    });
+
+    expect(within(heading).getByText(firstFamily.scientificName)).toHaveClass(
+      'scientific-name',
+      'scientific-name--title'
+    );
   });
 
   it('creates links to family detail', async () => {

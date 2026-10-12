@@ -7,6 +7,7 @@ import PlantSafetyIndicators from '../components/PlantSafetyIndicators/PlantSafe
 
 import './plantCard.css';
 import Badge from '../../../shared/components/Badge/Badge';
+import ScientificName from '../../../shared/components/ScientificName/ScientificName';
 import { iconsMap } from '../../../shared/constants/iconsMap';
 
 export interface PlantCardProps {
@@ -27,7 +28,9 @@ export default function PlantCard({ plant }: PlantCardProps) {
         {plant.identity.scientificName && (
           <p className="plant-scientific-name">
             <Badge variant="scientific" icon={iconsMap.research}>
-              {capitalizeFirstLetter(plant.identity.scientificName)}
+              <ScientificName>
+                {capitalizeFirstLetter(plant.identity.scientificName)}
+              </ScientificName>
             </Badge>
           </p>
         )}
