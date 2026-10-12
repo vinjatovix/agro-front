@@ -2,7 +2,7 @@
 
 > Extraído el 2026-10-04 de los prototipos de Stitch ("Botanical Precision"). Los prototipos no se versionan en el repo.
 > **Solo valen los colores, la tipografía y la distribución.** El contenido y los componentes de los prototipos **no son correctos** y no se usan como especificación funcional ni de datos.
-> Paleta, tipografía, radios, espaciado, sombras y anillo de foco están definidos como custom properties en `src/styles/tokens.css` (feature 009); la base global (`body`, titulares, foco) ya los usa. Las hojas de componentes se migran a los tokens en los PR siguientes de la feature.
+> Paleta, tipografía, radios, espaciado, sombras y anillo de foco están definidos como custom properties en `src/styles/tokens.css` y aplicados en todas las pantallas existentes (feature 009). Fuera de ese archivo no hay colores literales.
 
 ## Decisiones
 
@@ -41,6 +41,14 @@
 | `on-surface-variant`        | `#414943` | `outline`                    | `#717973` |
 | `outline-variant`           | `#c1c8c1` | `inverse-surface`            | `#2a322f` |
 | `inverse-on-surface`        | `#eaf3ee` |                              |           |
+
+Asignación por rol en el front:
+
+- Fondo de página `background`; superficies (tarjetas, barra superior, drawer, sidebar, secciones) `surface-container-lowest`; fondos suaves (listas, badges) `surface-container-low`; hover `surface-container-high` o `elevation-1-hover` en tarjetas.
+- Texto principal `on-surface`; etiquetas y texto secundario `on-surface-variant`; enlaces de acción `surface-tint`.
+- Estados activos: `primary-container` + `on-primary-container` en página activa, hemisferio activo, meses activos y botón flotante de filtros; `secondary-container` + `on-secondary-container` en filtros activos, pestañas activas y badges de familia y nombre científico.
+- Bordes `outline` en controles interactivos y `outline-variant` en superficies y separadores. Error: `error-container` + `on-error-container` con borde `error`. Deshabilitado: `opacity: 0.6`.
+- `Loader` con la paleta: tierra `tertiary-container`, semillas `on-tertiary-fixed-variant`, sol y centro de la flor `tertiary-fixed-dim`, tallo `secondary`, hojas `surface-tint`, nube `surface-dim`, gotas `secondary-fixed-dim`, pétalos `tertiary-fixed`.
 
 Equivalencias para quien lea el texto original de Stitch: el verde "Deep Forest Emerald" (`#133E2B`) es `primary-container`; el acento ocre se cubre con `tertiary-fixed-dim` (`#f0bd8b`).
 
