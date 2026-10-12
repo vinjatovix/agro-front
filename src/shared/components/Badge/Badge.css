@@ -1,36 +1,23 @@
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-xs);
 
-  padding: 4px 10px;
-  border-radius: 999px;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-full);
 
-  font-size: 16px;
-  line-height: 1;
+  font: var(--type-label-md);
+  letter-spacing: var(--tracking-label-md);
 
-  border: 1px solid #e5e5e5;
-  background: #fafafa;
-  color: #333;
+  border: 1px solid var(--color-outline-variant);
+  background: var(--color-surface-container-low);
+  color: var(--color-on-surface-variant);
 }
-.badge__icon {
-  font-size: 16px;
-  line-height: 1;
-}
-.badge--family {
-  background: #eef7ee;
-  border-color: #cfe8cf;
-}
+.badge--family,
 .badge--scientific {
-  background: #f3f6ff;
-  border-color: #d8e2ff;
-}
-.badge--alias {
-  background: #fff;
-  border-color: #eee;
-}
-.badge--default {
-  background: #fafafa;
+  background: var(--color-secondary-container);
+  border-color: var(--color-secondary-fixed-dim);
+  color: var(--color-on-secondary-container);
 }
 .badge--unavailable {
   color: var(--color-on-surface-variant);
