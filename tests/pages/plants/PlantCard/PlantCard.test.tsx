@@ -60,6 +60,16 @@ describe('PlantCard', () => {
     ).toBeInTheDocument();
   });
 
+  it('renders the scientific name with the scientific name style', () => {
+    renderComponent();
+
+    expect(
+      screen.getByText(
+        capitalizeFirstLetter(defaultPlant.identity.scientificName!)
+      )
+    ).toHaveClass('scientific-name');
+  });
+
   it('renders all aliases', () => {
     renderComponent();
 

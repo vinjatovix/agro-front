@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
 import PlantHero from '../../../../../src/pages/plants/PlantDetail/components/PlantHero';
+import { capitalizeFirstLetter } from '../../../../../src/shared/utils/capitalizeFirstLetter';
 import { buildFamilySummary } from '../../../../fixtures/families/buildFamilySummary';
 import {
   buildPlant,
@@ -122,6 +123,25 @@ describe('PlantHero: unavailable and missing family', () => {
     );
 
     expect(screen.queryByText('Familia no disponible')).not.toBeInTheDocument();
+  });
+});
+
+describe('PlantHero: scientific name', () => {
+  it('styles only the scientific name value, not its label', () => {
+    const plant = buildPlant();
+
+    render(
+      <MemoryRouter>
+        <PlantHero plant={plant} />
+      </MemoryRouter>
+    );
+
+    expect(
+      screen.getByText(capitalizeFirstLetter(plant.identity.scientificName!))
+    ).toHaveClass('scientific-name');
+    expect(
+      screen.getByText('Nombre científico', { exact: false })
+    ).not.toHaveClass('scientific-name');
   });
 });
 

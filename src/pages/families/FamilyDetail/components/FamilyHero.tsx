@@ -3,6 +3,7 @@ import type { Family } from '../../../../types/Family';
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
 import { iconsMap } from '../../../../shared/constants/iconsMap';
 import Badge from '../../../../shared/components/Badge/Badge';
+import ScientificName from '../../../../shared/components/ScientificName/ScientificName';
 
 import './familyHero.css';
 
@@ -26,7 +27,7 @@ export function FamilyHero({ family }: Props) {
         <p className="family-hero__scientific">
           {iconsMap.research}{' '}
           <strong>{t('family.hero.scientific_name')}:</strong>{' '}
-          {family.scientificName}
+          <ScientificName>{family.scientificName}</ScientificName>
         </p>
 
         {family.extra?.speciesCount && (
