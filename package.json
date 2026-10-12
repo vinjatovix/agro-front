@@ -12,6 +12,7 @@
     "format:check": "prettier . --check",
     "typecheck": "tsc -b",
     "check": "npm run typecheck && npm run lint && npm run format:check",
+    "check:colors": "node scripts/checkColorLiterals.ts",
     "check-circular": "skott --displayMode=raw --showCircularDependencies --tsconfig ./tsconfig.json",
     "prepare": "husky",
     "test": "vitest run",
