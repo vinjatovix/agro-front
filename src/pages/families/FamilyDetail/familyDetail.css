@@ -72,13 +72,13 @@
 }
 
 .family-plants__count {
-  margin: 0 0 var(--space-2) 0;
+  margin: 0 0 var(--space-sm) 0;
   font-size: 0.875rem;
   color: var(--color-on-surface-variant);
 }
 
 .family-plants__empty {
-  margin: var(--space-2) 0;
+  margin: var(--space-sm) 0;
   font-size: 0.875rem;
   color: var(--color-on-surface-variant);
 }

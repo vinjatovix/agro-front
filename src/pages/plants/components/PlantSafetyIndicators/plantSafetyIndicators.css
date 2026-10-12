@@ -1,7 +1,7 @@
 .plant-safety-indicators {
   display: inline-flex;
   flex-shrink: 0;
-  gap: var(--space-1);
+  gap: var(--space-xs);
   align-items: center;
 }
 
