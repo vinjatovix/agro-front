@@ -15,7 +15,15 @@ vi.mock('../../../src/shared/hooks/useMediaQuery', () => ({
 
 vi.mock('../../../src/pages/plants/hooks/usePlants', () => ({
   usePlants: () => ({
-    query: { isLoading: false, error: null, data: undefined },
+    query: {
+      isError: false,
+      isFetching: false,
+      error: null,
+      data: {
+        data: [],
+        pagination: { page: 1, limit: 25, totalPages: 0, totalItems: 0 }
+      }
+    },
     request: {
       filters: {},
       pagination: { page: 1, limit: 25 },

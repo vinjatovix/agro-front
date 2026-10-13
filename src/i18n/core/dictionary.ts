@@ -39,7 +39,6 @@ export const dictionary = {
 
     loading: 'Cargando...',
     not_found: 'No encontrado',
-    unknown_error: 'Error desconocido',
     results_per_page: 'Resultados por página',
     filters: 'Filtros',
     orders: {
@@ -49,9 +48,50 @@ export const dictionary = {
     }
   },
 
+  errors: {
+    offline: {
+      title: 'Sin conexión',
+      message:
+        'No se ha podido conectar. Comprueba tu conexión e inténtalo de nuevo.'
+    },
+    unavailable: {
+      title: 'Servicio no disponible',
+      message:
+        'El servicio no está disponible en este momento. Inténtalo de nuevo en unos minutos.'
+    },
+    badRequest: {
+      title: 'Petición no válida',
+      message: 'No se ha podido completar la petición.',
+      listMessage: 'No se ha podido hacer la búsqueda con estos filtros.'
+    },
+    forbidden: {
+      title: 'Acceso no permitido',
+      message: 'No tienes permiso para ver este contenido.'
+    },
+    tooManyRequests: {
+      title: 'Demasiadas peticiones',
+      message:
+        'Hay demasiadas peticiones. Espera un momento e inténtalo de nuevo.'
+    },
+    notFound: {
+      title: 'No encontrado',
+      message: 'No se ha encontrado lo que buscas.'
+    },
+    unknown: {
+      title: 'Error inesperado',
+      message: 'Ha ocurrido un error inesperado. Inténtalo de nuevo.'
+    },
+    actions: {
+      retry: 'Reintentar',
+      goHome: 'Volver al inicio',
+      clearFilters: 'Quitar filtros'
+    }
+  },
+
   family: {
     families: 'Familias',
     empty: 'No hay familias registradas.',
+    select_error: 'No se han podido cargar las familias.',
     detail: {
       loading: 'Cargando familia...',
       not_found: 'Familia no encontrada'

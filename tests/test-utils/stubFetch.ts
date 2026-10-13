@@ -13,6 +13,7 @@ function fetchResponse(ok: boolean, status: number, body: unknown) {
     ok,
     status,
     statusText: '',
+    headers: new Headers({ 'content-type': 'application/json' }),
     json: () => Promise.resolve(body)
   });
 }

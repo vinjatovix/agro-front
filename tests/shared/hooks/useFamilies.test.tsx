@@ -38,14 +38,16 @@ describe('useFamilies', () => {
     vi.clearAllMocks();
   });
 
-  it('expone loading mientras la petición está pendiente', () => {
+  it('expone isPending mientras la petición está pendiente', () => {
     mockedGetFamilyList.mockImplementation(
       () => new Promise<FamilyListItem[]>(() => {})
     );
 
     const { result } = renderUseFamilies();
 
-    expect(result.current).toEqual({ data: [], loading: true, error: null });
+    expect(result.current.isPending).toBe(true);
+    expect(result.current.data).toBeUndefined();
+    expect(result.current.error).toBeNull();
   });
 
   it('devuelve las familias del listado y pide una sola vez', async () => {
@@ -54,25 +56,23 @@ describe('useFamilies', () => {
     const { result } = renderUseFamilies();
 
     await waitFor(() => {
-      expect(result.current).toEqual({
-        data: listFamilyItems,
-        loading: false,
-        error: null
-      });
+      expect(result.current.data).toEqual(listFamilyItems);
     });
+    expect(result.current.error).toBeNull();
     expect(mockedGetFamilyList).toHaveBeenCalledOnce();
   });
 
-  it('expone el error y datos vacíos si la petición falla', async () => {
-    mockedGetFamilyList.mockRejectedValue(new Error('Failed to load families'));
+  it('expone el error sin datos si la petición falla', async () => {
+    const failure = new Error('Failed to load families');
+    mockedGetFamilyList.mockRejectedValue(failure);
 
     const { result } = renderUseFamilies();
 
     await waitFor(() => {
-      expect(result.current.error).toBeTruthy();
+      expect(result.current.isError).toBe(true);
     });
-    expect(result.current.data).toEqual([]);
-    expect(result.current.loading).toBe(false);
+    expect(result.current.error).toBe(failure);
+    expect(result.current.data).toBeUndefined();
   });
 });
 

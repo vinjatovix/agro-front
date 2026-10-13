@@ -1,10 +1,13 @@
 import '@testing-library/jest-dom';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import FamilyDetail from '../../../../src/pages/families/FamilyDetail/FamilyDetail';
 import { getFamilyById } from '../../../../src/services/families.service';
 import { getFamilyPlants } from '../../../../src/services/plants.service';
+import { ApiError } from '../../../../src/shared/errors/ApiError';
+import { NetworkError } from '../../../../src/shared/errors/NetworkError';
 
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import { listFamiliesResponse } from '../../../fixtures/families/listFamilies';
@@ -79,44 +82,93 @@ describe('FamilyDetail', () => {
     expect(links.length).toBeGreaterThan(0);
   });
 
-  it('should render error state', async () => {
-    mockedGetFamilyById.mockRejectedValue(new Error('Family not found'));
-
-    mockedGetFamilyPlants.mockResolvedValue({
-      ...mockPlants,
-      data: []
-    });
+  it('explains a failed family request in Spanish and retries it', async () => {
+    mockedGetFamilyById.mockRejectedValueOnce(
+      new NetworkError(new TypeError('Failed to fetch'))
+    );
+    mockedGetFamilyById.mockResolvedValue(mockFamily);
+    mockedGetFamilyPlants.mockResolvedValue(mockPlants);
 
     renderFamilyDetail();
 
-    await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent(/family not found/i);
-    });
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'No se ha podido conectar'
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Reintentar' }));
+
+    expect(
+      await screen.findByRole('heading', {
+        name: new RegExp(mockFamily.name, 'i')
+      })
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('should render plants error state', async () => {
+  it('shows the plants error only inside the plants section, keeping hero and info', async () => {
     mockedGetFamilyById.mockResolvedValue(mockFamily);
-
-    mockedGetFamilyPlants.mockRejectedValue(new Error('Plants failed'));
+    mockedGetFamilyPlants.mockRejectedValue(
+      new ApiError('Internal Server Error', 500)
+    );
 
     renderFamilyDetail();
 
-    await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent(/plants failed/i);
-    });
+    const plantsSection = await screen.findByTestId(/section-🌿 Plantas/i);
+    expect(await within(plantsSection).findByRole('alert')).toHaveTextContent(
+      'El servicio no está disponible'
+    );
+    expect(
+      screen.getByRole('heading', { name: new RegExp(mockFamily.name, 'i') })
+    ).toBeInTheDocument();
+    expect(screen.getByTestId(/section-📝 Descripción/i)).toBeInTheDocument();
+    expect(screen.getByRole('alert')).not.toHaveTextContent(/500|Internal/);
   });
 
-  it('should keep loading while plants are loading even if family is ready', async () => {
+  it('retries the plants request from its section', async () => {
     mockedGetFamilyById.mockResolvedValue(mockFamily);
+    mockedGetFamilyPlants.mockRejectedValueOnce(new ApiError('x', 503));
+    mockedGetFamilyPlants.mockResolvedValue(mockPlants);
 
+    renderFamilyDetail();
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Reintentar' })
+    );
+
+    expect(
+      await screen.findByTestId('family-plants-count')
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('shows the plants loader inside its section once the family is ready', async () => {
+    mockedGetFamilyById.mockResolvedValue(mockFamily);
     mockedGetFamilyPlants.mockImplementation(() => new Promise(() => {}));
 
     renderFamilyDetail();
 
-    await waitFor(() => {
-      expect(mockedGetFamilyById).toHaveBeenCalled();
-      expect(screen.getByRole('status')).toBeInTheDocument();
-    });
+    const plantsSection = await screen.findByTestId(/section-🌿 Plantas/i);
+    expect(within(plantsSection).getByRole('status')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: new RegExp(mockFamily.name, 'i') })
+    ).toBeInTheDocument();
+  });
+
+  it('keeps the family and its plants when a refetch fails', async () => {
+    mockedGetFamilyById.mockResolvedValue(mockFamily);
+    mockedGetFamilyPlants.mockResolvedValue(mockPlants);
+
+    const { queryClient } = renderFamilyDetail();
+    await screen.findByTestId('family-plants-count');
+    mockedGetFamilyById.mockRejectedValue(new ApiError('x', 500));
+    mockedGetFamilyPlants.mockRejectedValue(new ApiError('x', 500));
+
+    await queryClient.refetchQueries();
+
+    expect(screen.getByTestId('family-plants-count')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: new RegExp(mockFamily.name, 'i') })
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
   it('loads plants with family uuid when accessed by slug', async () => {

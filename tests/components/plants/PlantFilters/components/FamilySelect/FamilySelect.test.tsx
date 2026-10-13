@@ -1,9 +1,12 @@
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { QueryClientProvider } from '@tanstack/react-query';
 import FamilySelect from '../../../../../../src/components/plants/PlantFilters/components/FamilySelect/FamilySelect';
 import { getFamilyList } from '../../../../../../src/services/families.service';
+import { ApiError } from '../../../../../../src/shared/errors/ApiError';
+import { NetworkError } from '../../../../../../src/shared/errors/NetworkError';
 import type { FamilyListItem } from '../../../../../../src/types/Family';
 import { buildFamilyListItem } from '../../../../../fixtures/families/buildFamilyListItem';
 import { listFamilyItems } from '../../../../../fixtures/families/listFamilyItems';
@@ -140,32 +143,59 @@ describe('FamilySelect', () => {
 
   describe('when families query fails', () => {
     beforeEach(() => {
-      mockedGetFamilyList.mockRejectedValue(new Error('Network error'));
+      mockedGetFamilyList.mockRejectedValue(
+        new NetworkError(new TypeError('Failed to fetch'))
+      );
     });
 
-    it('renders unknown error option', async () => {
+    it('explains that families could not be loaded and offers retry', async () => {
       renderFamilySelect();
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'No se han podido cargar las familias.'
+      );
+      expect(
+        screen.getByRole('button', { name: 'Reintentar' })
+      ).toBeInTheDocument();
+      expect(screen.queryByText('Error desconocido')).not.toBeInTheDocument();
+    });
+
+    it('disables the select and marks it invalid', async () => {
+      renderFamilySelect();
+      await screen.findByRole('alert');
+
+      const select = screen.getByTestId('family-select');
+      expect(select).toBeDisabled();
+      expect(select).toHaveAttribute('aria-invalid', 'true');
+      expect(select).toHaveAccessibleDescription(
+        'No se han podido cargar las familias.'
+      );
+    });
+
+    it('loads the families when retrying with a good response', async () => {
+      renderFamilySelect();
+      mockedGetFamilyList.mockResolvedValue(listFamilyItems);
+
+      await userEvent.click(
+        await screen.findByRole('button', { name: 'Reintentar' })
+      );
 
       expect(
-        await screen.findByRole('option', { name: 'Error desconocido' })
-      ).toHaveValue('');
+        await screen.findByRole('option', { name: 'Amarilidáceas' })
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(screen.getByTestId('family-select')).toBeEnabled();
     });
 
-    it('disables the select input', async () => {
+    it('does not offer retry when forbidden', async () => {
+      mockedGetFamilyList.mockRejectedValue(new ApiError('Forbidden', 403));
+
       renderFamilySelect();
-      await screen.findByRole('option', { name: 'Error desconocido' });
 
-      expect(screen.getByTestId('family-select')).toBeDisabled();
-    });
-
-    it('indicates invalid state via aria-invalid', async () => {
-      renderFamilySelect();
-      await screen.findByRole('option', { name: 'Error desconocido' });
-
-      expect(screen.getByTestId('family-select')).toHaveAttribute(
-        'aria-invalid',
-        'true'
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'No se han podido cargar las familias.'
       );
+      expect(screen.queryByRole('button')).not.toBeInTheDocument();
     });
   });
 });

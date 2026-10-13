@@ -10,9 +10,12 @@ import { listPlantsResponse } from '../../fixtures/plants/listPlants';
 import { renderWithProviders } from '../../test-utils/renderWithProviders';
 import {
   API_URL,
+  errorResponse,
   lastRequest,
+  okResponse,
   stubFetchError,
   stubFetchOk,
+  stubFetchSequence,
   type FetchMock
 } from '../../test-utils/stubFetch';
 
@@ -78,12 +81,71 @@ describe('PlantList', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('un 400 de la API pinta el estado de error', async () => {
+  it('un 400 de la API pinta el estado de error sin el texto del back', async () => {
     stubFetchError(400, { message: 'Invalid sort key', errors: {} });
 
     renderPlantList();
 
-    expect(await screen.findByText(/invalid sort key/i)).toBeInTheDocument();
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent(t('errors.badRequest.message'));
+    expect(alert).not.toHaveTextContent(/invalid sort key/i);
+  });
+
+  it('un fallo de red explica que no hay conexión y no muestra texto técnico', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.reject(new TypeError('Failed to fetch')))
+    );
+
+    renderPlantList();
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent(t('errors.offline.message'));
+    expect(alert).not.toHaveTextContent(/failed to fetch/i);
+  });
+
+  it.each([
+    ['un 500 con cuerpo', { message: 'Internal Server Error' }],
+    ['un 500 sin cuerpo', undefined]
+  ])('%s explica que el servicio no está disponible', async (_label, body) => {
+    stubFetchError(500, body);
+
+    renderPlantList();
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent(t('errors.unavailable.message'));
+    expect(alert).not.toHaveTextContent(/internal server error|500/i);
+  });
+
+  it('reintentar tras un error carga las plantas sin recargar la página', async () => {
+    stubFetchSequence(
+      errorResponse(500, { message: 'Internal Server Error' }),
+      okResponse(listPlantsResponse)
+    );
+    renderPlantList();
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: t('errors.actions.retry') })
+    );
+
+    await waitForPlants();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('conserva las plantas cargadas si falla un refresco', async () => {
+    stubFetchSequence(
+      okResponse(listPlantsResponse),
+      errorResponse(500, { message: 'Internal Server Error' })
+    );
+    const { queryClient } = renderPlantList();
+    await waitForPlants();
+
+    await queryClient.refetchQueries();
+
+    expect(
+      screen.getByText(new RegExp(firstPlant.identity.name.primary, 'i'))
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
   it('cambiar el límite pide la primera página con ese límite', async () => {

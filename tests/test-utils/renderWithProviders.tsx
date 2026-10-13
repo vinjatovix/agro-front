@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createTestQueryClient } from './createTestQueryClient';
 
 export function renderWithProviders(
@@ -8,17 +8,21 @@ export function renderWithProviders(
   options?: {
     route?: string;
     path?: string;
+    queryClient?: QueryClient;
   }
 ) {
-  const queryClient = createTestQueryClient();
+  const queryClient = options?.queryClient ?? createTestQueryClient();
 
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[options?.route ?? '/']}>
-        <Routes>
-          <Route path={options?.path ?? '*'} element={ui} />
-        </Routes>
-      </MemoryRouter>
-    </QueryClientProvider>
-  );
+  return {
+    queryClient,
+    ...render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[options?.route ?? '/']}>
+          <Routes>
+            <Route path={options?.path ?? '*'} element={ui} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+  };
 }

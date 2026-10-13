@@ -1,16 +1,31 @@
+import type { UseQueryResult } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import PlantStatusBadge from '../../../../components/plants/PlantStatusBadge/PlantStatusBadge';
 import { t } from '../../../../i18n/core/t';
 import BodySection from '../../../../shared/components/BodySection/BodySection';
+import { ErrorResponse } from '../../../../shared/components/ErrorResponse/ErrorResponse';
+import { Loader } from '../../../../shared/components/Loader/Loader';
 import { iconsMap } from '../../../../shared/constants/iconsMap';
+import { getQueryViewState } from '../../../../shared/reactQuery/queryViewState';
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
 import type { Family } from '../../../../types/Family';
 import type { FamilyPlantItem } from '../../../../types/Plants/Plant';
+import type { PaginatedResponse } from '../../../../types/api';
+
+export type FamilyPlantsQuery = Pick<
+  UseQueryResult<PaginatedResponse<FamilyPlantItem>>,
+  'data' | 'error' | 'isError' | 'isFetching' | 'refetch'
+>;
 
 interface Props {
   readonly family: Family;
+  readonly query: FamilyPlantsQuery;
+}
+
+interface ContentProps {
+  readonly family: Family;
   readonly plants: FamilyPlantItem[];
-  readonly total?: number;
+  readonly total: number;
 }
 
 function getCountLabel(count: number, total: number): string {
@@ -24,44 +39,72 @@ function getCountLabel(count: number, total: number): string {
   return t('family.plants.single_count');
 }
 
-export default function FamilyPlants({ family, plants, total }: Props) {
-  const effectiveTotal = Math.max(total ?? plants.length, plants.length);
+function FamilyPlantsContent({ family, plants, total }: ContentProps) {
+  const effectiveTotal = Math.max(total, plants.length);
+
+  if (effectiveTotal === 0) {
+    return (
+      <p className="family-plants__empty" data-testid="family-plants-empty">
+        {t('family.plants.empty')}
+      </p>
+    );
+  }
 
   return (
-    <BodySection title={`${iconsMap.gardening} ${t('family.plants.title')}`}>
-      {effectiveTotal === 0 ? (
-        <p className="family-plants__empty" data-testid="family-plants-empty">
-          {t('family.plants.empty')}
-        </p>
-      ) : (
-        <>
-          <p className="family-plants__count" data-testid="family-plants-count">
-            {getCountLabel(plants.length, effectiveTotal)}
-          </p>
+    <>
+      <p className="family-plants__count" data-testid="family-plants-count">
+        {getCountLabel(plants.length, effectiveTotal)}
+      </p>
 
+      <Link
+        to={`/plants?family=${family.id}`}
+        className="family-detail__cta-link"
+        data-testid="family-plants-view-all"
+      >
+        {iconsMap.arrowRight} {t('family.plants.view_all')}
+      </Link>
+
+      <div className="family-plants__grid">
+        {plants.map((plant) => (
           <Link
-            to={`/plants?family=${family.id}`}
-            className="family-detail__cta-link"
-            data-testid="family-plants-view-all"
+            key={plant.id}
+            to={`/plants/${plant.id}`}
+            className="family-plants__grid-item"
+            data-testid="family-plants-link"
           >
-            {iconsMap.arrowRight} {t('family.plants.view_all')}
+            {capitalizeFirstLetter(plant.identity.name.primary)}
+            <PlantStatusBadge status={plant.status} />
           </Link>
+        ))}
+      </div>
+    </>
+  );
+}
 
-          <div className="family-plants__grid">
-            {plants.map((plant) => (
-              <Link
-                key={plant.id}
-                to={`/plants/${plant.id}`}
-                className="family-plants__grid-item"
-                data-testid="family-plants-link"
-              >
-                {capitalizeFirstLetter(plant.identity.name.primary)}
-                <PlantStatusBadge status={plant.status} />
-              </Link>
-            ))}
-          </div>
-        </>
-      )}
+function FamilyPlantsState({ family, query }: Props) {
+  const viewState = getQueryViewState(query);
+
+  if (viewState === 'loading') return <Loader />;
+
+  if (viewState === 'error') {
+    return (
+      <ErrorResponse error={query.error} onRetry={() => void query.refetch()} />
+    );
+  }
+
+  return (
+    <FamilyPlantsContent
+      family={family}
+      plants={query.data?.data ?? []}
+      total={query.data?.pagination.totalItems ?? 0}
+    />
+  );
+}
+
+export default function FamilyPlants({ family, query }: Props) {
+  return (
+    <BodySection title={`${iconsMap.gardening} ${t('family.plants.title')}`}>
+      <FamilyPlantsState family={family} query={query} />
     </BodySection>
   );
 }
