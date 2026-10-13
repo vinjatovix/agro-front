@@ -7,3 +7,7 @@ declare module '@tanstack/react-query' {
     queryMeta: ClassifyFailureOptions;
   }
 }
+
+export const DETAIL_QUERY_META: ClassifyFailureOptions = {
+  badRequestMeansNotFound: true
+};

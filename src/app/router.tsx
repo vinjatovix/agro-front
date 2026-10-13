@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 
 import AuthLayout from '../components/layout/AuthLayout';
 import MainLayout from '../components/layout/MainLayout';
@@ -14,8 +14,9 @@ import FamilyDetail from '../pages/families/FamilyDetail/FamilyDetail';
 
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import PlantsPage from '../pages/plants/PlantsPage';
+import NotFoundPage from '../pages/NotFoundPage';
 
-export const router = createBrowserRouter([
+export const routes: RouteObject[] = [
   {
     element: <AuthLayout />,
     children: [
@@ -32,7 +33,10 @@ export const router = createBrowserRouter([
       { path: '/plants/:id', element: <PlantDetail /> },
       { path: '/families', element: <FamilyList /> },
       { path: '/families/:id', element: <FamilyDetail /> },
-      { path: '/admin', element: <AdminDashboard /> }
+      { path: '/admin', element: <AdminDashboard /> },
+      { path: '*', element: <NotFoundPage /> }
     ]
   }
-]);
+];
+
+export const router = createBrowserRouter(routes);

@@ -89,4 +89,40 @@ describe('usePlant', () => {
       expect(entry).toBeDefined();
     });
   });
+
+  it('does not request a plant without id', () => {
+    const queryClient = createTestQueryClient();
+
+    const { result } = renderHook(() => usePlant(undefined), {
+      wrapper: ({ children }) => (
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      )
+    });
+
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(mockedGetPlantById).not.toHaveBeenCalled();
+  });
+
+  it('treats a 400 as not found through the query meta', async () => {
+    const mockPlant = listPlantsResponse.data[0];
+    mockedGetPlantById.mockResolvedValue(mockPlant);
+    const queryClient = createTestQueryClient();
+
+    renderHook(() => usePlant(mockPlant.id), {
+      wrapper: ({ children }) => (
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      )
+    });
+
+    await waitFor(() => {
+      const entry = queryClient.getQueryCache().find({
+        queryKey: plantKeys.detail(mockPlant.id)
+      });
+      expect(entry?.meta).toEqual({ badRequestMeansNotFound: true });
+    });
+  });
 });

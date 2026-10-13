@@ -274,14 +274,43 @@ describe('FamilyDetail', () => {
     });
   });
 
-  it('renders error state when id param is missing', () => {
+  function expectFamilyNotFound() {
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Familia no encontrada' })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'La familia no existe.'
+    );
+    expect(
+      screen.getByRole('link', { name: 'Volver al listado de familias' })
+    ).toHaveAttribute('href', '/families');
+  }
+
+  it.each([404, 400])(
+    'shows the family not found screen on a %i',
+    async (status) => {
+      mockedGetFamilyById.mockRejectedValue(new ApiError('x', status));
+
+      renderFamilyDetail();
+
+      expect(
+        await screen.findByRole('heading', {
+          level: 1,
+          name: 'Familia no encontrada'
+        })
+      ).toBeInTheDocument();
+      expectFamilyNotFound();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    }
+  );
+
+  it('shows the family not found screen when the id param is missing', () => {
     renderWithProviders(<FamilyDetail />, {
       route: '/families',
       path: '/families'
     });
 
-    const alert = screen.getByRole('alert');
-
-    expect(alert).toHaveTextContent('Familia no encontrada');
+    expectFamilyNotFound();
+    expect(mockedGetFamilyById).not.toHaveBeenCalled();
   });
 });
