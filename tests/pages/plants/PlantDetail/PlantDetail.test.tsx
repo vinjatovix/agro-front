@@ -69,6 +69,21 @@ describe('PlantDetail', () => {
     expect(screen.getByTestId('section-📝 notas')).toBeInTheDocument();
   });
 
+  it('renders every section of the full plant without a section notice', async () => {
+    mockedGetPlantById.mockResolvedValue(mockPlantWithVideos);
+
+    renderPlantDetail();
+
+    await screen.findByTestId('section-📅 calendario');
+    expect(screen.getByTestId('section-⚡ datos rápidos')).toBeInTheDocument();
+    expect(screen.getByTestId('section-🌱 cultivo')).toBeInTheDocument();
+    expect(screen.getByTestId('section-🌿 ecología')).toBeInTheDocument();
+    expect(screen.getByTestId('section-📝 notas')).toBeInTheDocument();
+    expect(
+      screen.queryByText('No se ha podido mostrar esta sección.')
+    ).not.toBeInTheDocument();
+  });
+
   it('should change hemisphere', async () => {
     const user = userEvent.setup();
     mockedGetPlantById.mockResolvedValue(mockPlant);

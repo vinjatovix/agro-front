@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { Loader } from '../../../shared/components/Loader/Loader';
 import { ErrorResponse } from '../../../shared/components/ErrorResponse/ErrorResponse';
 import { NotFound } from '../../../shared/components/NotFound/NotFound';
+import { SectionErrorBoundary } from '../../../shared/components/SectionErrorBoundary/SectionErrorBoundary';
 import { getDetailViewState } from '../../../shared/reactQuery/detailViewState';
 
 import { usePlant } from '../hooks/usePlant';
@@ -52,20 +53,35 @@ export default function PlantDetail() {
 
   return (
     <div className="plant-detail">
-      <PlantDetailStickyHeader plant={plant} />
-
-      <PlantHero plant={plant} />
-      <PlantCalendar
-        plant={plant}
-        hemisphere={hemisphere}
-        onHemisphereChange={setHemisphere}
-      />
-      <QuickFacts plant={plant} />
-      <PlantSafety safety={readPlantSafety(plant)} />
-      <PlantCultivation plant={plant} />
-      <PlantEcology plant={plant} />
-      <PlantNotes plant={plant} />
-      <PlantResources plant={plant} />
+      <SectionErrorBoundary section="plant.hero">
+        <PlantDetailStickyHeader plant={plant} />
+        <PlantHero plant={plant} />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary section="plant.calendar">
+        <PlantCalendar
+          plant={plant}
+          hemisphere={hemisphere}
+          onHemisphereChange={setHemisphere}
+        />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary section="plant.quickFacts">
+        <QuickFacts plant={plant} />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary section="plant.safety">
+        <PlantSafety safety={readPlantSafety(plant)} />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary section="plant.cultivation">
+        <PlantCultivation plant={plant} />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary section="plant.ecology">
+        <PlantEcology plant={plant} />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary section="plant.notes">
+        <PlantNotes plant={plant} />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary section="plant.resources">
+        <PlantResources plant={plant} />
+      </SectionErrorBoundary>
     </div>
   );
 }

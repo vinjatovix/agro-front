@@ -19,7 +19,6 @@ export default function MainLayout() {
           <Link to="/families">
             {iconsMap.genome} {t('app.nav.families')}
           </Link>
-          {/* <Link to="/admin">Admin</Link> */}
         </nav>
       </header>
 

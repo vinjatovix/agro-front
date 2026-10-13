@@ -15,10 +15,14 @@ import FamilyDetail from '../pages/families/FamilyDetail/FamilyDetail';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import PlantsPage from '../pages/plants/PlantsPage';
 import NotFoundPage from '../pages/NotFoundPage';
+import RouteErrorFallback from '../pages/RouteErrorFallback';
+
+import { LayoutErrorFallback } from './LayoutErrorFallback';
 
 export const routes: RouteObject[] = [
   {
     element: <AuthLayout />,
+    errorElement: <LayoutErrorFallback />,
     children: [
       { path: '/login', element: <Login /> },
       { path: '/register', element: <Register /> }
@@ -27,14 +31,20 @@ export const routes: RouteObject[] = [
 
   {
     element: <MainLayout />,
+    errorElement: <LayoutErrorFallback />,
     children: [
-      { path: '/', element: <Home /> },
-      { path: '/plants', element: <PlantsPage /> },
-      { path: '/plants/:id', element: <PlantDetail /> },
-      { path: '/families', element: <FamilyList /> },
-      { path: '/families/:id', element: <FamilyDetail /> },
-      { path: '/admin', element: <AdminDashboard /> },
-      { path: '*', element: <NotFoundPage /> }
+      {
+        errorElement: <RouteErrorFallback />,
+        children: [
+          { path: '/', element: <Home /> },
+          { path: '/plants', element: <PlantsPage /> },
+          { path: '/plants/:id', element: <PlantDetail /> },
+          { path: '/families', element: <FamilyList /> },
+          { path: '/families/:id', element: <FamilyDetail /> },
+          { path: '/admin', element: <AdminDashboard /> },
+          { path: '*', element: <NotFoundPage /> }
+        ]
+      }
     ]
   }
 ];

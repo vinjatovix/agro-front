@@ -109,6 +109,12 @@ Es una SPA: no tiene CLIs, jobs, colas ni schedulers.
 
 **No encontrado** (feature 010): la ruta `*` pinta `NotFoundPage` en la misma URL, con la cabecera y la navegación de `MainLayout`, sin redirigir ni añadir historial. Las fichas (`PlantDetail`, `FamilyDetail`) pintan `<NotFound/>` con su propio texto y enlace al listado cuando falta el parámetro de ruta, o la petición devuelve 404 o 400: `usePlant` y `useFamily` usan `skipToken` sin `id` y declaran `meta: { badRequestMeansNotFound: true }`, de modo que `getDetailViewState` da `notFound` y `QueryCache.onError` no registra ese 400. Ya no se lanza ninguna excepción por parámetro de ruta. No hay guards de autenticación.
 
+**Contención de errores de pintado** (feature 010), en tres niveles, cada uno con aviso en castellano y un único registro `kind: 'render'` por `reportUnexpectedError`:
+
+1. **Sección**: `SectionErrorBoundary` (clase, `shared/components`) envuelve cada sección de `PlantDetail` (`plant.hero`, `plant.calendar`, `plant.quickFacts`, `plant.safety`, `plant.cultivation`, `plant.ecology`, `plant.notes`, `plant.resources`) y de `FamilyDetail` (`family.hero`, `family.info`, `family.plants`). Si una lanza, solo ella se sustituye por «No se ha podido mostrar esta sección.» (sin acciones).
+2. **Contenido de página**: todos los hijos de `MainLayout` cuelgan de una ruta sin `path` con `errorElement: <RouteErrorFallback/>`, que se pinta en el `<Outlet>` (cabecera y navegación visibles) con enlace al inicio; registra `section: 'page'`.
+3. **Aplicación**: `MainLayout` y `AuthLayout` tienen `errorElement: <LayoutErrorFallback/>` y `main.tsx` envuelve todo en `AppErrorBoundary`; ambos pintan `AppErrorScreen` (pantalla completa con «Recargar» y `<a href="/">`, sin depender del router) y registran `section: 'app'`.
+
 **Query params de `/plants`** (contrato interno URL ↔ UI): `page`, `limit`, `sortDirection`, `family`, `identity`, `lifeCycle`, `sowingMethod`, `lightType`, `rootSystem`, `sowingMonth` (singular), `hemisphere` (solo UI), `soilPh`, `lightHoursMin`, `spacingCm`, `soilAvailableDepthCm`.
 
 **Llamadas HTTP salientes** (todas `GET`, sin auth):
@@ -276,7 +282,7 @@ Estado de lint: 0 errores, 12 warnings (`no-hardcoded-ui-text`: 1 en `Home.tsx`,
 
 1. ~~**Orden del listado fuera de contrato**~~ (corregido en la feature 002, `fix(plants): use contract sort keys`): `getPlants` envía `sort[name]` o `sort[scientificName]`; las claves permitidas viven en `services/plantListQuery.ts` (feature 003).
 2. **Tipos de dominio desincronizados con el contrato** (ver 6.2): `pruning.seasons`, `propagation.seasons` y `pollination.types` llegan con otra forma, por lo que hoy se pintan claves i18n crudas. Además hay campos opcionales tratados como obligatorios (`aliases`, `knowledge`, `ecology`), lo que puede provocar un `TypeError` en render. No hay validación en tiempo de ejecución (`apiFetch` hace `as T`).
-3. **Sin `errorElement` ni ErrorBoundary**: cualquier excepción de render tumba la app. (Los `throw` por parámetro de ruta de las fichas se eliminaron en la feature 010.)
+3. ~~**Sin `errorElement` ni ErrorBoundary**~~ (corregido en la feature 010): los errores de pintado se contienen en tres niveles (ver 5) y los `throw` por parámetro de ruta de las fichas se eliminaron.
 4. ~~**`FamilyList` ignora `error`**~~ (corregido en la feature 008): pinta `ErrorResponse` si la API falla y «No hay familias registradas.» si no hay familias.
 
 ### Media

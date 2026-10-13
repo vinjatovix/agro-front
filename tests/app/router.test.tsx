@@ -1,13 +1,22 @@
 import { render, screen } from '@testing-library/react';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { createMemoryRouter, RouterProvider } from 'react-router-dom';
+import {
+  createMemoryRouter,
+  RouterProvider,
+  type RouteObject
+} from 'react-router-dom';
 import { describe, it, expect } from 'vitest';
 import { routes } from '../../src/app/router';
 import { t } from '../../src/i18n/core/t';
 import { createTestQueryClient } from '../test-utils/createTestQueryClient';
+import {
+  getUnexpectedErrorReports,
+  silenceConsoleError,
+  ThrowingChild
+} from '../test-utils/unexpectedErrorReports';
 
-function renderRoute(path: string) {
-  const router = createMemoryRouter(routes, { initialEntries: [path] });
+function renderRoute(path: string, routeObjects: RouteObject[] = routes) {
+  const router = createMemoryRouter(routeObjects, { initialEntries: [path] });
   render(
     <QueryClientProvider client={createTestQueryClient()}>
       <RouterProvider router={router} />
@@ -26,5 +35,27 @@ describe('router', () => {
     expect(screen.getByRole('navigation')).toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/ruta-inventada');
     expect(router.state.historyAction).toBe('POP');
+  });
+
+  it('shows the app error screen when a layout throws', () => {
+    const errorSpy = silenceConsoleError();
+    const [authRoute, mainRoute] = routes;
+    const failingRoutes: RouteObject[] = [
+      authRoute,
+      { ...mainRoute, element: <ThrowingChild /> }
+    ];
+
+    renderRoute('/plants', failingRoutes);
+
+    expect(
+      screen.getByRole('heading', { name: t('errors.app.title') })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: t('errors.actions.reload') })
+    ).toBeInTheDocument();
+    expect(getUnexpectedErrorReports(errorSpy)).toEqual([
+      expect.objectContaining({ kind: 'render', section: 'app' })
+    ]);
+    errorSpy.mockRestore();
   });
 });
