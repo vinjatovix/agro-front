@@ -1,6 +1,8 @@
 import { t } from '../../i18n/core/t';
 
 import type { PlantsSortField } from '../../services/plantListQuery';
+import type { PaginatedResponse } from '../../types/api';
+import type { PlantListItem } from '../../types/Plants/Plant';
 import { buildPaginationPages } from '../../shared/utils/pagination';
 import { getQueryViewState } from '../../shared/reactQuery/queryViewState';
 import { Loader } from '../../shared/components/Loader/Loader';
@@ -73,6 +75,18 @@ function PlantListEmpty(props: PlantListEmptyProps) {
   );
 }
 
+function readPlantListPage(
+  response: PaginatedResponse<PlantListItem> | undefined,
+  page: number
+) {
+  const totalPages = response?.pagination.totalPages ?? 0;
+  return {
+    plants: response?.data ?? [],
+    totalItems: response?.pagination.totalItems ?? 0,
+    pages: totalPages > 0 ? buildPaginationPages(page, totalPages) : []
+  };
+}
+
 export default function PlantList() {
   const {
     query,
@@ -102,11 +116,8 @@ export default function PlantList() {
     );
   }
 
-  const plants = query.data?.data ?? [];
-  const totalPages = query.data?.pagination.totalPages;
-  const totalItems = query.data?.pagination.totalItems ?? 0;
   const page = request.pagination.page;
-  const pages = totalPages ? buildPaginationPages(page, totalPages) : [];
+  const { plants, totalItems, pages } = readPlantListPage(query.data, page);
 
   return (
     <div>
