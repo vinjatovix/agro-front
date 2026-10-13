@@ -71,6 +71,22 @@ describe('FamilyDetail', () => {
     expect(screen.getByTestId(/section-🌿 Plantas/i)).toBeInTheDocument();
   });
 
+  it('renders hero, info and plants sections without a section notice', async () => {
+    mockedGetFamilyById.mockResolvedValue(mockFamily);
+    mockedGetFamilyPlants.mockResolvedValue(mockPlants);
+
+    renderFamilyDetail();
+
+    await screen.findByTestId('family-plants-count');
+    expect(
+      screen.getByRole('heading', { name: new RegExp(mockFamily.name, 'i') })
+    ).toBeInTheDocument();
+    expect(screen.getByTestId(/section-📝 Descripción/i)).toBeInTheDocument();
+    expect(
+      screen.queryByText('No se ha podido mostrar esta sección.')
+    ).not.toBeInTheDocument();
+  });
+
   it('should render plants list links', async () => {
     mockedGetFamilyById.mockResolvedValue(mockFamily);
     mockedGetFamilyPlants.mockResolvedValue(mockPlants);

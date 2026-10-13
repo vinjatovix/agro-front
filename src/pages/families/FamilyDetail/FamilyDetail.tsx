@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Loader } from '../../../shared/components/Loader/Loader';
 import { ErrorResponse } from '../../../shared/components/ErrorResponse/ErrorResponse';
 import { NotFound } from '../../../shared/components/NotFound/NotFound';
+import { SectionErrorBoundary } from '../../../shared/components/SectionErrorBoundary/SectionErrorBoundary';
 import { getDetailViewState } from '../../../shared/reactQuery/detailViewState';
 
 import { useFamily } from '../hooks/useFamily';
@@ -36,9 +37,15 @@ export default function FamilyDetail() {
   if (family) {
     return (
       <div className="family-detail">
-        <FamilyHero family={family} />
-        <FamilyInfo family={family} />
-        <FamilyPlants family={family} query={plantsQuery} />
+        <SectionErrorBoundary section="family.hero">
+          <FamilyHero family={family} />
+        </SectionErrorBoundary>
+        <SectionErrorBoundary section="family.info">
+          <FamilyInfo family={family} />
+        </SectionErrorBoundary>
+        <SectionErrorBoundary section="family.plants">
+          <FamilyPlants family={family} query={plantsQuery} />
+        </SectionErrorBoundary>
       </div>
     );
   }

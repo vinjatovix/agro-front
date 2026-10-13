@@ -80,10 +80,24 @@ export const dictionary = {
       title: 'Error inesperado',
       message: 'Ha ocurrido un error inesperado. Inténtalo de nuevo.'
     },
+    section: {
+      message: 'No se ha podido mostrar esta sección.'
+    },
+    page: {
+      title: 'No se ha podido mostrar la página',
+      message:
+        'Algo ha fallado al mostrar esta página. Puedes volver al inicio y seguir navegando.'
+    },
+    app: {
+      title: 'La aplicación ha dejado de funcionar',
+      message:
+        'Ha ocurrido un error inesperado. Recarga la página para volver a intentarlo.'
+    },
     actions: {
       retry: 'Reintentar',
       goHome: 'Volver al inicio',
-      clearFilters: 'Quitar filtros'
+      clearFilters: 'Quitar filtros',
+      reload: 'Recargar'
     }
   },
 
