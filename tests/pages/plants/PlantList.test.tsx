@@ -250,16 +250,85 @@ describe('PlantList', () => {
     expect(lastUrl(fetchMock)).toBe(DEFAULT_REQUEST);
   });
 
-  it('una página sin resultados muestra el estado vacío, no un error', async () => {
-    stubFetchOk({
-      data: [],
-      pagination: { page: 999, limit: 25, totalPages: 1, totalItems: 2 }
-    });
+  it('una página fuera de rango lo explica y ofrece ir a la primera página', async () => {
+    const fetchMock = stubFetchSequence(
+      okResponse({
+        data: [],
+        pagination: { page: 999, limit: 25, totalPages: 1, totalItems: 2 }
+      }),
+      okResponse(listPlantsResponse)
+    );
 
     renderPlantList('/plants?page=999');
 
-    expect(await screen.findByText(t('plant.empty'))).toBeInTheDocument();
+    expect(
+      await screen.findByText(t('plant.emptyState.outOfRange'))
+    ).toHaveAttribute('role', 'status');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole('button', { name: t('plant.emptyState.goToFirstPage') })
+    );
+
+    await waitForPlants();
+    expect(lastUrl(fetchMock)).toContain('pagination[page]=1');
+  });
+
+  it('un catálogo vacío lo explica sin acciones', async () => {
+    stubFetchOk({
+      data: [],
+      pagination: { page: 1, limit: 25, totalPages: 0, totalItems: 0 }
+    });
+
+    renderPlantList();
+
+    expect(
+      await screen.findByText(t('plant.emptyState.emptyCatalog'))
+    ).toHaveAttribute('role', 'status');
+    expect(
+      screen.queryByRole('button', { name: t('errors.actions.clearFilters') })
+    ).not.toBeInTheDocument();
+  });
+
+  it('sin coincidencias con filtros, quitar filtros vuelve a mostrar resultados con un clic', async () => {
+    const fetchMock = stubFetchSequence(
+      okResponse({
+        data: [],
+        pagination: { page: 1, limit: 50, totalPages: 0, totalItems: 0 }
+      }),
+      okResponse(listPlantsResponse)
+    );
+
+    renderPlantList('/plants?identity=zzzzzz&limit=50&page=2');
+
+    expect(
+      await screen.findByText(t('plant.emptyState.noMatches'))
+    ).toHaveAttribute('role', 'status');
+    await userEvent.click(
+      screen.getByRole('button', { name: t('errors.actions.clearFilters') })
+    );
+
+    await waitForPlants();
+    expect(lastUrl(fetchMock)).toBe(
+      `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=50&sort[name]=asc&${LIST_FIELDS}`
+    );
+  });
+
+  it('un 400 con filtros ofrece quitarlos en lugar de volver al inicio', async () => {
+    stubFetchSequence(
+      errorResponse(400, { message: 'Invalid filter', errors: {} }),
+      okResponse(listPlantsResponse)
+    );
+
+    renderPlantList('/plants?identity=x');
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      t('errors.badRequest.listMessage')
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: t('errors.actions.clearFilters') })
+    );
+
+    await waitForPlants();
   });
 
   it('marca las plantas comestibles y tóxicas con una sola petición', async () => {
@@ -281,7 +350,9 @@ describe('PlantList', () => {
 
     renderPlantList('/plants?edible=false');
 
-    expect(await screen.findByText(t('plant.empty'))).toBeInTheDocument();
+    expect(
+      await screen.findByText(t('plant.emptyState.noMatches'))
+    ).toHaveAttribute('role', 'status');
     expect(lastUrl(fetchMock)).toContain('filter[edible][eq]=false');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });

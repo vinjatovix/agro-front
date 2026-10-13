@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useNavigate } from 'react-router-dom';
 import { usePlantFilters } from '../../../../../src/components/plants/PlantFilters/hooks/usePlantFilters';
 
 function wrapperEmpty({ children }: { children: React.ReactNode }) {
@@ -206,5 +206,52 @@ describe('usePlantFilters', () => {
 
     expect(result.current.edible).toBeUndefined();
     expect(result.current.toxic).toBeUndefined();
+  });
+
+  describe('search text synced with the URL', () => {
+    function useFiltersWithNavigation() {
+      return { filters: usePlantFilters(), navigate: useNavigate() };
+    }
+
+    function renderWithSearch(route: string) {
+      return renderHook(() => useFiltersWithNavigation(), {
+        wrapper: ({ children }: { children: React.ReactNode }) => (
+          <MemoryRouter initialEntries={[route]}>{children}</MemoryRouter>
+        )
+      });
+    }
+
+    it('follows the identity param when it changes from outside', () => {
+      const { result } = renderWithSearch('/plants?identity=tomate');
+      expect(result.current.filters.textState.identity).toBe('tomate');
+
+      act(() => {
+        result.current.navigate('/plants?limit=50');
+      });
+
+      expect(result.current.filters.textState.identity).toBe('');
+    });
+
+    it('keeps what is typed inside the debounce window', () => {
+      vi.useFakeTimers();
+      const { result } = renderWithSearch('/plants');
+
+      act(() => {
+        result.current.filters.handleTextChange('identity', 'lech');
+      });
+      act(() => {
+        result.current.filters.setHemisphere('south');
+      });
+
+      expect(result.current.filters.textState.identity).toBe('lech');
+
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
+
+      expect(result.current.filters.getParam('identity')).toBe('lech');
+      expect(result.current.filters.textState.identity).toBe('lech');
+      vi.useRealTimers();
+    });
   });
 });

@@ -144,3 +144,52 @@ describe('usePlants: setters', () => {
     expect(params.get('lifeCycle')).toBe('annual');
   });
 });
+
+describe('usePlants: vacíos y filtros', () => {
+  const route =
+    '/plants?page=3&limit=50&sortField=name&sortDirection=desc&hemisphere=south&identity=tomate&lifeCycle=annual';
+
+  it('hasActiveFilters es true si la URL tiene filtros válidos', () => {
+    const { result } = renderUsePlants(route);
+
+    expect(result.current.plants.hasActiveFilters).toBe(true);
+  });
+
+  it('hasActiveFilters es false sin filtros o con filtros no válidos', () => {
+    const { result } = renderUsePlants(
+      '/plants?limit=50&hemisphere=south&lifeCycle=invented'
+    );
+
+    expect(result.current.plants.hasActiveFilters).toBe(false);
+  });
+
+  it('clearFilters deja en la URL solo orden, límite y hemisferio', async () => {
+    const { result } = renderUsePlants(route);
+
+    act(() => {
+      result.current.plants.clearFilters();
+    });
+
+    await waitFor(() => {
+      expect(searchParams(result.current.search).toString()).toBe(
+        'limit=50&sortField=name&sortDirection=desc&hemisphere=south'
+      );
+    });
+    expect(result.current.plants.hasActiveFilters).toBe(false);
+  });
+
+  it('goToFirstPage quita la página fuera de rango y conserva el resto', async () => {
+    const { result } = renderUsePlants(route);
+
+    act(() => {
+      result.current.plants.goToFirstPage();
+    });
+
+    await waitFor(() => {
+      expect(result.current.plants.request.pagination.page).toBe(1);
+    });
+    const params = searchParams(result.current.search);
+    expect(params.get('identity')).toBe('tomate');
+    expect(params.get('limit')).toBe('50');
+  });
+});

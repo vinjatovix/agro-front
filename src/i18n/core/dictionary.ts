@@ -163,7 +163,12 @@ export const dictionary = {
       DELETED: 'Borrada'
     },
     plants: 'Plantas',
-    empty: 'No hay plantas que coincidan con esta búsqueda.',
+    emptyState: {
+      noMatches: 'Ningún resultado coincide con los filtros.',
+      emptyCatalog: 'Todavía no hay plantas registradas.',
+      outOfRange: 'Esta página no tiene resultados.',
+      goToFirstPage: 'Ir a la primera página'
+    },
     filters: {
       clear: 'Borrar filtros',
       search_label: 'Buscar plantas',

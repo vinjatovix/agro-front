@@ -6,7 +6,10 @@ import type { SortDirection } from '../../../services/listQuery';
 import type { PlantsSortField } from '../../../services/plantListQuery';
 import { QUERY_DEFAULTS } from '../../../shared/reactQuery/queryDefaults';
 import { plantKeys } from '../../../shared/reactQuery/plantKeys';
-import { PLANT_LIST_URL_PARAMS } from '../../../shared/constants/plantListUrlParams';
+import {
+  PLANT_LIST_URL_PARAMS,
+  withoutPlantListFilters
+} from '../../../shared/constants/plantListUrlParams';
 import type { PlantListItem } from '../../../types/Plants/Plant';
 import type { PaginatedResponse } from '../../../types/api';
 import { parsePlantListSearchParams } from '../utils/parsePlantListSearchParams';
@@ -38,6 +41,18 @@ export function usePlants() {
     });
   }
 
+  function goToFirstPage() {
+    setParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.delete(PLANT_LIST_URL_PARAMS.page);
+      return next;
+    });
+  }
+
+  function clearFilters() {
+    setParams((prev) => withoutPlantListFilters(prev));
+  }
+
   function setLimit(limit: number) {
     updateParams(PLANT_LIST_URL_PARAMS.limit, String(limit));
   }
@@ -53,7 +68,10 @@ export function usePlants() {
   return {
     query,
     request,
+    hasActiveFilters: Object.keys(request.filters).length > 0,
     setPage,
+    goToFirstPage,
+    clearFilters,
     setLimit,
     setSortField,
     setSortDirection

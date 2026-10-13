@@ -11,9 +11,16 @@ function useTextFilters(
   setParam: (key: string, value?: string) => void,
   getParam: (key: string) => string
 ) {
+  const urlIdentity = getParam(PLANT_LIST_URL_PARAMS.identity);
   const [textState, setTextState] = useState<Record<TextFilterKey, string>>({
-    identity: getParam(PLANT_LIST_URL_PARAMS.identity)
+    identity: urlIdentity
   });
+  const [lastUrlIdentity, setLastUrlIdentity] = useState(urlIdentity);
+
+  if (urlIdentity !== lastUrlIdentity) {
+    setLastUrlIdentity(urlIdentity);
+    setTextState((prev) => ({ ...prev, identity: urlIdentity }));
+  }
 
   const setTextValue = useCallback((key: TextFilterKey, value: string) => {
     setTextState((prev) => ({

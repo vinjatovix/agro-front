@@ -12,6 +12,10 @@ import { ErrorResponse } from '../../shared/components/ErrorResponse/ErrorRespon
 
 import PlantCard from './PlantCard/PlantCard';
 import { usePlants } from './hooks/usePlants';
+import {
+  getPlantListEmptyState,
+  type PlantListEmptyState
+} from './utils/getPlantListEmptyState';
 
 import './plantList.css';
 
@@ -24,9 +28,63 @@ const SORT_FIELD_OPTIONS = Object.entries(SORT_FIELD_LABELS).map(
   ([value, label]) => ({ value: value as PlantsSortField, label })
 );
 
+const EMPTY_STATE_MESSAGE_KEYS = {
+  outOfRange: 'plant.emptyState.outOfRange',
+  noMatches: 'plant.emptyState.noMatches',
+  emptyCatalog: 'plant.emptyState.emptyCatalog'
+} as const;
+
+interface PlantListEmptyProps {
+  readonly state: PlantListEmptyState;
+  readonly onClearFilters: () => void;
+  readonly onGoToFirstPage: () => void;
+}
+
+function PlantListEmptyAction({
+  state,
+  onClearFilters,
+  onGoToFirstPage
+}: PlantListEmptyProps) {
+  if (state === 'emptyCatalog') return null;
+  const [label, onClick] =
+    state === 'noMatches'
+      ? [t('errors.actions.clearFilters'), onClearFilters]
+      : [t('plant.emptyState.goToFirstPage'), onGoToFirstPage];
+
+  return (
+    <button
+      type="button"
+      className="plant-list__empty-action"
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  );
+}
+
+function PlantListEmpty(props: PlantListEmptyProps) {
+  return (
+    <div className="plant-list__empty">
+      <p role="status" className="plant-list__empty-message">
+        {t(EMPTY_STATE_MESSAGE_KEYS[props.state])}
+      </p>
+      <PlantListEmptyAction {...props} />
+    </div>
+  );
+}
+
 export default function PlantList() {
-  const { query, request, setPage, setLimit, setSortField, setSortDirection } =
-    usePlants();
+  const {
+    query,
+    request,
+    hasActiveFilters,
+    setPage,
+    goToFirstPage,
+    clearFilters,
+    setLimit,
+    setSortField,
+    setSortDirection
+  } = usePlants();
 
   const viewState = getQueryViewState(query);
 
@@ -36,12 +94,17 @@ export default function PlantList() {
 
   if (viewState === 'error') {
     return (
-      <ErrorResponse error={query.error} onRetry={() => void query.refetch()} />
+      <ErrorResponse
+        error={query.error}
+        onRetry={() => void query.refetch()}
+        onClearFilters={hasActiveFilters ? clearFilters : undefined}
+      />
     );
   }
 
   const plants = query.data?.data ?? [];
   const totalPages = query.data?.pagination.totalPages;
+  const totalItems = query.data?.pagination.totalItems ?? 0;
   const page = request.pagination.page;
   const pages = totalPages ? buildPaginationPages(page, totalPages) : [];
 
@@ -71,7 +134,11 @@ export default function PlantList() {
       <Pagination pages={pages} currentPage={page} onPageChange={setPage} />
 
       {plants.length === 0 ? (
-        <p className="plant-list__empty">{t('plant.empty')}</p>
+        <PlantListEmpty
+          state={getPlantListEmptyState({ page, totalItems, hasActiveFilters })}
+          onClearFilters={clearFilters}
+          onGoToFirstPage={goToFirstPage}
+        />
       ) : (
         <div className="plant-grid">
           {plants.map((plant) => (
