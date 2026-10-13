@@ -38,7 +38,6 @@ export const dictionary = {
     cancel: 'Cancelar',
 
     loading: 'Cargando...',
-    not_found: 'No encontrado',
     results_per_page: 'Resultados por página',
     filters: 'Filtros',
     orders: {
@@ -88,13 +87,28 @@ export const dictionary = {
     }
   },
 
+  notFound: {
+    title: 'Página no encontrada',
+    message: 'La página que buscas no existe o ha cambiado de dirección.',
+    plant: {
+      title: 'Planta no encontrada',
+      message: 'La planta no existe o ya no está disponible.'
+    },
+    family: {
+      title: 'Familia no encontrada',
+      message: 'La familia no existe.'
+    },
+    backHome: 'Volver al inicio',
+    backToPlants: 'Volver al listado de plantas',
+    backToFamilies: 'Volver al listado de familias'
+  },
+
   family: {
     families: 'Familias',
     empty: 'No hay familias registradas.',
     select_error: 'No se han podido cargar las familias.',
     detail: {
-      loading: 'Cargando familia...',
-      not_found: 'Familia no encontrada'
+      loading: 'Cargando familia...'
     },
     hero: {
       order: 'Orden',
@@ -196,8 +210,7 @@ export const dictionary = {
       }
     },
     detail: {
-      loading: 'Cargando planta...',
-      not_found: 'Planta no encontrada'
+      loading: 'Cargando planta...'
     },
     hero: {
       scientific_name: 'Nombre científico',

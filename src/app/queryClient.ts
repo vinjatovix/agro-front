@@ -7,7 +7,6 @@ import {
   toUnexpectedErrorReport
 } from '../shared/observability/reportUnexpectedError';
 import { shouldRetryQuery } from '../shared/reactQuery/retryPolicy';
-import '../shared/reactQuery/queryMeta';
 
 function reportQueryError(error: unknown, query: Pick<Query, 'meta'>): void {
   const kind = classifyFailure(error, query.meta);

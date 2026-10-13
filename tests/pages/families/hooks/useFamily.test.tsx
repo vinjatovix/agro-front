@@ -100,6 +100,19 @@ describe('useFamily', () => {
     expect(mockedGetFamilyById).not.toHaveBeenCalled();
   });
 
+  it('treats a 400 as not found through the query meta', async () => {
+    mockedGetFamilyById.mockResolvedValue(familyMock);
+
+    renderHook(() => useFamily(familyMock.id), { wrapper });
+
+    await waitFor(() => {
+      const entry = queryClient.getQueryCache().find({
+        queryKey: familyKeys.detail(familyMock.id)
+      });
+      expect(entry?.meta).toEqual({ badRequestMeansNotFound: true });
+    });
+  });
+
   it('requests the full family even when the partial list is cached', async () => {
     const family = buildFamily();
     queryClient.setQueryData(familyKeys.list(), listFamilyItems);

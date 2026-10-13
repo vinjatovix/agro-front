@@ -1,9 +1,9 @@
 import { useParams } from 'react-router-dom';
 
-import { t } from '../../../i18n/core/t';
 import { Loader } from '../../../shared/components/Loader/Loader';
 import { ErrorResponse } from '../../../shared/components/ErrorResponse/ErrorResponse';
-import { getQueryViewState } from '../../../shared/reactQuery/queryViewState';
+import { NotFound } from '../../../shared/components/NotFound/NotFound';
+import { getDetailViewState } from '../../../shared/reactQuery/detailViewState';
 
 import { useFamily } from '../hooks/useFamily';
 import { useFamilyPlants } from '../hooks/useFamilyPlants';
@@ -19,12 +19,18 @@ export default function FamilyDetail() {
 
   const familyQuery = useFamily(id);
   const plantsQuery = useFamilyPlants(familyQuery.data?.id);
-  const viewState = getQueryViewState(familyQuery);
-
+  const viewState = getDetailViewState(id, familyQuery);
   const family = familyQuery.data;
 
-  if (!id) {
-    return <p role="alert">{t('family.detail.not_found')}</p>;
+  if (viewState === 'notFound') {
+    return (
+      <NotFound
+        titleKey="notFound.family.title"
+        messageKey="notFound.family.message"
+        backTo="/families"
+        backLabelKey="notFound.backToFamilies"
+      />
+    );
   }
 
   if (family) {

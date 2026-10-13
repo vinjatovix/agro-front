@@ -380,4 +380,50 @@ describe('PlantDetail', () => {
     expect(screen.getByTestId('section-🌱 cultivo')).toBeInTheDocument();
     expect(screen.getByTestId('section-📝 notas')).toBeInTheDocument();
   });
+
+  describe('not found', () => {
+    const errorSpy = vi.spyOn(console, 'error');
+
+    beforeEach(() => {
+      errorSpy.mockClear();
+    });
+
+    function expectPlantNotFound() {
+      expect(
+        screen.getByRole('heading', { level: 1, name: 'Planta no encontrada' })
+      ).toBeInTheDocument();
+      expect(screen.getByRole('status')).toHaveTextContent(
+        'La planta no existe o ya no está disponible.'
+      );
+      expect(
+        screen.getByRole('link', { name: 'Volver al listado de plantas' })
+      ).toHaveAttribute('href', '/plants');
+      expect(errorSpy).not.toHaveBeenCalled();
+    }
+
+    it.each([404, 400])(
+      'shows the plant not found screen on a %i',
+      async (status) => {
+        mockedGetPlantById.mockRejectedValue(new ApiError('x', status));
+
+        renderPlantDetail();
+
+        await screen.findByRole('heading', {
+          level: 1,
+          name: 'Planta no encontrada'
+        });
+        expectPlantNotFound();
+      }
+    );
+
+    it('shows the plant not found screen without throwing when the id param is missing', () => {
+      renderWithProviders(<PlantDetail />, {
+        route: '/plants',
+        path: '/plants'
+      });
+
+      expectPlantNotFound();
+      expect(mockedGetPlantById).not.toHaveBeenCalled();
+    });
+  });
 });
