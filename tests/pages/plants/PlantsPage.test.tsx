@@ -29,7 +29,10 @@ vi.mock('../../../src/pages/plants/hooks/usePlants', () => ({
       pagination: { page: 1, limit: 25 },
       sort: { field: 'name', direction: 'asc' }
     },
+    hasActiveFilters: false,
     setPage: vi.fn(),
+    goToFirstPage: vi.fn(),
+    clearFilters: vi.fn(),
     setLimit: vi.fn(),
     setSortField: vi.fn(),
     setSortDirection: vi.fn()

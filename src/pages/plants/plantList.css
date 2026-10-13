@@ -16,3 +16,34 @@
   font: var(--type-body-lg);
   cursor: pointer;
 }
+
+.plant-list__empty {
+  margin: var(--space-lg) 0;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-md);
+  background: var(--color-surface-container-low);
+  border-radius: var(--radius-xl);
+}
+
+.plant-list__empty-message {
+  margin: 0;
+  font: var(--type-body-lg);
+  color: var(--color-on-surface-variant);
+}
+
+.plant-list__empty-action {
+  font: var(--type-label-lg);
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-full);
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+}
+
+.plant-list__empty-action:hover {
+  background: var(--color-primary-container);
+}
