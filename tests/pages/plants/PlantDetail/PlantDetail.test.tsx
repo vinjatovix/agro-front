@@ -6,6 +6,8 @@ import { Route, Routes } from 'react-router-dom';
 
 import PlantDetail from '../../../../src/pages/plants/PlantDetail/PlantDetail';
 import { getPlantById } from '../../../../src/services/plants.service';
+import { ApiError } from '../../../../src/shared/errors/ApiError';
+import { NetworkError } from '../../../../src/shared/errors/NetworkError';
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import { listPlantsResponse } from '../../../fixtures/plants/listPlants';
 import {
@@ -173,14 +175,66 @@ describe('PlantDetail', () => {
     expect(screen.queryByRole('img', { name: 'Tóxica' })).toBeNull();
   });
 
-  it('should render error when service fails', async () => {
-    mockedGetPlantById.mockRejectedValue(new Error('Plant not found'));
+  it.each([
+    [
+      'a network failure',
+      new NetworkError(new TypeError('Failed to fetch')),
+      'No se ha podido conectar'
+    ],
+    [
+      'a 500',
+      new ApiError('Internal Server Error', 500),
+      'El servicio no está disponible'
+    ],
+    [
+      'an error without body',
+      new ApiError('API error: 503', 503),
+      'El servicio no está disponible'
+    ]
+  ])(
+    'explains %s in Spanish without technical details',
+    async (_label, error, expectedText) => {
+      mockedGetPlantById.mockRejectedValue(error);
+
+      renderPlantDetail();
+
+      const alert = await screen.findByRole('alert');
+      expect(alert).toHaveTextContent(expectedText);
+      expect(alert).not.toHaveTextContent(/API error|Internal Server|\d{3}/);
+    }
+  );
+
+  it('shows the plant after retrying with a good response', async () => {
+    mockedGetPlantById.mockRejectedValueOnce(new ApiError('x', 500));
+    mockedGetPlantById.mockResolvedValue(mockPlant);
 
     renderPlantDetail();
-
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      /plant not found/i
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Reintentar' })
     );
+
+    expect(
+      await screen.findByRole('heading', {
+        name: new RegExp(mockPlant.identity.name.primary, 'i')
+      })
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('keeps the plant when a refetch fails', async () => {
+    mockedGetPlantById.mockResolvedValue(mockPlant);
+    const primaryName = new RegExp(mockPlant.identity.name.primary, 'i');
+
+    const { queryClient } = renderPlantDetail();
+    await screen.findByRole('heading', { name: primaryName });
+    mockedGetPlantById.mockRejectedValue(new ApiError('x', 500));
+
+    await queryClient.refetchQueries();
+
+    expect(
+      screen.getByRole('heading', { name: primaryName })
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
   it('should render resources section with youtube videos and articles', async () => {

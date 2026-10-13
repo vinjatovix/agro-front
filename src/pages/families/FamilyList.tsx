@@ -4,7 +4,7 @@ import { t } from '../../i18n/core/t';
 import { ErrorResponse } from '../../shared/components/ErrorResponse/ErrorResponse';
 import { Loader } from '../../shared/components/Loader/Loader';
 import ScientificName from '../../shared/components/ScientificName/ScientificName';
-import { toUiError } from '../../shared/errors/toUiError';
+import { getQueryViewState } from '../../shared/reactQuery/queryViewState';
 
 import { useFamilies } from '../../shared/hooks/useFamilies';
 import type { FamilyListItem } from '../../types/Family';
@@ -33,17 +33,22 @@ function FamilyCards({ families }: { readonly families: FamilyListItem[] }) {
 }
 
 export default function FamilyList() {
-  const { data, loading, error } = useFamilies();
+  const query = useFamilies();
+  const viewState = getQueryViewState(query);
 
-  if (loading) return <Loader />;
+  if (viewState === 'loading') return <Loader />;
 
-  if (error) return <ErrorResponse {...toUiError(error)} />;
+  if (viewState === 'error') {
+    return (
+      <ErrorResponse error={query.error} onRetry={() => void query.refetch()} />
+    );
+  }
 
   return (
     <div>
       <h1>{t('family.families')}</h1>
 
-      <FamilyCards families={data} />
+      <FamilyCards families={query.data ?? []} />
     </div>
   );
 }

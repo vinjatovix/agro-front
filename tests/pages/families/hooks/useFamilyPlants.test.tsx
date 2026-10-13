@@ -43,7 +43,7 @@ describe('useFamilyPlants', () => {
     );
 
     await waitFor(() => {
-      expect(result.current.data).toEqual(listPlantsResponse.data);
+      expect(result.current.data?.data).toEqual(listPlantsResponse.data);
     });
 
     expect(mockedGetFamilyPlants).toHaveBeenCalledExactlyOnceWith(
@@ -70,12 +70,13 @@ describe('useFamilyPlants', () => {
     );
 
     await waitFor(() => {
-      expect(result.current.data).toEqual([]);
+      expect(result.current.data?.data).toEqual([]);
     });
   });
 
   it('handles error state', async () => {
-    mockedGetFamilyPlants.mockRejectedValue(new Error('API error'));
+    const failure = new Error('API error');
+    mockedGetFamilyPlants.mockRejectedValue(failure);
 
     const { result } = renderHook(
       () => useFamilyPlants('5a2380c4-1546-4511-a77b-ec9d3ebcb7cf'),
@@ -85,7 +86,7 @@ describe('useFamilyPlants', () => {
     );
 
     await waitFor(() => {
-      expect(result.current.error).toBeTruthy();
+      expect(result.current.error).toBe(failure);
     });
   });
 
@@ -101,7 +102,7 @@ describe('useFamilyPlants', () => {
       }
     );
 
-    expect(result.current.loading).toBe(true);
+    expect(result.current.isLoading).toBe(true);
   });
 
   it('does not call getFamilyPlants when familyId is undefined', () => {
@@ -112,23 +113,23 @@ describe('useFamilyPlants', () => {
     expect(mockedGetFamilyPlants).not.toHaveBeenCalled();
   });
 
-  it('returns empty data when familyId is undefined', () => {
+  it('returns no data when familyId is undefined', () => {
     const { result } = renderHook(() => useFamilyPlants(undefined), {
       wrapper: createWrapper()
     });
 
-    expect(result.current.data).toEqual([]);
+    expect(result.current.data).toBeUndefined();
   });
 
-  it('returns loading as false when familyId is undefined', () => {
+  it('is not fetching when familyId is undefined', () => {
     const { result } = renderHook(() => useFamilyPlants(undefined), {
       wrapper: createWrapper()
     });
 
-    expect(result.current.loading).toBe(false);
+    expect(result.current.isFetching).toBe(false);
   });
 
-  it('returns total items count from pagination', async () => {
+  it('exposes the total items count from pagination', async () => {
     mockedGetFamilyPlants.mockResolvedValue({
       data: listPlantsResponse.data,
       pagination: {
@@ -147,15 +148,7 @@ describe('useFamilyPlants', () => {
     );
 
     await waitFor(() => {
-      expect(result.current.total).toBe(42);
+      expect(result.current.data?.pagination.totalItems).toBe(42);
     });
-  });
-
-  it('returns total as 0 when familyId is undefined', () => {
-    const { result } = renderHook(() => useFamilyPlants(undefined), {
-      wrapper: createWrapper()
-    });
-
-    expect(result.current.total).toBe(0);
   });
 });

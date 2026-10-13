@@ -1,22 +1,22 @@
 import { t } from '../../i18n/core/t';
 import type { UiError } from '../components/ErrorResponse/types';
-import { ApiError } from './ApiError';
+import { classifyFailure, type FailureKind } from './classifyFailure';
 
-export function toUiError(error: unknown): UiError {
-  if (!error) {
-    return { message: t('common.unknown_error') };
+export type ToUiErrorOptions = {
+  listFilters?: boolean;
+};
+
+function messageFor(kind: FailureKind, options: ToUiErrorOptions): string {
+  if (kind === 'badRequest' && options.listFilters) {
+    return t('errors.badRequest.listMessage');
   }
+  return t(`errors.${kind}.message`);
+}
 
-  if (error instanceof ApiError) {
-    return {
-      message: error.message,
-      details: error.errors ? Object.values(error.errors) : undefined
-    };
-  }
-
-  if (error instanceof Error) {
-    return { message: error.message };
-  }
-
-  return { message: t('common.unknown_error') };
+export function toUiError(
+  error: unknown,
+  options: ToUiErrorOptions = {}
+): UiError {
+  const kind = classifyFailure(error);
+  return { kind, message: messageFor(kind, options) };
 }

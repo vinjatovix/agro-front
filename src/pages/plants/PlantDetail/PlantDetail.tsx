@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { t } from '../../../i18n/core/t';
 import { Loader } from '../../../shared/components/Loader/Loader';
 import { ErrorResponse } from '../../../shared/components/ErrorResponse/ErrorResponse';
-import { toUiError } from '../../../shared/errors/toUiError';
+import { getQueryViewState } from '../../../shared/reactQuery/queryViewState';
 
 import { usePlant } from '../hooks/usePlant';
 import { readPlantSafety } from '../utils/plantSafety';
@@ -31,20 +30,18 @@ export default function PlantDetail() {
   const [hemisphere, setHemisphere] = useState<'north' | 'south'>('north');
   const plantQuery = usePlant(id);
 
-  if (plantQuery.isLoading) {
-    return <Loader labelKey="plant.detail.loading" />;
-  }
+  const plant = plantQuery.data;
 
-  if (plantQuery.error) {
-    return <ErrorResponse {...toUiError(plantQuery.error)} />;
-  }
-  if (!plantQuery.data) {
-    return (
-      <ErrorResponse {...toUiError(new Error(t('plant.detail.not_found')))} />
+  if (!plant) {
+    return getQueryViewState(plantQuery) === 'error' ? (
+      <ErrorResponse
+        error={plantQuery.error}
+        onRetry={() => void plantQuery.refetch()}
+      />
+    ) : (
+      <Loader labelKey="plant.detail.loading" />
     );
   }
-
-  const plant = plantQuery.data;
 
   return (
     <div className="plant-detail">

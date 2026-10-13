@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { t } from '../../../i18n/core/t';
 import { Loader } from '../../../shared/components/Loader/Loader';
 import { ErrorResponse } from '../../../shared/components/ErrorResponse/ErrorResponse';
-import { toUiError } from '../../../shared/errors/toUiError';
+import { getQueryViewState } from '../../../shared/reactQuery/queryViewState';
 
 import { useFamily } from '../hooks/useFamily';
 import { useFamilyPlants } from '../hooks/useFamilyPlants';
@@ -19,44 +19,32 @@ export default function FamilyDetail() {
 
   const familyQuery = useFamily(id);
   const plantsQuery = useFamilyPlants(familyQuery.data?.id);
-
-  if (!id) {
-    return (
-      <ErrorResponse {...toUiError(new Error(t('family.detail.not_found')))} />
-    );
-  }
-
-  const isLoading = familyQuery.isLoading || plantsQuery.loading;
-
-  if (isLoading) {
-    return <Loader labelKey="family.detail.loading" />;
-  }
-
-  if (familyQuery.error) {
-    return <ErrorResponse {...toUiError(familyQuery.error)} />;
-  }
-
-  if (plantsQuery.error) {
-    return <ErrorResponse {...toUiError(plantsQuery.error)} />;
-  }
+  const viewState = getQueryViewState(familyQuery);
 
   const family = familyQuery.data;
 
-  if (!family) {
+  if (!id) {
+    return <p role="alert">{t('family.detail.not_found')}</p>;
+  }
+
+  if (family) {
     return (
-      <ErrorResponse {...toUiError(new Error(t('family.detail.not_found')))} />
+      <div className="family-detail">
+        <FamilyHero family={family} />
+        <FamilyInfo family={family} />
+        <FamilyPlants family={family} query={plantsQuery} />
+      </div>
     );
   }
 
-  return (
-    <div className="family-detail">
-      <FamilyHero family={family} />
-      <FamilyInfo family={family} />
-      <FamilyPlants
-        family={family}
-        plants={plantsQuery.data}
-        total={plantsQuery.total}
+  if (viewState === 'error') {
+    return (
+      <ErrorResponse
+        error={familyQuery.error}
+        onRetry={() => void familyQuery.refetch()}
       />
-    </div>
-  );
+    );
+  }
+
+  return <Loader labelKey="family.detail.loading" />;
 }

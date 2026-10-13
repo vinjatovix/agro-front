@@ -2,7 +2,7 @@ import { t } from '../../i18n/core/t';
 
 import type { PlantsSortField } from '../../services/plantListQuery';
 import { buildPaginationPages } from '../../shared/utils/pagination';
-import { toUiError } from '../../shared/errors/toUiError';
+import { getQueryViewState } from '../../shared/reactQuery/queryViewState';
 import { Loader } from '../../shared/components/Loader/Loader';
 import OrderSelector from '../../shared/components/OrderSelector/OrderSelector';
 import LimitSelector from '../../shared/components/LimitSelector/LimitSelector';
@@ -28,12 +28,16 @@ export default function PlantList() {
   const { query, request, setPage, setLimit, setSortField, setSortDirection } =
     usePlants();
 
-  if (query.isLoading) {
+  const viewState = getQueryViewState(query);
+
+  if (viewState === 'loading') {
     return <Loader />;
   }
 
-  if (query.error) {
-    return <ErrorResponse {...toUiError(query.error)} />;
+  if (viewState === 'error') {
+    return (
+      <ErrorResponse error={query.error} onRetry={() => void query.refetch()} />
+    );
   }
 
   const plants = query.data?.data ?? [];

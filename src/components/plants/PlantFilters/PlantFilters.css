@@ -27,6 +27,20 @@
   font: var(--type-body-lg);
 }
 
+.plant-filters__error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+
+.plant-filters__error-message {
+  margin: 0;
+  font: var(--type-body-md);
+  color: var(--color-error);
+}
+
 .plant-filters__buttons {
   display: flex;
   flex-wrap: wrap;

@@ -1,9 +1,11 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
-import FamilyPlants from '../../../../../src/pages/families/FamilyDetail/components/FamilyPlants';
+import FamilyPlants, {
+  type FamilyPlantsQuery
+} from '../../../../../src/pages/families/FamilyDetail/components/FamilyPlants';
 import { listFamiliesResponse } from '../../../../fixtures/families/listFamilies';
 import { buildFamilyPlantItem } from '../../../../fixtures/plants/buildFamilyPlantItem';
 import { listPlantsResponse } from '../../../../fixtures/plants/listPlants';
@@ -14,6 +16,22 @@ const mockPlants = listPlantsResponse.data.map(({ id, identity }) =>
   buildFamilyPlantItem({ id, identity })
 );
 
+function loadedQuery(
+  plants: FamilyPlantItem[],
+  total = plants.length
+): FamilyPlantsQuery {
+  return {
+    data: {
+      data: plants,
+      pagination: { page: 1, limit: 25, totalPages: 1, totalItems: total }
+    },
+    error: null,
+    isError: false,
+    isFetching: false,
+    refetch: vi.fn()
+  };
+}
+
 function renderFamilyPlants(props: {
   family?: typeof mockFamily;
   plants?: FamilyPlantItem[];
@@ -23,8 +41,7 @@ function renderFamilyPlants(props: {
     <MemoryRouter>
       <FamilyPlants
         family={props.family ?? mockFamily}
-        plants={props.plants ?? mockPlants}
-        total={props.total}
+        query={loadedQuery(props.plants ?? mockPlants, props.total)}
       />
     </MemoryRouter>
   );
@@ -67,7 +84,7 @@ describe('FamilyPlants', () => {
     }
   );
 
-  it('renders fallback count when total is omitted', () => {
+  it('renders the plants count as total when no total is given', () => {
     const plants = mockPlants.slice(0, 2);
 
     renderFamilyPlants({ plants, total: undefined });
