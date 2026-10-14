@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import MonthChips from '../../../../../src/pages/plants/PlantDetail/components/MonthChips';
-import { mapMonth } from '../../../../../src/shared/utils/mapMonth';
 
 const SHORT = [
   'Ene',
@@ -74,11 +73,8 @@ describe('MonthChips', () => {
     const { container } = render(
       <MonthChips months={[7]} hemisphere="south" />
     );
-    const index = SHORT.findIndex(
-      (_, position) => mapMonth(position + 1, 'south') === 7
-    );
 
-    expect(chipOf(SHORT[index])).toHaveClass('month-chip--active');
+    expect(chipOf('Ene')).toHaveClass('month-chip--active');
     expect(activeChips(container)).toHaveLength(1);
   });
 

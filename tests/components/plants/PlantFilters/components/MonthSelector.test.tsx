@@ -3,7 +3,6 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import MonthSelector from '../../../../../src/components/plants/PlantFilters/components/MonthSelector';
-import { mapMonth } from '../../../../../src/shared/utils/mapMonth';
 
 const MONTHS = [
   ['enero', 'Ene'],
@@ -50,7 +49,7 @@ describe('MonthSelector', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'enero' }));
 
-    expect(onChange).toHaveBeenCalledWith(String(mapMonth(1, 'south')));
+    expect(onChange).toHaveBeenCalledWith('7');
   });
 
   it('marks the active month and clears it when pressed again', () => {
