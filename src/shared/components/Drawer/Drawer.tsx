@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect } from 'react';
+import { t } from '../../../i18n/core/t';
 import './drawer.css';
 
 interface DrawerProps {
@@ -33,7 +34,7 @@ export default function Drawer({
           type="button"
           className="drawer-overlay"
           onClick={onClose}
-          aria-label="Close drawer"
+          aria-label={t('common.drawer.close')}
         />
       )}
 

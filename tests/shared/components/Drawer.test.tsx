@@ -50,6 +50,20 @@ describe('Drawer', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  it('names the overlay close button in Spanish', () => {
+    const onClose = vi.fn();
+
+    render(
+      <Drawer isOpen={true} onClose={onClose}>
+        <div>Content</div>
+      </Drawer>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cerrar panel' }));
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it('should close on Escape key', () => {
     const onClose = vi.fn();
 

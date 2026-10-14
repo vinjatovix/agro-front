@@ -1,3 +1,4 @@
+import { t } from '../../../i18n/core/t';
 import { iconsMap } from '../../constants/iconsMap';
 
 import './pagination.css';
@@ -16,7 +17,7 @@ export default function Pagination({
   let ellipsisCount = 0;
 
   return (
-    <nav className="pagination" aria-label="Pagination">
+    <nav className="pagination" aria-label={t('common.pagination.label')}>
       {pages.map((p) => {
         if (p === '...') {
           const key = `ellipsis-${ellipsisCount++}`;
