@@ -92,13 +92,13 @@ export interface Plant {
       spreadCm: Range;
     };
     watering: {
-      frequency: 'daily' | 'weekly';
+      frequency: string;
       amountMm?: number;
       conditions?: string[];
     };
     light: {
       hoursMin: number;
-      type: 'full_sun' | 'partial_shade';
+      type: string;
       preference?: 'morning' | 'afternoon' | 'all_day';
     };
     pruning?: Array<{
