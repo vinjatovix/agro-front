@@ -57,6 +57,9 @@ const LITERAL_TEXT_READERS = {
     ...findLiteralTexts(node.left),
     ...findLiteralTexts(node.right)
   ],
+  TSAsExpression: (node) => findLiteralTexts(node.expression),
+  TSSatisfiesExpression: (node) => findLiteralTexts(node.expression),
+  TSNonNullExpression: (node) => findLiteralTexts(node.expression),
   BinaryExpression: (node) =>
     node.operator === '+'
       ? [...findLiteralTexts(node.left), ...findLiteralTexts(node.right)]
