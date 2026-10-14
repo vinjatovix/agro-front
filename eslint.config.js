@@ -32,7 +32,7 @@ export default defineConfig([
       local: localRules
     },
     rules: {
-      'local/no-hardcoded-ui-text': 'warn'
+      'local/no-hardcoded-ui-text': 'error'
     }
   }
 ]);
