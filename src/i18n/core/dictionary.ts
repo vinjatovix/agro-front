@@ -74,6 +74,12 @@ export const dictionary = {
         november: 'noviembre',
         december: 'diciembre'
       }
+    },
+    drawer: {
+      close: 'Cerrar panel'
+    },
+    pagination: {
+      label: 'Paginación'
     }
   },
 
