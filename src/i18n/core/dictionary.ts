@@ -297,6 +297,7 @@ export const dictionary = {
       lifecycle: 'Ciclo de vida',
       light: 'Luz',
       light_hours: 'Horas de luz',
+      light_hours_value: '{hours} h o más al día',
       watering: 'Riego',
       watering_conditions: 'Condiciones de riego',
       height: 'Altura',
@@ -353,7 +354,7 @@ export const dictionary = {
     },
     resources: {
       title: 'Recursos',
-      video_title: 'Video sobre la planta',
+      video_title: 'Vídeo sobre la planta',
       videos: 'Vídeos',
       articles: 'Artículos'
     },

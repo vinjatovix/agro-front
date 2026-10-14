@@ -1,4 +1,5 @@
 import { t } from '../../../../i18n/core/t';
+import { tValue } from '../../../../i18n/core/tValue';
 import { iconsMap } from '../../../../shared/constants/iconsMap';
 import type { Plant } from '../../../../types/Plants/Plant';
 import BodySection from '../../../../shared/components/BodySection/BodySection';
@@ -8,23 +9,6 @@ interface Props {
   readonly plant: Plant;
 }
 
-const LIFE_CYCLE_LABELS: Record<string, string> = {
-  annual: 'Anual',
-  biennial: 'Bienal',
-  perennial: 'Perenne'
-};
-
-const LIGHT_TYPE_LABELS: Record<string, string> = {
-  full_sun: 'Pleno sol',
-  partial_shade: 'Sombra parcial'
-};
-
-const WATERING_LABELS: Record<string, string> = {
-  daily: 'Diario',
-  weekly: 'Semanal',
-  biweekly: 'Cada 2 semanas'
-};
-
 export default function QuickFacts({ plant }: Props) {
   return (
     <BodySection
@@ -32,30 +16,27 @@ export default function QuickFacts({ plant }: Props) {
     >
       <InfoRow
         label={`${iconsMap.recycle} ${t('plant.quick_facts.lifecycle')}`}
-        value={
-          LIFE_CYCLE_LABELS[plant.traits.lifecycle] ?? plant.traits.lifecycle
-        }
+        value={tValue('plant.filters.lifeCycleValues', plant.traits.lifecycle)}
       />
 
       <InfoRow
         label={`${iconsMap.sun} ${t('plant.quick_facts.light')}`}
-        value={
-          LIGHT_TYPE_LABELS[plant.knowledge.light.type] ??
+        value={tValue(
+          'plant.filters.lightTypeValues',
           plant.knowledge.light.type
-        }
+        )}
       />
 
       <InfoRow
         label={`${iconsMap.clock} ${t('plant.quick_facts.light_hours')}`}
-        value={`${plant.knowledge.light.hoursMin}+ ${t('plant.quick_facts.light_hours')} al día`}
+        value={t('plant.quick_facts.light_hours_value', {
+          hours: plant.knowledge.light.hoursMin
+        })}
       />
 
       <InfoRow
         label={`${iconsMap.water} ${t('plant.quick_facts.watering')}`}
-        value={
-          WATERING_LABELS[plant.knowledge.watering?.frequency] ??
-          plant.knowledge.watering?.frequency
-        }
+        value={plant.knowledge.watering?.frequency}
       />
 
       <InfoRow
