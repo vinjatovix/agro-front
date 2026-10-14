@@ -1,7 +1,7 @@
+import { monthNames } from '../../../../i18n/core/monthNames';
 import { t } from '../../../../i18n/core/t';
 import { iconsMap } from '../../../../shared/constants/iconsMap';
-import { MONTHS } from '../constants';
-import { mapMonth } from '../utils/month.utils';
+import { mapMonth } from '../../../../shared/utils/mapMonth';
 
 interface Props {
   readonly hemisphere: 'north' | 'south';
@@ -17,9 +17,7 @@ export default function MonthSelector({ hemisphere, value, onChange }: Props) {
       </legend>
 
       <div className="plant-filters__buttons">
-        {MONTHS.map((monthName, index) => {
-          const displayMonth = index + 1;
-
+        {monthNames().map(({ displayMonth, short, long }) => {
           const backendMonth = mapMonth(displayMonth, hemisphere);
 
           const active = value === String(backendMonth);
@@ -27,8 +25,9 @@ export default function MonthSelector({ hemisphere, value, onChange }: Props) {
           return (
             <button
               data-testid={`month-button-${displayMonth}`}
-              key={monthName}
+              key={displayMonth}
               type="button"
+              aria-label={long}
               className={
                 active
                   ? 'plant-filters__toggle plant-filters__toggle--active'
@@ -36,7 +35,7 @@ export default function MonthSelector({ hemisphere, value, onChange }: Props) {
               }
               onClick={() => onChange(active ? '' : String(backendMonth))}
             >
-              {monthName}
+              {short}
             </button>
           );
         })}

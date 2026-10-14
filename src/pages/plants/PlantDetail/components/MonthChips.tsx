@@ -1,5 +1,5 @@
-import { MONTHS } from '../../../../components/plants/PlantFilters/constants';
-import { mapMonth } from '../../../../components/plants/PlantFilters/utils/month.utils';
+import { monthNames } from '../../../../i18n/core/monthNames';
+import { mapMonth } from '../../../../shared/utils/mapMonth';
 
 import './monthChips.css';
 
@@ -11,19 +11,18 @@ interface Props {
 export default function MonthChips({ months, hemisphere }: Props) {
   return (
     <div className="month-chips">
-      {MONTHS.map((monthName, index) => {
-        const displayMonth = index + 1;
-
+      {monthNames().map(({ displayMonth, short, long }) => {
         const backendMonth = mapMonth(displayMonth, hemisphere);
 
         const active = months.includes(backendMonth);
 
         return (
           <span
-            key={monthName}
+            key={displayMonth}
             className={active ? 'month-chip month-chip--active' : 'month-chip'}
           >
-            {monthName}
+            <span aria-hidden="true">{short}</span>
+            <span className="sr-only">{long}</span>
           </span>
         );
       })}
