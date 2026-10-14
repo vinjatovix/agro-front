@@ -44,6 +44,36 @@ export const dictionary = {
       order: 'Orden',
       asc: 'Ascendente',
       desc: 'Descendente'
+    },
+    months: {
+      short: {
+        january: 'Ene',
+        february: 'Feb',
+        march: 'Mar',
+        april: 'Abr',
+        may: 'May',
+        june: 'Jun',
+        july: 'Jul',
+        august: 'Ago',
+        september: 'Sep',
+        october: 'Oct',
+        november: 'Nov',
+        december: 'Dic'
+      },
+      long: {
+        january: 'enero',
+        february: 'febrero',
+        march: 'marzo',
+        april: 'abril',
+        may: 'mayo',
+        june: 'junio',
+        july: 'julio',
+        august: 'agosto',
+        september: 'septiembre',
+        october: 'octubre',
+        november: 'noviembre',
+        december: 'diciembre'
+      }
     }
   },
 
