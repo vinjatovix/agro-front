@@ -8,7 +8,12 @@ describe('findUiTextRuleBypasses', () => {
     '/* eslint-disable local/no-hardcoded-ui-text */',
     '<p>Hola</p> // eslint-disable-line local/no-hardcoded-ui-text -- motivo',
     '/* eslint local/no-hardcoded-ui-text: off */',
-    "const rule = 'no-hardcoded-ui-text';"
+    "const rule = 'no-hardcoded-ui-text';",
+    '// eslint-disable-next-line',
+    '// eslint-disable-next-line -- motivo',
+    '/* eslint-disable */',
+    '{/* eslint-disable-next-line */}',
+    '<p>Hola</p> // eslint-disable-line'
   ])('flags %s', (directive) => {
     const source = `const a = 1;\n${directive}\nconst b = 2;\n`;
 
@@ -31,6 +36,7 @@ describe('findUiTextRuleBypasses', () => {
 
   it.each([
     '// eslint-disable-next-line react-hooks/exhaustive-deps -- motivo',
+    '/* eslint-disable react-hooks/set-state-in-effect */',
     "export const a = t('common.loading');"
   ])('ignores %s', (source) => {
     expect(findUiTextRuleBypasses(source)).toEqual([]);
