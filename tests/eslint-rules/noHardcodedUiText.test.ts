@@ -59,7 +59,10 @@ const HARDCODED_TEXTS = [
   '<span>Google</span>',
   "<p>{'y'}</p>",
   "<p>{'Celsius'}</p>",
-  "<p>{'mínimo'}</p>"
+  "<p>{'mínimo'}</p>",
+  "<p>{'Hola' as string}</p>",
+  "<p>{'Hola' satisfies string}</p>",
+  "<p>{ok ? 'Sí'! : t('x')}</p>"
 ];
 
 const HARDCODED_ATTRIBUTES = [
