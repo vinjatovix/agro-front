@@ -30,6 +30,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: UI text rule bypass
+        run: npm run check:ui-text-bypass
+
       - name: Format check
         run: npm run format:check
 
