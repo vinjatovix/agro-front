@@ -27,7 +27,7 @@ export default function PlantCard({ plant }: PlantCardProps) {
 
         {plant.identity.scientificName && (
           <p className="plant-scientific-name">
-            <Badge variant="scientific" icon="biotech">
+            <Badge variant="scientific" icon="microscope">
               <ScientificName>
                 {capitalizeFirstLetter(plant.identity.scientificName)}
               </ScientificName>

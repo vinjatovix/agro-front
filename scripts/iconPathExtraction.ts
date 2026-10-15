@@ -26,6 +26,7 @@ export const TWEMOJI_PRIMARY_MAPPING: Record<string, string> = {
   lock: '1f510',
   login: '1f511',
   menu_book: '1f4da',
+  microscope: '1f52c',
   movie: '1f3ac',
   person_add: '1f195',
   potted_plant: '1f331',

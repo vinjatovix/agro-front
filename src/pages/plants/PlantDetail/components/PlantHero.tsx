@@ -45,8 +45,8 @@ export default function PlantHero({ plant }: Props) {
       {plant.identity.scientificName && (
         <p className="plant-hero__scientific">
           <strong>
-            <Icon name="biotech" decorative /> {t('plant.hero.scientific_name')}
-            :{' '}
+            <Icon name="microscope" decorative />{' '}
+            {t('plant.hero.scientific_name')}:{' '}
           </strong>
           <ScientificName>
             {capitalizeFirstLetter(plant.identity.scientificName)}
