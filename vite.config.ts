@@ -11,6 +11,9 @@ export default defineVitestConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './tests/setup.ts',
+    env: {
+      VITE_API_URL: 'http://localhost:3000'
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
