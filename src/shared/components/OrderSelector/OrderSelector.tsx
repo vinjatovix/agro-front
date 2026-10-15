@@ -1,4 +1,5 @@
 import { t } from '../../../i18n/core/t';
+
 interface Props {
   readonly value: 'asc' | 'desc';
   readonly labelAsc?: string;
@@ -20,8 +21,8 @@ export default function OrderSelector({
         value={value}
         onChange={(e) => onChange(e.target.value as 'asc' | 'desc')}
       >
-        <option value="asc">↑ {labelAsc}</option>
-        <option value="desc">↓ {labelDes}</option>
+        <option value="asc">{labelAsc}</option>
+        <option value="desc">{labelDes}</option>
       </select>
     </>
   );

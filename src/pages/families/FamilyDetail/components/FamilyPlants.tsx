@@ -1,11 +1,12 @@
 import type { UseQueryResult } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+
 import PlantStatusBadge from '../../../../components/plants/PlantStatusBadge/PlantStatusBadge';
 import { t } from '../../../../i18n/core/t';
 import BodySection from '../../../../shared/components/BodySection/BodySection';
 import { ErrorResponse } from '../../../../shared/components/ErrorResponse/ErrorResponse';
+import Icon from '../../../../shared/components/Icon/Icon';
 import { Loader } from '../../../../shared/components/Loader/Loader';
-import { iconsMap } from '../../../../shared/constants/iconsMap';
 import { getQueryViewState } from '../../../../shared/reactQuery/queryViewState';
 import { capitalizeFirstLetter } from '../../../../shared/utils/capitalizeFirstLetter';
 import type { Family } from '../../../../types/Family';
@@ -61,7 +62,7 @@ function FamilyPlantsContent({ family, plants, total }: ContentProps) {
         className="family-detail__cta-link"
         data-testid="family-plants-view-all"
       >
-        {iconsMap.arrowRight} {t('family.plants.view_all')}
+        <Icon name="arrow_forward" decorative /> {t('family.plants.view_all')}
       </Link>
 
       <div className="family-plants__grid">
@@ -103,7 +104,7 @@ function FamilyPlantsState({ family, query }: Props) {
 
 export default function FamilyPlants({ family, query }: Props) {
   return (
-    <BodySection title={`${iconsMap.gardening} ${t('family.plants.title')}`}>
+    <BodySection title={t('family.plants.title')} icon="eco">
       <FamilyPlantsState family={family} query={query} />
     </BodySection>
   );

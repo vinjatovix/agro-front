@@ -208,6 +208,21 @@ describe('usePlantFilters', () => {
     expect(result.current.toxic).toBeUndefined();
   });
 
+  it('clearing individual slider filter removes its parameter and resets page', () => {
+    const { result } = renderHook(() => usePlantFilters(), {
+      wrapper: wrapperWithParams
+    });
+
+    act(() => {
+      result.current.setParam('soilPh', undefined);
+      result.current.soilPh.setValue(null);
+    });
+
+    expect(result.current.getParam('soilPh')).toBe('');
+    expect(result.current.soilPh.value).toBe(null);
+    expect(result.current.getParam('page')).toBe('');
+  });
+
   describe('search text synced with the URL', () => {
     function useFiltersWithNavigation() {
       return { filters: usePlantFilters(), navigate: useNavigate() };

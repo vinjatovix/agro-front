@@ -1,3 +1,5 @@
-.plant-list--notes li::before {
-  content: '📝';
+.plant-list--notes li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
 }

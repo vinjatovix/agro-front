@@ -5,11 +5,12 @@ import Badge from '../../../../src/shared/components/Badge/Badge';
 
 describe('Badge', () => {
   it('hides the icon element from assistive technologies with aria-hidden', () => {
-    render(<Badge icon="icon-sample">Solanáceas</Badge>);
+    const { container } = render(<Badge icon="label">Solanáceas</Badge>);
 
-    const iconElement = screen.getByText('icon-sample');
+    const svg = container.querySelector('svg');
 
-    expect(iconElement).toHaveAttribute('aria-hidden', 'true');
+    expect(svg).toBeInTheDocument();
+    expect(svg).toHaveAttribute('aria-hidden', 'true');
   });
 
   it('renders children text as badge content', () => {

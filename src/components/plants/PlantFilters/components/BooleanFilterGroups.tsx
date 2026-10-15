@@ -21,7 +21,8 @@ export default function BooleanFilterGroups({ values, onChange }: Props) {
       {BOOLEAN_FILTERS.map((filter) => (
         <ToggleGroup
           key={filter.key}
-          label={`${filter.icon} ${t(filter.labelKey)}`}
+          icon={filter.icon}
+          label={t(filter.labelKey)}
           options={filter.options}
           value={values[filter.key] ?? BOOLEAN_FILTER_ANY}
           describedBy={hintId}

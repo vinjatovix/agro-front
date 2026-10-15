@@ -62,11 +62,11 @@ describe('PlantDetail', () => {
     ).toBeInTheDocument();
     expect(screen.getByText(regexScientific)).toBeInTheDocument();
 
-    expect(screen.getByTestId('section-📅 calendario')).toBeInTheDocument();
-    expect(screen.getByTestId('section-⚡ datos rápidos')).toBeInTheDocument();
-    expect(screen.getByTestId('section-🌱 cultivo')).toBeInTheDocument();
-    expect(screen.getByTestId('section-🌿 ecología')).toBeInTheDocument();
-    expect(screen.getByTestId('section-📝 notas')).toBeInTheDocument();
+    expect(screen.getByTestId('section-calendario')).toBeInTheDocument();
+    expect(screen.getByTestId('section-datos rápidos')).toBeInTheDocument();
+    expect(screen.getByTestId('section-cultivo')).toBeInTheDocument();
+    expect(screen.getByTestId('section-ecología')).toBeInTheDocument();
+    expect(screen.getByTestId('section-notas')).toBeInTheDocument();
   });
 
   it('renders every section of the full plant without a section notice', async () => {
@@ -74,11 +74,11 @@ describe('PlantDetail', () => {
 
     renderPlantDetail();
 
-    await screen.findByTestId('section-📅 calendario');
-    expect(screen.getByTestId('section-⚡ datos rápidos')).toBeInTheDocument();
-    expect(screen.getByTestId('section-🌱 cultivo')).toBeInTheDocument();
-    expect(screen.getByTestId('section-🌿 ecología')).toBeInTheDocument();
-    expect(screen.getByTestId('section-📝 notas')).toBeInTheDocument();
+    await screen.findByTestId('section-calendario');
+    expect(screen.getByTestId('section-datos rápidos')).toBeInTheDocument();
+    expect(screen.getByTestId('section-cultivo')).toBeInTheDocument();
+    expect(screen.getByTestId('section-ecología')).toBeInTheDocument();
+    expect(screen.getByTestId('section-notas')).toBeInTheDocument();
     expect(
       screen.queryByText('No se ha podido mostrar esta sección.')
     ).not.toBeInTheDocument();
@@ -165,8 +165,8 @@ describe('PlantDetail', () => {
     const safety = await screen.findByTestId(
       'section-comestibilidad y toxicidad'
     );
-    const quickFacts = screen.getByTestId('section-⚡ datos rápidos');
-    const cultivation = screen.getByTestId('section-🌱 cultivo');
+    const quickFacts = screen.getByTestId('section-datos rápidos');
+    const cultivation = screen.getByTestId('section-cultivo');
 
     expect(screen.getByRole('img', { name: 'Comestible' })).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'Tóxica' })).toBeInTheDocument();
@@ -183,7 +183,7 @@ describe('PlantDetail', () => {
 
     renderPlantDetail();
 
-    await screen.findByTestId('section-🌱 cultivo');
+    await screen.findByTestId('section-cultivo');
 
     expect(screen.queryByText('Comestibilidad y toxicidad')).toBeNull();
     expect(screen.queryByRole('img', { name: 'Comestible' })).toBeNull();
@@ -257,7 +257,7 @@ describe('PlantDetail', () => {
 
     renderPlantDetail();
 
-    const section = await screen.findByTestId('section-📚 recursos');
+    const section = await screen.findByTestId('section-recursos');
     expect(section).toBeInTheDocument();
 
     const articlesTab = document.getElementById('tab-articles');
@@ -269,7 +269,7 @@ describe('PlantDetail', () => {
     mockedGetPlantById.mockResolvedValue(mockPlantWithVideos);
 
     renderPlantDetail();
-    await screen.findByTestId('section-📚 recursos');
+    await screen.findByTestId('section-recursos');
 
     const videosTab = await screen.getByTestId('tab-videos');
     await user.click(videosTab);
@@ -390,10 +390,10 @@ describe('PlantDetail', () => {
     });
 
     expect(
-      await screen.findByTestId('section-⚡ datos rápidos')
+      await screen.findByTestId('section-datos rápidos')
     ).toBeInTheDocument();
-    expect(screen.getByTestId('section-🌱 cultivo')).toBeInTheDocument();
-    expect(screen.getByTestId('section-📝 notas')).toBeInTheDocument();
+    expect(screen.getByTestId('section-cultivo')).toBeInTheDocument();
+    expect(screen.getByTestId('section-notas')).toBeInTheDocument();
   });
 
   describe('not found', () => {

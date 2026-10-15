@@ -1,5 +1,10 @@
-import { iconsMap } from '../../shared/constants/iconsMap';
+import { t } from '../../i18n/core/t';
+import Icon from '../../shared/components/Icon/Icon';
 
 export default function Login() {
-  return <div>{iconsMap.login}</div>;
+  return (
+    <div>
+      <Icon name="login" label={t('auth.login')} />
+    </div>
+  );
 }

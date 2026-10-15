@@ -132,6 +132,7 @@ describe('selectColorCheckFiles', () => {
     expect(
       selectColorCheckFiles([
         'src/styles/tokens.css',
+        'src/shared/components/Icon/iconPaths.tsx',
         'src/shared/components/Badge/Badge.css',
         'src/app/router.tsx',
         'src/main.ts',

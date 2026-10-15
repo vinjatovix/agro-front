@@ -1,7 +1,8 @@
 import { t } from '../../../i18n/core/t';
-import { iconsMap } from '../../constants/iconsMap';
 
 import './pagination.css';
+
+const ELLIPSIS = '…';
 
 interface Props {
   readonly pages: (number | '...')[];
@@ -23,8 +24,8 @@ export default function Pagination({
           const key = `ellipsis-${ellipsisCount++}`;
 
           return (
-            <span key={key} className="pagination__ellipsis">
-              {iconsMap.ellipsis}
+            <span key={key} className="pagination__ellipsis" aria-hidden="true">
+              {ELLIPSIS}
             </span>
           );
         }

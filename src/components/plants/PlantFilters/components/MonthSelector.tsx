@@ -1,6 +1,6 @@
 import { monthNames } from '../../../../i18n/core/monthNames';
 import { t } from '../../../../i18n/core/t';
-import { iconsMap } from '../../../../shared/constants/iconsMap';
+import Icon from '../../../../shared/components/Icon/Icon';
 import { mapMonth } from '../../../../shared/utils/mapMonth';
 
 interface Props {
@@ -13,7 +13,8 @@ export default function MonthSelector({ hemisphere, value, onChange }: Props) {
   return (
     <fieldset className="plant-filters__group">
       <legend className="plant-filters__label">
-        {iconsMap.calendar} {t('plant.filters.sowingMonths')}
+        <Icon name="calendar_today" decorative />{' '}
+        {t('plant.filters.sowingMonths')}
       </legend>
 
       <div className="plant-filters__buttons">

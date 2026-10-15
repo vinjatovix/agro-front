@@ -1,7 +1,12 @@
 import { useId } from 'react';
 
+import { t } from '../../i18n/core/t';
+import Icon from '../../shared/components/Icon/Icon';
+import type { IconName } from '../../shared/components/Icon/iconPaths';
+
 interface Props {
   readonly label: string;
+  readonly icon?: IconName;
   readonly value: number | null;
   readonly min: number;
   readonly max: number;
@@ -13,12 +18,12 @@ interface Props {
 
 export default function SliderFilter({
   label,
+  icon,
   value,
   min,
   max,
   step,
   testId,
-
   onChange,
   onCommit
 }: Props) {
@@ -28,19 +33,21 @@ export default function SliderFilter({
     <div className="plant-filters__group">
       <div className="plant-filters__label-row">
         <label className="plant-filters__label" htmlFor={sliderId}>
-          {label} {value}
+          {icon && <Icon name={icon} decorative />}
+          {icon ? ` ${label}` : label} {value}
         </label>
 
         {value !== null && (
           <button
             type="button"
             className="plant-filters__slider-clear"
+            aria-label={t('plant.filters.clear_range', { label })}
             onClick={() => {
               onChange(null);
               onCommit(null);
             }}
           >
-            ❌
+            <Icon name="close" decorative />
           </button>
         )}
       </div>
