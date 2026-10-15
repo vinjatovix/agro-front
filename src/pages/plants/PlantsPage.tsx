@@ -28,7 +28,7 @@ export default function PlantsPage() {
   return (
     <div className="plants-layout">
       {!isMobile && (
-        <aside className="plants-sidebar">
+        <aside className="plants-sidebar" aria-label={t('common.filters')}>
           <PlantFilters activeCount={activeCount} />
         </aside>
       )}
@@ -45,9 +45,9 @@ export default function PlantsPage() {
         </Drawer>
       )}
 
-      <main className="plants-main">
+      <section className="plants-main">
         <PlantList />
-      </main>
+      </section>
     </div>
   );
 }

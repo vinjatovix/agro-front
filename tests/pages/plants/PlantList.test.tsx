@@ -423,4 +423,109 @@ describe('PlantList', () => {
       screen.queryByRole('region', { name: t('plant.applied.title') })
     ).not.toBeInTheDocument();
   });
+
+  it('cambiar de página reinicia el scroll al inicio', async () => {
+    stubFetchOk(MULTI_PAGE_RESPONSE);
+    renderPlantList();
+    await waitForPlants();
+    vi.mocked(window.scrollTo).mockClear();
+
+    await userEvent.click(screen.getAllByTestId('pagination-button-2')[0]);
+
+    await waitFor(() => {
+      expect(window.scrollTo).toHaveBeenCalledWith(0, 0);
+    });
+  });
+
+  it('cambiar el orden reinicia el scroll al inicio', async () => {
+    stubFetchOk(listPlantsResponse);
+    renderPlantList();
+    await waitForPlants();
+    vi.mocked(window.scrollTo).mockClear();
+
+    await userEvent.selectOptions(
+      screen.getByRole('combobox', { name: SORT_LABEL }),
+      t('plant.orders.combined.name_desc')
+    );
+
+    await waitFor(() => {
+      expect(window.scrollTo).toHaveBeenCalledWith(0, 0);
+    });
+  });
+
+  it('cambiar el tamaño de página reinicia el scroll al inicio', async () => {
+    stubFetchOk(listPlantsResponse);
+    renderPlantList();
+    await waitForPlants();
+    vi.mocked(window.scrollTo).mockClear();
+
+    await userEvent.click(
+      within(
+        screen.getByRole('group', { name: t('plant.filters.page_size') })
+      ).getByRole('button', { name: '50' })
+    );
+
+    await waitFor(() => {
+      expect(window.scrollTo).toHaveBeenCalledWith(0, 0);
+    });
+  });
+
+  it('eliminar un filtro aplicado reinicia el scroll al inicio', async () => {
+    stubFetchOk(listPlantsResponse);
+    renderPlantList('/plants?lifeCycle=annual');
+    await waitForPlants();
+    vi.mocked(window.scrollTo).mockClear();
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: t('plant.applied.remove', { label: 'Anual' })
+      })
+    );
+
+    await waitFor(() => {
+      expect(window.scrollTo).toHaveBeenCalledWith(0, 0);
+    });
+  });
+
+  it('limpiar filtros en estado vacío reinicia el scroll al inicio', async () => {
+    stubFetchSequence(
+      okResponse({
+        data: [],
+        pagination: { page: 1, limit: 50, totalPages: 0, totalItems: 0 }
+      }),
+      okResponse(listPlantsResponse)
+    );
+    renderPlantList('/plants?identity=zzzzzz&limit=50&page=2');
+    const clearButton = await screen.findByRole('button', {
+      name: t('errors.actions.clearFilters')
+    });
+    vi.mocked(window.scrollTo).mockClear();
+
+    await userEvent.click(clearButton);
+
+    await waitFor(() => {
+      expect(window.scrollTo).toHaveBeenCalledWith(0, 0);
+    });
+  });
+
+  it('volver a la primera página en estado fuera de rango reinicia el scroll al inicio', async () => {
+    stubFetchSequence(
+      okResponse({
+        data: [],
+        pagination: { page: 999, limit: 25, totalPages: 1, totalItems: 2 }
+      }),
+      okResponse(listPlantsResponse)
+    );
+    renderPlantList('/plants?page=999');
+    const firstPageButton = await screen.findByRole('button', {
+      name: t('plant.emptyState.goToFirstPage')
+    });
+    vi.mocked(window.scrollTo).mockClear();
+
+    await userEvent.click(firstPageButton);
+
+    await waitFor(() => {
+      expect(window.scrollTo).toHaveBeenCalledWith(0, 0);
+    });
+  });
 });

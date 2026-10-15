@@ -1,20 +1,30 @@
 .plants-layout {
   display: flex;
-  height: calc(100vh - 60px);
+  margin: calc(-1 * var(--space-lg));
+  flex: 1;
 }
 
 .plants-main {
   flex: 1;
-  padding: var(--space-md);
-  overflow-y: auto;
+  min-width: 0;
+  padding: var(--space-lg);
+  overflow: visible;
 }
 
 .plants-sidebar {
+  position: sticky;
+  top: var(--app-header-height, 64px);
   width: 320px;
+  height: calc(100vh - var(--app-header-height, 64px));
+  height: calc(100dvh - var(--app-header-height, 64px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  align-self: flex-start;
+  flex-shrink: 0;
+  box-sizing: border-box;
   background: var(--color-surface-container-lowest);
   border-right: 1px solid var(--color-outline-variant);
   padding: var(--space-md);
-  overflow-y: auto;
 }
 
 .plants-fab {
@@ -39,4 +49,14 @@
 
 .plants-fab:hover {
   transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .plants-layout {
+    display: block;
+  }
+
+  .plants-main {
+    padding: var(--space-md);
+  }
 }

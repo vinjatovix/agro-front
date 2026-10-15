@@ -23,6 +23,7 @@ import {
   readStoredMode
 } from './components/ViewModeToggle/viewMode';
 import PlantCard from './PlantCard/PlantCard';
+import { useCatalogScrollReset } from './hooks/useCatalogScrollReset';
 import { usePlants } from './hooks/usePlants';
 import { buildActiveFilters } from './utils/buildActiveFilters';
 import { buildFilterSummary } from './utils/buildFilterSummary';
@@ -120,6 +121,8 @@ export default function PlantList() {
     (family) => family.id === request.filters.family
   )?.name;
   const activeFilters = buildActiveFilters(request, { hemisphere, familyName });
+
+  useCatalogScrollReset(request);
 
   const viewState = getQueryViewState(query);
 

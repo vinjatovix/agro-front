@@ -1,6 +1,6 @@
 .plant-detail__sticky-header {
   position: sticky;
-  top: 0;
+  top: var(--app-header-height, 64px);
   z-index: 200;
 
   background: var(--color-surface-translucent);
