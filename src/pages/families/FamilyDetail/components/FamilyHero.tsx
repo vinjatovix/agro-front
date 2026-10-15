@@ -25,7 +25,7 @@ export function FamilyHero({ family }: Props) {
         )}
 
         <p className="family-hero__scientific">
-          <Icon name="biotech" decorative />{' '}
+          <Icon name="microscope" decorative />{' '}
           <strong>{t('family.hero.scientific_name')}:</strong>{' '}
           <ScientificName>{family.scientificName}</ScientificName>
         </p>
