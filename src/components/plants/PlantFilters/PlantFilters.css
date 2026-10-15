@@ -108,3 +108,23 @@
   font: var(--type-body-sm);
   color: var(--color-on-surface-variant);
 }
+
+.plant-filters__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.plant-filters__active-count {
+  font: var(--type-label-md);
+  color: var(--color-on-surface-variant);
+}
+
+.plant-filters__quick-search {
+  padding: var(--space-sm);
+  background: var(--color-surface-container-high);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-default);
+}

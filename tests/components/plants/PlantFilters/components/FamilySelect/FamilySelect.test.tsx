@@ -110,6 +110,14 @@ describe('FamilySelect', () => {
     expect(handleChange).toHaveBeenCalledWith(family.id);
   });
 
+  it('muestra el recuento de familias registradas', async () => {
+    renderFamilySelect();
+
+    expect(
+      await screen.findByText(`${listFamilyItems.length} registradas`)
+    ).toBeInTheDocument();
+  });
+
   it('keeps the select enabled with only the reset option when there are no families', async () => {
     resolveFamilies([]);
 

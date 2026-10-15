@@ -18,7 +18,11 @@ import { usePlantFilters } from './hooks/usePlantFilters';
 
 import './PlantFilters.css';
 
-export default function PlantFilters() {
+interface Props {
+  readonly activeCount?: number;
+}
+
+export default function PlantFilters({ activeCount = 0 }: Props) {
   const {
     setParam,
 
@@ -63,29 +67,39 @@ export default function PlantFilters() {
 
   return (
     <div className="plant-filters">
-      <button
-        data-testid="clear-filters"
-        type="button"
-        className="plant-filters__clear"
-        onClick={clearFilters}
-      >
-        <Icon name="clear_all" decorative /> {t('plant.filters.clear')}
-      </button>
+      <div className="plant-filters__header">
+        {activeCount > 0 && (
+          <span className="plant-filters__active-count">
+            {t('plant.filters.active_count', { n: activeCount })}
+          </span>
+        )}
+
+        <button
+          data-testid="clear-filters"
+          type="button"
+          className="plant-filters__clear"
+          onClick={clearFilters}
+        >
+          <Icon name="clear_all" decorative /> {t('plant.applied.clear_all')}
+        </button>
+      </div>
+
+      <div className="plant-filters__quick-search" data-testid="quick-search">
+        {TEXT_FILTERS.map((filter) => (
+          <TextFilter
+            testId={`text-filter-${filter.key}`}
+            key={filter.key}
+            icon={filter.icon}
+            label={`${t(filter.labelKey)}`}
+            value={textState[filter.key] ?? ''}
+            placeholder={t(filter.placeholder)}
+            maxLength={filter.maxLength}
+            onChange={(value) => handleTextChange(filter.key, value)}
+          />
+        ))}
+      </div>
 
       <FamilySelect value={family} onChange={setFamily} />
-
-      {TEXT_FILTERS.map((filter) => (
-        <TextFilter
-          testId={`text-filter-${filter.key}`}
-          key={filter.key}
-          icon={filter.icon}
-          label={`${t(filter.labelKey)}`}
-          value={textState[filter.key] ?? ''}
-          placeholder={t(filter.placeholder)}
-          maxLength={filter.maxLength}
-          onChange={(value) => handleTextChange(filter.key, value)}
-        />
-      ))}
 
       <ToggleGroup
         icon="public"

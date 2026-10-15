@@ -65,6 +65,12 @@ export default function FamilySelect({ value, onChange }: Props) {
         <Icon name="biotech" decorative /> {t('plant.filters.family')}
       </label>
 
+      {viewState === 'success' && (
+        <span className="plant-filters__families-count">
+          {t('plant.filters.families_count', { n: sortedFamilies.length })}
+        </span>
+      )}
+
       <select
         id={selectId}
         data-testid="family-select"

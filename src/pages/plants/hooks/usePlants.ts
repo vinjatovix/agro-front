@@ -12,7 +12,16 @@ import {
 } from '../../../shared/constants/plantListUrlParams';
 import type { PlantListItem } from '../../../types/Plants/Plant';
 import type { PaginatedResponse } from '../../../types/api';
+import type { ActiveFilter } from '../utils/buildActiveFilters';
 import { parsePlantListSearchParams } from '../utils/parsePlantListSearchParams';
+import {
+  withListPage,
+  withListParam,
+  withListSort,
+  withoutListPage,
+  withoutListParam
+} from '../utils/plantListParamWrites';
+import { removeMultiValueParam } from '../utils/removeMultiValueParam';
 
 export function usePlants() {
   const [params, setParams] = useSearchParams();
@@ -25,28 +34,15 @@ export function usePlants() {
   });
 
   function updateParams(key: string, value: string) {
-    setParams((prev) => {
-      const next = new URLSearchParams(prev);
-      next.set(key, value);
-      next.delete(PLANT_LIST_URL_PARAMS.page);
-      return next;
-    });
+    setParams((prev) => withListParam(prev, key, value));
   }
 
   function setPage(page: number) {
-    setParams((prev) => {
-      const next = new URLSearchParams(prev);
-      next.set(PLANT_LIST_URL_PARAMS.page, String(page));
-      return next;
-    });
+    setParams((prev) => withListPage(prev, page));
   }
 
   function goToFirstPage() {
-    setParams((prev) => {
-      const next = new URLSearchParams(prev);
-      next.delete(PLANT_LIST_URL_PARAMS.page);
-      return next;
-    });
+    setParams((prev) => withoutListPage(prev));
   }
 
   function clearFilters() {
@@ -57,12 +53,18 @@ export function usePlants() {
     updateParams(PLANT_LIST_URL_PARAMS.limit, String(limit));
   }
 
-  function setSortField(field: PlantsSortField) {
-    updateParams(PLANT_LIST_URL_PARAMS.sortField, field);
+  function removeFilter(descriptor: ActiveFilter) {
+    setParams((prev) =>
+      descriptor.value !== undefined
+        ? withoutListPage(
+            removeMultiValueParam(prev, descriptor.param, descriptor.value)
+          )
+        : withoutListParam(prev, descriptor.param)
+    );
   }
 
-  function setSortDirection(direction: SortDirection) {
-    updateParams(PLANT_LIST_URL_PARAMS.sortDirection, direction);
+  function setSort(field: PlantsSortField, direction: SortDirection) {
+    setParams((prev) => withListSort(prev, field, direction));
   }
 
   return {
@@ -72,8 +74,8 @@ export function usePlants() {
     setPage,
     goToFirstPage,
     clearFilters,
+    removeFilter,
     setLimit,
-    setSortField,
-    setSortDirection
+    setSort
   };
 }

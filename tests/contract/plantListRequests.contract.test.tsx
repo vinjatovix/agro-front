@@ -9,6 +9,10 @@ import { renderWithProviders } from '../test-utils/renderWithProviders';
 import { lastRequest, stubFetchOk, API_URL } from '../test-utils/stubFetch';
 import { validateRequest, validateSchema } from './openApiContract';
 
+vi.mock('../../src/services/families.service', () => ({
+  getFamilyList: vi.fn(() => Promise.resolve([]))
+}));
+
 const UUID = '3f2504e0-4f89-41d3-9a0c-0305e82c3301';
 const LONG_TEXT = 'a'.repeat(201);
 const DEFAULT_TAIL = 'pagination[page]=1&pagination[limit]=25&sort[name]=asc';
