@@ -9,6 +9,7 @@ import { describe, it, expect } from 'vitest';
 import { routes } from '../../src/app/router';
 import { t } from '../../src/i18n/core/t';
 import { createTestQueryClient } from '../test-utils/createTestQueryClient';
+import { stubFetchOk } from '../test-utils/stubFetch';
 import {
   getUnexpectedErrorReports,
   silenceConsoleError,
@@ -57,5 +58,22 @@ describe('router', () => {
       expect.objectContaining({ kind: 'render', section: 'app' })
     ]);
     errorSpy.mockRestore();
+  });
+
+  it.each([
+    '/plants',
+    '/plants/678efda2-ac3d-4623-81cd-fc1d0ab80315',
+    '/families'
+  ])('mantiene la estructura uniforme de layout en la ruta %s', (path) => {
+    stubFetchOk({
+      data: [],
+      pagination: { page: 1, limit: 25, totalPages: 0, totalItems: 0 }
+    });
+
+    renderRoute(path);
+
+    expect(screen.getByRole('banner')).toBeInTheDocument();
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
+    expect(screen.getByRole('main')).toBeInTheDocument();
   });
 });

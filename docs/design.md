@@ -98,6 +98,9 @@ Cada estilo es un token shorthand de `font` (`--type-<estilo>`, por ejemplo `--t
 
 Coincidencias con el front actual: el `Drawer` ya mide 320px por defecto y `PlantsPage` ya cambia de layout a 768px. El front actual no tiene el breakpoint de 1200px.
 
-- **Barra superior**: fija, 64px de alto, superficie blanca con borde inferior fino; navegación con subrayado de 2px en el elemento activo.
+- **Barra superior**: sticky (`position: sticky; top: 0; z-index: 1000;`), altura fijada mediante `--app-header-height: 64px`, superficie blanca con borde inferior fino; navegación con subrayado de 2px en el elemento activo.
+- **Scroll y arquitectura de layout**: scroll vertical único a nivel de `window` del navegador en toda la aplicación (`.app-shell` con `min-height: 100dvh; display: flex; flex-direction: column;`). En `.app-content`, padding estándar de `var(--space-lg)`.
+- **Catálogo de plantas**: maquetación fluida `.plants-layout` sin recorte de altura que compensa el padding exterior con margen negativo. Sidebar de escritorio (`.plants-sidebar`) sticky (`top: var(--app-header-height); height: calc(100dvh - var(--app-header-height)); overflow-y: auto;`) con scroll interno exclusivo cuando la altura de los filtros supera el viewport; columna principal `.plants-main` (`<section>`) integrada en el scroll nativo del documento con su propio padding. En móvil (<768px), layout en bloque con apertura de filtros mediante Drawer y bloqueo de scroll en el `body`.
+- **Restauración y reinicio de scroll**: `<ScrollRestoration />` en `MainLayout` para restaurar coordenadas en navegación histórica (`POP`), complementado con `useCatalogScrollReset` en el catálogo para reiniciar el scroll a la parte superior (`0, 0`) al cambiar página, filtros, orden o límite de página.
 - **Tarjeta de planta**: imagen con proporción 4:3 o 1:1, nombre común en Newsreader y nombre científico como badge en cursiva.
 - **Paginación**: página activa en pill con `primary-container`; el resto, texto plano con hover suave.

@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, ScrollRestoration } from 'react-router-dom';
 
 import { t } from '../../i18n/core/t';
 import Icon from '../../shared/components/Icon/Icon';
@@ -6,6 +6,7 @@ import Icon from '../../shared/components/Icon/Icon';
 export default function MainLayout() {
   return (
     <div className="app-shell">
+      <ScrollRestoration />
       <header className="app-header">
         <div className="app-brand">
           <Link to="/">

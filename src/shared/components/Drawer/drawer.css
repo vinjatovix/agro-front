@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   background: var(--color-scrim);
-  z-index: 999;
+  z-index: 1200;
 }
 
 .drawer-panel {
@@ -20,7 +20,7 @@
   padding: var(--space-md);
 
   transition: transform 0.25s ease;
-  z-index: 1000;
+  z-index: 1210;
 }
 
 .drawer-left {

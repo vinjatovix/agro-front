@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { t } from '../../../src/i18n/core/t';
 import PlantsPage from '../../../src/pages/plants/PlantsPage';
@@ -46,6 +46,11 @@ function renderPlantsPage() {
 describe('PlantsPage', () => {
   beforeEach(() => {
     isMobile = true;
+    document.body.style.overflow = '';
+  });
+
+  afterEach(() => {
+    document.body.style.overflow = '';
   });
 
   it('should always render plant list', () => {
@@ -71,13 +76,6 @@ describe('PlantsPage', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should render sidebar in desktop mode', () => {
-    isMobile = false;
-    renderPlantsPage();
-
-    expect(document.querySelector('.plants-sidebar')).toBeInTheDocument();
-  });
-
   it('should open drawer when clicking filters button', async () => {
     const user = userEvent.setup();
     renderPlantsPage();
@@ -96,15 +94,44 @@ describe('PlantsPage', () => {
   it('should not render sidebar in mobile mode', () => {
     renderPlantsPage();
 
-    expect(document.querySelector('.plants-sidebar')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('complementary', { name: t('common.filters') })
+    ).not.toBeInTheDocument();
   });
 
-  it('should not render mobile button in desktop mode', () => {
+  it('renders plants-main without exposing a main landmark to prevent duplicates', () => {
+    renderPlantsPage();
+
+    expect(screen.queryByRole('main')).not.toBeInTheDocument();
+  });
+
+  it('renders plants sidebar in desktop mode', () => {
     isMobile = false;
     renderPlantsPage();
 
     expect(
-      screen.queryByRole('button', { name: /^filtros$/i })
-    ).not.toBeInTheDocument();
+      screen.getByRole('complementary', { name: t('common.filters') })
+    ).toBeInTheDocument();
+  });
+
+  it('locks body scroll when drawer opens', async () => {
+    const user = userEvent.setup();
+    renderPlantsPage();
+
+    await user.click(screen.getByRole('button', { name: t('common.filters') }));
+
+    expect(document.body.style.overflow).toBe('hidden');
+  });
+
+  it('restores body scroll when drawer closes', async () => {
+    const user = userEvent.setup();
+    renderPlantsPage();
+    await user.click(screen.getByRole('button', { name: t('common.filters') }));
+
+    await user.click(
+      screen.getByRole('button', { name: t('common.drawer.close') })
+    );
+
+    expect(document.body.style.overflow).toBe('');
   });
 });
