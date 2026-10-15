@@ -9,11 +9,11 @@ interface Props {
 export default function FamilyInfo({ family }: Props) {
   return (
     <>
-      <BodySection title={`📝 ${t('family.info.description')}`}>
+      <BodySection title={t('family.info.description')} icon="description">
         <p>{family.shortDescription}</p>
       </BodySection>
 
-      <BodySection title={`🌟 ${t('family.info.highlights')}`}>
+      <BodySection title={t('family.info.highlights')} icon="auto_awesome">
         <ul className="family-list family-list--highlights">
           {family.highlights.map((highlight: string) => (
             <li key={highlight}>{highlight}</li>

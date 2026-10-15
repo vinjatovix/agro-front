@@ -39,4 +39,20 @@ describe('Pagination', () => {
 
     expect(onPageChange).toHaveBeenCalledWith(2);
   });
+
+  it('renders ellipsis character with aria-hidden', () => {
+    const { container } = render(
+      <Pagination
+        pages={[1, '...', 5]}
+        currentPage={1}
+        onPageChange={vi.fn()}
+      />
+    );
+
+    const ellipsis = container.querySelector('.pagination__ellipsis');
+
+    expect(ellipsis).toBeInTheDocument();
+    expect(ellipsis).toHaveAttribute('aria-hidden', 'true');
+    expect(ellipsis).toHaveTextContent('…');
+  });
 });

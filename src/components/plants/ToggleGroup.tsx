@@ -1,7 +1,11 @@
 import { useId } from 'react';
 
+import Icon from '../../shared/components/Icon/Icon';
+import type { IconName } from '../../shared/components/Icon/iconPaths';
+
 interface Props {
   readonly label: string;
+  readonly icon?: IconName;
   readonly options: readonly string[];
   readonly value: string;
   readonly onChange: (value: string) => void;
@@ -11,6 +15,7 @@ interface Props {
 
 export default function ToggleGroup({
   label,
+  icon,
   options,
   value,
   onChange,
@@ -27,7 +32,8 @@ export default function ToggleGroup({
       aria-describedby={describedBy}
     >
       <span id={labelId} className="plant-filters__group-label">
-        {label}
+        {icon && <Icon name={icon} decorative />}
+        {icon ? ` ${label}` : label}
       </span>
 
       <div className="plant-filters__buttons">

@@ -1,8 +1,9 @@
 import { useId, useMemo } from 'react';
+
 import { t } from '../../../../../i18n/core/t';
-import { useFamilies } from '../../../../../shared/hooks/useFamilies';
-import { iconsMap } from '../../../../../shared/constants/iconsMap';
+import Icon from '../../../../../shared/components/Icon/Icon';
 import { toUiError } from '../../../../../shared/errors/toUiError';
+import { useFamilies } from '../../../../../shared/hooks/useFamilies';
 import { getQueryViewState } from '../../../../../shared/reactQuery/queryViewState';
 import { capitalizeFirstLetter } from '../../../../../shared/utils/capitalizeFirstLetter';
 import type { FamilyListItem } from '../../../../../types/Family';
@@ -61,7 +62,7 @@ export default function FamilySelect({ value, onChange }: Props) {
   return (
     <div className="plant-filters__group">
       <label htmlFor={selectId}>
-        {iconsMap['genome']} {t('plant.filters.family')}
+        <Icon name="biotech" decorative /> {t('plant.filters.family')}
       </label>
 
       <select

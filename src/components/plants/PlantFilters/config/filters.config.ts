@@ -1,37 +1,37 @@
-import { FILTER_TEXT_MAX_LENGTH } from '../../../../shared/constants/filterText';
-import { iconsMap } from '../../../../shared/constants/iconsMap';
 import type { ValueGroup } from '../../../../i18n/core/tValue';
+import type { IconName } from '../../../../shared/components/Icon/iconPaths';
+import { FILTER_TEXT_MAX_LENGTH } from '../../../../shared/constants/filterText';
 import {
   LIFE_CYCLES,
-  SOWING_METHODS,
   LIGHT_TYPES,
-  ROOT_SYSTEMS
+  ROOT_SYSTEMS,
+  SOWING_METHODS
 } from '../constants';
 
 export const TOGGLE_FILTERS = [
   {
-    icon: iconsMap['recycle'],
+    icon: 'recycling' as IconName,
     key: 'lifeCycle',
     labelKey: 'plant.filters.lifeCycle',
     valuesGroup: 'plant.filters.lifeCycleValues' satisfies ValueGroup,
     options: LIFE_CYCLES
   },
   {
-    icon: iconsMap['sowing'],
+    icon: 'potted_plant' as IconName,
     key: 'sowingMethod',
     labelKey: 'plant.filters.sowingMethod',
     valuesGroup: 'plant.filters.sowingMethodValues' satisfies ValueGroup,
     options: SOWING_METHODS
   },
   {
-    icon: iconsMap['sun'],
+    icon: 'sunny' as IconName,
     key: 'lightType',
     labelKey: 'plant.filters.lightType',
     valuesGroup: 'plant.filters.lightTypeValues' satisfies ValueGroup,
     options: LIGHT_TYPES
   },
   {
-    icon: iconsMap['rootSystem'],
+    icon: 'psychiatry' as IconName,
     key: 'rootSystem',
     labelKey: 'plant.filters.rootSystem',
     valuesGroup: 'plant.filters.rootSystemValues' satisfies ValueGroup,
@@ -43,14 +43,14 @@ export const BOOLEAN_FILTER_ANY = 'any';
 
 export const BOOLEAN_FILTERS = [
   {
-    icon: iconsMap['edible'],
+    icon: 'restaurant' as IconName,
     key: 'edible',
     labelKey: 'plant.filters.edible',
     valuesGroup: 'plant.filters.booleanValues' satisfies ValueGroup,
     options: [BOOLEAN_FILTER_ANY, 'true', 'false']
   },
   {
-    icon: iconsMap['toxic'],
+    icon: 'dangerous' as IconName,
     key: 'toxic',
     labelKey: 'plant.filters.toxic',
     valuesGroup: 'plant.filters.booleanValues' satisfies ValueGroup,
@@ -60,7 +60,7 @@ export const BOOLEAN_FILTERS = [
 
 export const TEXT_FILTERS = [
   {
-    icon: iconsMap['google'],
+    icon: 'search' as IconName,
     key: 'identity',
     labelKey: 'plant.filters.search_label',
     placeholder: 'plant.filters.search_placeholder',
@@ -70,7 +70,7 @@ export const TEXT_FILTERS = [
 
 export const SLIDER_FILTERS = [
   {
-    icon: iconsMap['chemistry'],
+    icon: 'science' as IconName,
     key: 'soilPh',
     labelKey: 'plant.filters.soilPh',
     min: 4,
@@ -78,7 +78,7 @@ export const SLIDER_FILTERS = [
     step: 0.1
   },
   {
-    icon: iconsMap['clock'],
+    icon: 'schedule' as IconName,
     key: 'lightHoursMin',
     labelKey: 'plant.filters.lightHoursMin',
     min: 0,
@@ -86,7 +86,7 @@ export const SLIDER_FILTERS = [
     step: 1
   },
   {
-    icon: iconsMap['ruler'],
+    icon: 'straighten' as IconName,
     key: 'spacingCm',
     labelKey: 'plant.filters.spacingCm',
     min: 5,
@@ -94,7 +94,7 @@ export const SLIDER_FILTERS = [
     step: 5
   },
   {
-    icon: iconsMap['ruler'],
+    icon: 'straighten' as IconName,
     key: 'soilAvailableDepthCm',
     labelKey: 'plant.filters.soilAvailableDepthCm',
     min: 10,

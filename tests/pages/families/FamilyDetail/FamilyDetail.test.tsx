@@ -66,9 +66,9 @@ describe('FamilyDetail', () => {
       screen.getByText(new RegExp(mockFamily.scientificName, 'i'))
     ).toBeInTheDocument();
 
-    expect(screen.getByTestId(/section-📝 Descripción/i)).toBeInTheDocument();
-    expect(screen.getByTestId(/section-🌟 Destacados/i)).toBeInTheDocument();
-    expect(screen.getByTestId(/section-🌿 Plantas/i)).toBeInTheDocument();
+    expect(screen.getByTestId(/section-descripción/i)).toBeInTheDocument();
+    expect(screen.getByTestId(/section-destacados/i)).toBeInTheDocument();
+    expect(screen.getByTestId(/section-plantas/i)).toBeInTheDocument();
   });
 
   it('renders hero, info and plants sections without a section notice', async () => {
@@ -81,7 +81,7 @@ describe('FamilyDetail', () => {
     expect(
       screen.getByRole('heading', { name: new RegExp(mockFamily.name, 'i') })
     ).toBeInTheDocument();
-    expect(screen.getByTestId(/section-📝 Descripción/i)).toBeInTheDocument();
+    expect(screen.getByTestId(/section-descripción/i)).toBeInTheDocument();
     expect(
       screen.queryByText('No se ha podido mostrar esta sección.')
     ).not.toBeInTheDocument();
@@ -128,14 +128,14 @@ describe('FamilyDetail', () => {
 
     renderFamilyDetail();
 
-    const plantsSection = await screen.findByTestId(/section-🌿 Plantas/i);
+    const plantsSection = await screen.findByTestId(/section-plantas/i);
     expect(await within(plantsSection).findByRole('alert')).toHaveTextContent(
       'El servicio no está disponible'
     );
     expect(
       screen.getByRole('heading', { name: new RegExp(mockFamily.name, 'i') })
     ).toBeInTheDocument();
-    expect(screen.getByTestId(/section-📝 Descripción/i)).toBeInTheDocument();
+    expect(screen.getByTestId(/section-descripción/i)).toBeInTheDocument();
     expect(screen.getByRole('alert')).not.toHaveTextContent(/500|Internal/);
   });
 
@@ -162,7 +162,7 @@ describe('FamilyDetail', () => {
 
     renderFamilyDetail();
 
-    const plantsSection = await screen.findByTestId(/section-🌿 Plantas/i);
+    const plantsSection = await screen.findByTestId(/section-plantas/i);
     expect(within(plantsSection).getByRole('status')).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { name: new RegExp(mockFamily.name, 'i') })
@@ -211,7 +211,7 @@ describe('FamilyDetail', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId(/section-🌿 Plantas/i)).toBeInTheDocument();
+      expect(screen.getByTestId(/section-plantas/i)).toBeInTheDocument();
     });
   });
 

@@ -1,11 +1,9 @@
 import { t } from '../../../../../i18n/core/t';
-import { iconsMap } from '../../../../../shared/constants/iconsMap';
+import BodySection from '../../../../../shared/components/BodySection/BodySection';
+import Icon from '../../../../../shared/components/Icon/Icon';
 import { getDomainFromUrl } from '../../../../../shared/utils/getDomainFromUrl';
 import type { Plant } from '../../../../../types/Plants/Plant';
-import BodySection from '../../../../../shared/components/BodySection/BodySection';
-
 import { getYoutubeEmbedUrl } from '../../../utils/getYoutubeEmbedUrl';
-
 import { usePlantResources } from './hooks/usePlantResourcesTabs';
 
 import './plantResources.css';
@@ -21,7 +19,7 @@ export default function PlantResources({ plant }: Props) {
   if (!videos.length && !articles.length) return null;
 
   return (
-    <BodySection title={`${iconsMap.education} ${t('plant.resources.title')}`}>
+    <BodySection title={t('plant.resources.title')} icon="menu_book">
       <div className="plant-resources__tabs" role="tablist">
         {videos.length > 0 && (
           <button
@@ -35,7 +33,7 @@ export default function PlantResources({ plant }: Props) {
             className={tab === 'videos' ? 'active' : ''}
             onClick={() => setTab('videos')}
           >
-            {iconsMap.videos} {t('plant.resources.videos')}
+            <Icon name="movie" decorative /> {t('plant.resources.videos')}
           </button>
         )}
 
@@ -51,7 +49,8 @@ export default function PlantResources({ plant }: Props) {
             className={tab === 'articles' ? 'active' : ''}
             onClick={() => setTab('articles')}
           >
-            {iconsMap.articles} {t('plant.resources.articles')}
+            <Icon name="description" decorative />{' '}
+            {t('plant.resources.articles')}
           </button>
         )}
       </div>
@@ -100,7 +99,8 @@ export default function PlantResources({ plant }: Props) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              {iconsMap.link} {article.title ?? getDomainFromUrl(article.url)}
+              <Icon name="link" decorative />{' '}
+              {article.title ?? getDomainFromUrl(article.url)}
             </a>
           ))}
         </div>

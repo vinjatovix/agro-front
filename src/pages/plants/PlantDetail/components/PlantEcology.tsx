@@ -1,7 +1,7 @@
 import { t } from '../../../../i18n/core/t';
-import { iconsMap } from '../../../../shared/constants/iconsMap';
-import type { Plant } from '../../../../types/Plants/Plant';
 import BodySection from '../../../../shared/components/BodySection/BodySection';
+import Icon from '../../../../shared/components/Icon/Icon';
+import type { Plant } from '../../../../types/Plants/Plant';
 
 import './plantEcology.css';
 
@@ -17,10 +17,12 @@ export default function PlantEcology({ plant }: Props) {
   }
 
   return (
-    <BodySection title={`${iconsMap.gardening} ${t('plant.ecology.title')}`}>
+    <BodySection title={t('plant.ecology.title')} icon="eco">
       <ul className="plant-list plant-list--ecology">
         {benefits.map((benefit) => (
-          <li key={benefit}>{benefit}</li>
+          <li key={benefit}>
+            <Icon name="eco" decorative /> {benefit}
+          </li>
         ))}
       </ul>
     </BodySection>

@@ -17,9 +17,11 @@ describe('PlantSafetyIndicators', () => {
     render(<PlantSafetyIndicators safety={safety(overrides)} />);
 
     const indicator = screen.getByRole('img', { name });
+    const svg = indicator.querySelector('svg');
 
     expect(indicator).toHaveAttribute('title', name);
-    expect(indicator.firstElementChild).toHaveAttribute('aria-hidden', 'true');
+    expect(svg).toHaveAttribute('aria-hidden', 'true');
+    expect(svg).toBeInTheDocument();
     expect(indicator).not.toHaveTextContent(name);
   });
 

@@ -1,5 +1,6 @@
 import { t } from '../../../../i18n/core/t';
-import { iconsMap } from '../../../../shared/constants/iconsMap';
+import Icon from '../../../../shared/components/Icon/Icon';
+import type { IconName } from '../../../../shared/components/Icon/iconPaths';
 import type { PlantSafety } from '../../utils/plantSafety';
 
 import './plantSafetyIndicators.css';
@@ -8,9 +9,15 @@ interface Props {
   readonly safety: PlantSafety;
 }
 
-const INDICATORS = [
-  { flag: 'edible', icon: iconsMap.edible, labelKey: 'plant.safety.edible' },
-  { flag: 'toxic', icon: iconsMap.toxic, labelKey: 'plant.safety.toxic' }
+interface IndicatorConfig {
+  readonly flag: 'edible' | 'toxic';
+  readonly icon: IconName;
+  readonly labelKey: 'plant.safety.edible' | 'plant.safety.toxic';
+}
+
+const INDICATORS: readonly IndicatorConfig[] = [
+  { flag: 'edible', icon: 'restaurant', labelKey: 'plant.safety.edible' },
+  { flag: 'toxic', icon: 'dangerous', labelKey: 'plant.safety.toxic' }
 ] as const;
 
 export default function PlantSafetyIndicators({ safety }: Props) {
@@ -30,7 +37,7 @@ export default function PlantSafetyIndicators({ safety }: Props) {
           title={t(labelKey)}
           className="plant-safety-indicators__item"
         >
-          <span aria-hidden="true">{icon}</span>
+          <Icon name={icon} decorative />
         </span>
       ))}
     </span>

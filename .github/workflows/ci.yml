@@ -39,6 +39,9 @@ jobs:
       - name: Color literals
         run: npm run check:colors
 
+      - name: Emoji characters
+        run: npm run check:emoji
+
       - name: Typecheck
         run: npm run typecheck
 

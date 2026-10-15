@@ -33,6 +33,14 @@ export const dictionary = {
       families: 'Familias'
     }
   },
+  auth: {
+    heading: 'Acceso',
+    login: 'Iniciar sesión',
+    register: 'Crear cuenta'
+  },
+  admin: {
+    heading: 'Administración'
+  },
   common: {
     save: 'Guardar',
     cancel: 'Cancelar',
@@ -207,6 +215,7 @@ export const dictionary = {
     },
     filters: {
       clear: 'Borrar filtros',
+      clear_range: 'Quitar filtro de {label}',
       search_label: 'Buscar plantas',
       search_placeholder: 'Nombre, alias...',
       aliases: 'Alias',
