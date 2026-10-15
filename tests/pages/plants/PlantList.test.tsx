@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { t } from '../../../src/i18n/core/t';
@@ -7,6 +7,10 @@ import PlantList from '../../../src/pages/plants/PlantList';
 
 import { validateRequest } from '../../contract/openApiContract';
 import { listPlantsResponse } from '../../fixtures/plants/listPlants';
+
+vi.mock('../../../src/services/families.service', () => ({
+  getFamilyList: vi.fn(() => Promise.resolve([]))
+}));
 import { renderWithProviders } from '../../test-utils/renderWithProviders';
 import {
   API_URL,
@@ -21,7 +25,7 @@ import {
 
 const LIST_FIELDS = 'fields[plants]=identity,traits,image,status';
 
-const SORT_FIELD_LABEL = new RegExp(`^${t('plant.orders.field')}:?$`);
+const SORT_LABEL = t('plant.orders.sort_label');
 
 const DEFAULT_REQUEST = `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[name]=asc&${LIST_FIELDS}`;
 
@@ -46,6 +50,7 @@ function lastUrl(fetchMock: FetchMock): string {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  sessionStorage.clear();
 });
 
 describe('PlantList', () => {
@@ -148,14 +153,16 @@ describe('PlantList', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('cambiar el límite pide la primera página con ese límite', async () => {
+  it('cambiar el tamaño de página pide la primera página con ese límite', async () => {
     const fetchMock = stubFetchOk(listPlantsResponse);
     renderPlantList('/plants?page=2');
     await waitForPlants();
 
-    fireEvent.change(screen.getByLabelText(/resultados por página/i), {
-      target: { value: '50' }
-    });
+    await userEvent.click(
+      within(
+        screen.getByRole('group', { name: t('plant.filters.page_size') })
+      ).getByRole('button', { name: '50' })
+    );
 
     await waitFor(() => {
       expect(lastUrl(fetchMock)).toBe(
@@ -164,14 +171,15 @@ describe('PlantList', () => {
     });
   });
 
-  it('cambiar el sentido del orden pide la primera página en ese sentido', async () => {
+  it('elegir un orden combinado pide la primera página con ese orden', async () => {
     const fetchMock = stubFetchOk(listPlantsResponse);
     renderPlantList('/plants?page=2');
     await waitForPlants();
 
-    fireEvent.change(screen.getByLabelText(/^orden:?$/i), {
-      target: { value: 'desc' }
-    });
+    await userEvent.selectOptions(
+      screen.getByRole('combobox', { name: SORT_LABEL }),
+      'Nombre común (Z-A)'
+    );
 
     await waitFor(() => {
       expect(lastUrl(fetchMock)).toBe(
@@ -194,42 +202,27 @@ describe('PlantList', () => {
     });
   });
 
-  it('muestra los controles de orden con el valor de la URL', async () => {
+  it('muestra el orden combinado con el valor de la URL', async () => {
     const fetchMock = stubFetchOk(listPlantsResponse);
 
     renderPlantList('/plants?sortField=scientificName&sortDirection=desc');
 
     await waitForPlants();
     expect(
-      screen.getByRole('combobox', { name: SORT_FIELD_LABEL })
-    ).toHaveDisplayValue(t('plant.orders.fields.scientificName'));
-    expect(screen.getByRole('combobox', { name: /^orden:?$/i })).toHaveValue(
-      'desc'
-    );
+      screen.getByRole('combobox', { name: SORT_LABEL })
+    ).toHaveDisplayValue('Nombre científico (Z-A)');
     expect(lastUrl(fetchMock)).toContain('sort[scientificName]=desc');
     expect(lastUrl(fetchMock)).toContain(LIST_FIELDS);
   });
 
-  it('elegir criterio y después sentido vuelve a la página 1 y combina ambos', async () => {
+  it('elegir un orden combinado vuelve a la página 1 y combina criterio y sentido', async () => {
     const fetchMock = stubFetchOk(listPlantsResponse);
     renderPlantList('/plants?page=3');
     await waitForPlants();
 
     await userEvent.selectOptions(
-      screen.getByRole('combobox', { name: SORT_FIELD_LABEL }),
-      t('plant.orders.fields.scientificName')
-    );
-
-    await waitFor(() => {
-      expect(lastUrl(fetchMock)).toBe(
-        `${API_URL}/api/v1/plants?pagination[page]=1&pagination[limit]=25&sort[scientificName]=asc&${LIST_FIELDS}`
-      );
-    });
-    expect(validateRequest('get', lastUrl(fetchMock))).toEqual([]);
-
-    await userEvent.selectOptions(
-      screen.getByRole('combobox', { name: /^orden:?$/i }),
-      'desc'
+      screen.getByRole('combobox', { name: SORT_LABEL }),
+      'Nombre científico (Z-A)'
     );
 
     await waitFor(() => {
@@ -240,13 +233,17 @@ describe('PlantList', () => {
     expect(validateRequest('get', lastUrl(fetchMock))).toEqual([]);
   });
 
-  it('un límite no soportado en la URL se corrige a 25 en el selector y en la petición', async () => {
+  it('un límite no soportado en la URL se corrige a 25 en el control y en la petición', async () => {
     const fetchMock = stubFetchOk(listPlantsResponse);
 
     renderPlantList('/plants?limit=37');
 
     await waitForPlants();
-    expect(screen.getByLabelText(/resultados por página/i)).toHaveValue('25');
+    expect(
+      within(
+        screen.getByRole('group', { name: t('plant.filters.page_size') })
+      ).getByRole('button', { name: '25' })
+    ).toHaveAttribute('aria-pressed', 'true');
     expect(lastUrl(fetchMock)).toBe(DEFAULT_REQUEST);
   });
 
@@ -355,5 +352,75 @@ describe('PlantList', () => {
     ).toHaveAttribute('role', 'status');
     expect(lastUrl(fetchMock)).toContain('filter[edible][eq]=false');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('con filtros activos muestra la barra de chips con un chip por filtro', async () => {
+    stubFetchOk(listPlantsResponse);
+
+    renderPlantList('/plants?lifeCycle=annual&lightType=full_sun');
+
+    await waitForPlants();
+    const bar = screen.getByRole('region', {
+      name: t('plant.applied.title')
+    });
+    expect(within(bar).getByText('Anual')).toBeInTheDocument();
+    expect(within(bar).getByText('Sol pleno')).toBeInTheDocument();
+  });
+
+  it('recupera filtros, orden y tamaño de página desde el enlace recargado (FR-024/SC-008)', async () => {
+    const fetchMock = stubFetchOk(listPlantsResponse);
+
+    renderPlantList(
+      '/plants?lifeCycle=annual&sortField=scientificName&sortDirection=desc&limit=50&page=1'
+    );
+
+    await waitForPlants();
+
+    const bar = screen.getByRole('region', { name: t('plant.applied.title') });
+    expect(within(bar).getByText('Anual')).toBeInTheDocument();
+    expect(
+      screen.getByRole('combobox', { name: t('plant.orders.sort_label') })
+    ).toHaveDisplayValue('Nombre científico (Z-A)');
+    expect(
+      within(
+        screen.getByRole('group', { name: t('plant.filters.page_size') })
+      ).getByRole('button', { name: '50' })
+    ).toHaveAttribute('aria-pressed', 'true');
+    expect(lastUrl(fetchMock)).toContain('pagination[limit]=50');
+    expect(lastUrl(fetchMock)).toContain('sort[scientificName]=desc');
+    expect(lastUrl(fetchMock)).toContain('filter[lifeCycle][eq]=annual');
+  });
+
+  it('el conmutador de vista cambia la maquetación de la lista a vista lista', async () => {
+    stubFetchOk(listPlantsResponse);
+
+    renderPlantList();
+
+    await waitForPlants();
+    const grid = screen.getByTestId('plant-grid');
+    expect(grid).not.toHaveClass('plant-grid--list');
+
+    await userEvent.click(
+      screen.getByRole('button', { name: t('plant.view.list') })
+    );
+
+    expect(grid).toHaveClass('plant-grid--list');
+
+    await userEvent.click(
+      screen.getByRole('button', { name: t('plant.view.grid') })
+    );
+
+    expect(grid).not.toHaveClass('plant-grid--list');
+  });
+
+  it('sin filtros activos no muestra la barra de chips', async () => {
+    stubFetchOk(listPlantsResponse);
+
+    renderPlantList();
+
+    await waitForPlants();
+    expect(
+      screen.queryByRole('region', { name: t('plant.applied.title') })
+    ).not.toBeInTheDocument();
   });
 });

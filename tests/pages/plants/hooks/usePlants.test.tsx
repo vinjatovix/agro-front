@@ -101,31 +101,41 @@ describe('usePlants: setters', () => {
   const route =
     '/plants?page=3&limit=25&sortField=name&sortDirection=asc&lifeCycle=annual';
 
-  it.each([
-    ['setSortField', 'sortField', 'scientificName'],
-    ['setSortDirection', 'sortDirection', 'desc'],
-    ['setLimit', 'limit', '50']
-  ] as const)(
-    '%s escribe su parámetro, borra page y conserva el resto',
-    async (setter, param, expected) => {
-      const { result } = renderUsePlants(route);
+  it('setLimit escribe su parámetro, borra page y conserva el resto', async () => {
+    const { result } = renderUsePlants(route);
 
-      act(() => {
-        const { plants } = result.current;
-        if (setter === 'setSortField') plants.setSortField('scientificName');
-        if (setter === 'setSortDirection') plants.setSortDirection('desc');
-        if (setter === 'setLimit') plants.setLimit(50);
-      });
+    act(() => {
+      result.current.plants.setLimit(50);
+    });
 
-      await waitFor(() => {
-        const params = searchParams(result.current.search);
-        expect(params.get(param)).toBe(expected);
-        expect(params.has('page')).toBe(false);
-        expect(params.get('lifeCycle')).toBe('annual');
-      });
-      expect(result.current.plants.request.pagination.page).toBe(1);
-    }
-  );
+    await waitFor(() => {
+      const params = searchParams(result.current.search);
+      expect(params.get('limit')).toBe('50');
+      expect(params.has('page')).toBe(false);
+      expect(params.get('lifeCycle')).toBe('annual');
+    });
+    expect(result.current.plants.request.pagination.page).toBe(1);
+  });
+
+  it('setSort fija criterio y dirección en una única actualización y borra page', async () => {
+    const { result } = renderUsePlants(route);
+
+    act(() => {
+      result.current.plants.setSort('scientificName', 'desc');
+    });
+
+    await waitFor(() => {
+      const params = searchParams(result.current.search);
+      expect(params.get('sortField')).toBe('scientificName');
+      expect(params.get('sortDirection')).toBe('desc');
+      expect(params.has('page')).toBe(false);
+      expect(params.get('lifeCycle')).toBe('annual');
+    });
+    expect(result.current.plants.request.sort).toEqual({
+      field: 'scientificName',
+      direction: 'desc'
+    });
+  });
 
   it('setPage escribe page y conserva orden, límite y filtros', async () => {
     const { result } = renderUsePlants(route);
@@ -142,6 +152,66 @@ describe('usePlants: setters', () => {
     expect(params.get('sortDirection')).toBe('asc');
     expect(params.get('limit')).toBe('25');
     expect(params.get('lifeCycle')).toBe('annual');
+  });
+});
+
+describe('usePlants: removeFilter', () => {
+  it('quitar un descriptor borra su parámetro y reinicia page', async () => {
+    const { result } = renderUsePlants(
+      '/plants?page=3&limit=50&lifeCycle=annual&identity=tomate'
+    );
+
+    act(() => {
+      result.current.plants.removeFilter({
+        id: 'lifeCycle',
+        label: 'Anual',
+        param: 'lifeCycle'
+      });
+    });
+
+    await waitFor(() => {
+      const params = searchParams(result.current.search);
+      expect(params.has('lifeCycle')).toBe(false);
+      expect(params.has('page')).toBe(false);
+    });
+    const params = searchParams(result.current.search);
+    expect(params.get('identity')).toBe('tomate');
+    expect(params.get('limit')).toBe('50');
+  });
+
+  it('para sowingMonths borra solo el valor indicado conservando el resto', async () => {
+    const { result } = renderUsePlants('/plants?sowingMonth=3&sowingMonth=5');
+
+    act(() => {
+      result.current.plants.removeFilter({
+        id: 'sowingMonths:3',
+        label: 'Marzo',
+        param: 'sowingMonth',
+        value: '3'
+      });
+    });
+
+    await waitFor(() => {
+      expect(searchParams(result.current.search).getAll('sowingMonth')).toEqual(
+        ['5']
+      );
+    });
+  });
+
+  it('hemisphere vuelve a north al quitarse', async () => {
+    const { result } = renderUsePlants('/plants?hemisphere=south');
+
+    act(() => {
+      result.current.plants.removeFilter({
+        id: 'hemisphere',
+        label: 'Hemisferio: Sur',
+        param: 'hemisphere'
+      });
+    });
+
+    await waitFor(() => {
+      expect(searchParams(result.current.search).has('hemisphere')).toBe(false);
+    });
   });
 });
 

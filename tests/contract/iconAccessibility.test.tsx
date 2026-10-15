@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest';
 
 import Icon from '../../src/shared/components/Icon/Icon';
 import Pagination from '../../src/shared/components/Pagination/Pagination';
-import OrderSelector from '../../src/shared/components/OrderSelector/OrderSelector';
 import SliderFilter from '../../src/components/plants/SliderFilter';
 import Badge from '../../src/shared/components/Badge/Badge';
 import type { IconName } from '../../src/shared/components/Icon/iconPaths';
@@ -72,23 +71,6 @@ describe('icon accessibility contract - shared UI components', () => {
     const ellipsis = container.querySelector('.pagination__ellipsis');
 
     expect(ellipsis).toHaveAttribute('aria-hidden', 'true');
-  });
-
-  it('renders OrderSelector options without arrow characters', () => {
-    render(
-      <OrderSelector
-        value="asc"
-        labelAsc="Ascendente"
-        labelDes="Descendente"
-        onChange={() => {}}
-      />
-    );
-
-    const ascOption = screen.getByRole('option', { name: 'Ascendente' });
-    const descOption = screen.getByRole('option', { name: 'Descendente' });
-
-    expect(ascOption).toHaveTextContent(/^Ascendente$/);
-    expect(descOption).toHaveTextContent(/^Descendente$/);
   });
 
   it('provides accessible name for SliderFilter reset button', () => {

@@ -70,11 +70,11 @@ describe('PlantFilters', () => {
     mockBooleans.toxic = undefined;
   });
 
-  function renderComponent() {
+  function renderComponent(activeCount?: number) {
     return render(
       <QueryClientProvider client={createTestQueryClient()}>
         <MemoryRouter>
-          <PlantFilters />
+          <PlantFilters activeCount={activeCount} />
         </MemoryRouter>
       </QueryClientProvider>
     );
@@ -83,6 +83,20 @@ describe('PlantFilters', () => {
   it('renders identity input', () => {
     renderComponent();
     expect(screen.getByTestId('text-filter-identity')).toBeInTheDocument();
+  });
+
+  it('muestra la búsqueda rápida destacada al principio del panel', () => {
+    renderComponent();
+
+    const quick = screen.getByTestId('quick-search');
+    const identityInput = screen.getByTestId('text-filter-identity');
+    const familySelect = screen.getByTestId('family-select');
+
+    expect(quick).toContainElement(identityInput);
+    expect(
+      identityInput.compareDocumentPosition(familySelect) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
   });
 
   it('limits the search input to the contract FilterText length', () => {
@@ -109,6 +123,26 @@ describe('PlantFilters', () => {
     fireEvent.click(screen.getByTestId('clear-filters'));
 
     expect(mockClearFilters).toHaveBeenCalled();
+  });
+
+  it('la acción de limpiar se llama "Limpiar todo"', () => {
+    renderComponent();
+
+    expect(
+      screen.getByRole('button', { name: /Limpiar todo/ })
+    ).toBeInTheDocument();
+  });
+
+  it('muestra el indicador de filtros activos cuando hay al menos uno', () => {
+    renderComponent(3);
+
+    expect(screen.getByText('3 activos')).toBeInTheDocument();
+  });
+
+  it('no muestra el indicador de filtros activos sin filtros', () => {
+    renderComponent(0);
+
+    expect(screen.queryByText(/activos/)).not.toBeInTheDocument();
   });
 
   it('calls setFamily from FamilySelect', async () => {

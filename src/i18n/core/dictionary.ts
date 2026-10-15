@@ -46,13 +46,7 @@ export const dictionary = {
     cancel: 'Cancelar',
 
     loading: 'Cargando...',
-    results_per_page: 'Resultados por página',
     filters: 'Filtros',
-    orders: {
-      order: 'Orden',
-      asc: 'Ascendente',
-      desc: 'Descendente'
-    },
     months: {
       short: {
         january: 'Ene',
@@ -261,16 +255,32 @@ export const dictionary = {
       strategicBenefits: 'Ecología',
       soilPh: 'pH del suelo',
       spacingCm: 'Espacio disponible (cm)',
-      soilAvailableDepthCm: 'Profundidad disponible (cm)'
+      soilAvailableDepthCm: 'Profundidad disponible (cm)',
+      active_count: '{n} activos',
+      families_count: '{n} registradas',
+      page_size: 'Mostrar'
+    },
+    applied: {
+      title: 'Filtros aplicados',
+      clear_all: 'Limpiar todo',
+      remove: 'Quitar filtro {label}'
+    },
+    catalog: {
+      species_count: '{n} especies',
+      summary_prefix: 'Filtrado activo'
+    },
+    view: {
+      label: 'Vista',
+      grid: 'Cuadrícula',
+      list: 'Lista'
     },
     orders: {
-      order: 'Orden',
-      asc: 'Az',
-      desc: 'Za',
-      field: 'Ordenar por',
-      fields: {
-        name: 'Nombre común',
-        scientificName: 'Nombre científico'
+      sort_label: 'Ordenar',
+      combined: {
+        name_asc: 'Nombre común (A-Z)',
+        name_desc: 'Nombre común (Z-A)',
+        scientificName_asc: 'Nombre científico (A-Z)',
+        scientificName_desc: 'Nombre científico (Z-A)'
       }
     },
     detail: {
