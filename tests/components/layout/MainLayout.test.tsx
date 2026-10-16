@@ -1,7 +1,10 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import MainLayout from '../../../src/components/layout/MainLayout';
+import { AuthProvider } from '../../../src/shared/auth/AuthContext';
 
 const mockScrollRestoration = vi.fn();
 
@@ -23,7 +26,11 @@ function renderMainLayout() {
   const router = createMemoryRouter([
     {
       path: '/',
-      element: <MainLayout />,
+      element: (
+        <AuthProvider>
+          <MainLayout />
+        </AuthProvider>
+      ),
       children: [
         {
           index: true,
@@ -41,26 +48,52 @@ describe('MainLayout', () => {
     mockScrollRestoration.mockClear();
   });
 
-  it.each([
-    ['cabecera', 'banner'],
-    ['navegación', 'navigation'],
-    ['contenido principal', 'main']
-  ] as const)(
-    'renderiza el landmark estructural de %s (%s)',
-    (_label, role) => {
-      renderMainLayout();
+  it('renders banner landmark and main content landmark', () => {
+    renderMainLayout();
 
-      expect(screen.getByRole(role)).toBeInTheDocument();
-    }
-  );
+    expect(screen.getByRole('banner')).toBeInTheDocument();
+    expect(screen.getByRole('main')).toBeInTheDocument();
+  });
 
-  it('renderiza el contenido hijo de la ruta dentro de app-content', () => {
+  it('renders brand logo link pointing to home', () => {
+    renderMainLayout();
+
+    const brandLink = screen.getByRole('link', { name: /MiBancal/i });
+    expect(brandLink).toBeInTheDocument();
+    expect(brandLink).toHaveAttribute('href', '/');
+  });
+
+  it('renders menu toggle button with accessibility attributes', () => {
+    renderMainLayout();
+
+    const toggleButton = screen.getByRole('button', {
+      name: /Menú de navegación/i
+    });
+    expect(toggleButton).toBeInTheDocument();
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
+    expect(toggleButton).toHaveAttribute('aria-controls', 'app-nav-dialog');
+  });
+
+  it('opens nav drawer when toggle button is clicked', async () => {
+    const user = userEvent.setup();
+    renderMainLayout();
+
+    const toggleButton = screen.getByRole('button', {
+      name: /Menú de navegación/i
+    });
+    await user.click(toggleButton);
+
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('renders child route content inside app-content', () => {
     renderMainLayout();
 
     expect(screen.getByText('Contenido de prueba')).toBeInTheDocument();
   });
 
-  it('renderiza el componente ScrollRestoration para gestionar el historial de scroll', () => {
+  it('invokes ScrollRestoration component', () => {
     renderMainLayout();
 
     expect(mockScrollRestoration).toHaveBeenCalledTimes(1);

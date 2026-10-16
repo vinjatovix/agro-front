@@ -1,37 +1,21 @@
 import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 
-import AuthLayout from '../components/layout/AuthLayout';
+import ProtectedRoute from '../components/auth/ProtectedRoute';
 import MainLayout from '../components/layout/MainLayout';
-
-import Home from '../pages/Home';
-
-import Login from '../pages/auth/Login';
-import Register from '../pages/auth/Register';
-
-import PlantDetail from '../pages/plants/PlantDetail/PlantDetail';
-import FamilyList from '../pages/families/FamilyList';
 import FamilyDetail from '../pages/families/FamilyDetail/FamilyDetail';
-
-import AdminDashboard from '../pages/admin/AdminDashboard';
-import PlantsPage from '../pages/plants/PlantsPage';
+import FamilyList from '../pages/families/FamilyList';
+import Home from '../pages/Home';
 import NotFoundPage from '../pages/NotFoundPage';
+import PlantDetail from '../pages/plants/PlantDetail/PlantDetail';
+import PlantsPage from '../pages/plants/PlantsPage';
 import RouteErrorFallback from '../pages/RouteErrorFallback';
-
 import { LayoutErrorFallback } from './LayoutErrorFallback';
 
 export const routes: RouteObject[] = [
   {
-    element: <AuthLayout />,
-    errorElement: <LayoutErrorFallback />,
-    children: [
-      { path: '/login', element: <Login /> },
-      { path: '/register', element: <Register /> }
-    ]
-  },
-
-  {
     element: <MainLayout />,
     errorElement: <LayoutErrorFallback />,
+    hydrateFallbackElement: null,
     children: [
       {
         errorElement: <RouteErrorFallback />,
@@ -41,7 +25,38 @@ export const routes: RouteObject[] = [
           { path: '/plants/:id', element: <PlantDetail /> },
           { path: '/families', element: <FamilyList /> },
           { path: '/families/:id', element: <FamilyDetail /> },
-          { path: '/admin', element: <AdminDashboard /> },
+          {
+            path: '/login',
+            lazy: async () => ({
+              Component: (await import('../pages/auth/Login')).default
+            })
+          },
+          {
+            path: '/register',
+            lazy: async () => ({
+              Component: (await import('../pages/auth/Register')).default
+            })
+          },
+          {
+            path: '/activate',
+            lazy: async () => ({
+              Component: (await import('../pages/auth/Activate')).default
+            })
+          },
+          {
+            path: '/admin',
+            lazy: async () => {
+              const { default: AdminDashboard } =
+                await import('../pages/admin/AdminDashboard');
+              return {
+                Component: () => (
+                  <ProtectedRoute requireAdmin={true}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                )
+              };
+            }
+          },
           { path: '*', element: <NotFoundPage /> }
         ]
       }

@@ -57,11 +57,12 @@ describen el problema de partida y no se reescriben.
 | 14  | Ficha de planta con el nuevo diseño        | Parcial              | Existen `PlantHero` y secciones (`QuickFacts`, `PlantCultivation`, `PlantEcology`, `PlantNotes`, `PlantResources`, `PlantCalendar`…). Sin spec dedicada ni DoD verificado                                                 |
 | 15  | Familias con el nuevo diseño               | Parcial              | Existen `FamilyHero`, `FamilyInfo`, `FamilyPlants`. Sin spec dedicada ni DoD verificado                                                                                                                                   |
 | 16  | Accesibilidad base                         | Parcial              | El `Drawer` cierra con Escape y tiene botón con `aria-label`. Faltan `role="dialog"`/`aria-modal`/focus trap, pestañas de recursos con flechas y reglas `jsx-a11y` en CI                                                  |
+| 17  | Pantallas de acceso y menú MiBancal        | Hecha                | Spec 016 (55/55). Renombrado a MiBancal, cabecera unificada con menú accesible `NavDrawer`, sesión JWT en `sessionStorage`/memoria, login, registro, activación de cuenta, Google SSO y preview SSO tras flag.            |
 
 Specs de trabajo en `specs/`: 001 (It. 1), 002 (It. 2), 003 (It. 3), 004 (edición de comestibles y
 tóxicas, y estaciones; no estaba en el DoD original), 005 (It. 5), 006 (It. 6), 007 y 008 (It. 7),
-009 (It. 10), 010 (It. 8), 011 (It. 9), 012 (It. 11), 013 (It. 13) y 014 (corrección de scroll del
-catálogo).
+009 (It. 10), 010 (It. 8), 011 (It. 9), 012 (It. 11), 013 (It. 13), 014 (corrección de scroll del
+catálogo) y 016 (pantallas de acceso y barra de navegación MiBancal).
 
 ## Iteración 1: Gates de tipado y lint
 

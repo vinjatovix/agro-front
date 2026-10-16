@@ -29,7 +29,7 @@
 
 .plants-fab {
   position: fixed;
-  bottom: var(--space-md);
+  bottom: calc(var(--space-md) + var(--dev-banner-height, 0px));
   right: var(--space-md);
   z-index: 1100;
 

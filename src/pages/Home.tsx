@@ -23,24 +23,6 @@ export default function Home() {
         {t('app.info.email')}{' '}
         <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
       </p>
-      <p>
-        {t('app.info.github')}{' '}
-        <a
-          href={t('app.info.github_back')}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t('app.info.github_back')}
-        </a>
-        {' | '}
-        <a
-          href={t('app.info.github_front')}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t('app.info.github_front')}
-        </a>
-      </p>
     </section>
   );
 }
