@@ -29,33 +29,39 @@ GitHub y destino de observabilidad en producción.
 - 12 → 10 · 13 → 10 · 14 → 4, 10 · 15 → 6, 10
 - Se recomienda cerrar 1 y 2 antes que las demás, para que ya se verifiquen con los gates.
 
-## Estado a 2026-10-10
+## Estado a 2026-10-16
 
-Verificado con `npm run lint`, `npm run typecheck` y `npm run test` (54 ficheros, 515 tests en
-verde) y revisando el código y el historial de commits. Los prompts de cada iteración describen el
-problema de partida y no se reescriben.
+Revisado contra el código real y el historial (última revisión de 2026-10-10 solo cubría hasta la
+spec 008; desde entonces se han trabajado las specs 009–014). Los prompts de cada iteración
+describen el problema de partida y no se reescriben.
+
+> Aviso: los checkboxes de `specs/*/tasks.md` no siempre reflejan el código. En particular, la spec
+> 002 figura casi completa en su `tasks.md`, pero el DoD **no** está implementado (ver It. 2). El
+> estado de esta tabla prevalece sobre esos checkboxes.
 
 | It. | Título                                     | Estado               | Evidencia / pendiente                                                                                                                                                                                                     |
 | --- | ------------------------------------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Gates de tipado y lint                     | Parcial              | `strict` y lint con 0 warnings hechos. Faltan `complexity`, `max-lines`, `no-console`, capas                                                                                                                              |
-| 2   | Gates de tests, build y dependencias       | Pendiente            | Sin umbrales de cobertura, sin `.env.example`, sin gate de bundle ni de `npm audit`                                                                                                                                       |
+| 1   | Gates de tipado y lint                     | Parcial              | `strict` y lint con `--max-warnings=0` hechos; regla custom `local/no-hardcoded-ui-text` activa. Faltan `complexity`, `max-lines`, `no-console` y restricciones de imports entre capas (spec 001: 24/42)                  |
+| 2   | Gates de tests, build y dependencias       | Pendiente            | `vite.config.ts` sin `thresholds` de cobertura, no existe `.env.example`, no hay `npm audit` ni gate de bundle en `ci.yml`. (Los checkboxes de spec 002 están adelantados respecto al código)                             |
 | 3   | Listado de plantas que respeta el contrato | Hecha (salvo umbral) | Orden y límite corregidos. Falta el umbral del 95 % en `services/` (depende de la 2)                                                                                                                                      |
-| 4   | Ficha de planta fiel al modelo             | Parcial              | Tipos y estaciones hechos. Las fixtures no se validan contra el schema                                                                                                                                                    |
+| 4   | Ficha de planta fiel al modelo             | Parcial              | Tipos y estaciones hechos. Las fixtures no se validan contra el schema en CI                                                                                                                                              |
 | 5   | Nombre de la familia en las plantas        | Hecha                | Commit `a8c6866`                                                                                                                                                                                                          |
 | 6   | Familias robustas                          | Hecha                | Commit `e1f528a`. Riesgo de una sola página de 100 familias resuelto en la spec 008                                                                                                                                       |
 | 7   | Peticiones ligeras en los listados         | Hecha                | Spec 007. Familia −94,5 %, listado −82,6 % ([medición](../specs/007-lightweight-list-requests/measurements.md)). Spec 008. Listado de familias −95,7 % ([medición](../specs/008-lightweight-family-list/measurements.md)) |
-| 8   | Errores, rutas inválidas y vacíos          | Parcial              | Existen `not_found`, `empty` y `ErrorResponse`. Falta error boundary y verificar la página 404                                                                                                                            |
-| 9   | Toda la interfaz en castellano             | Sin verificar        | No revisado en esta pasada                                                                                                                                                                                                |
-| 10  | Tokens de diseño                           | Pendiente            | No se cargan Newsreader ni Manrope en `index.html`                                                                                                                                                                        |
-| 11  | Iconos en lugar de emojis                  | Parcial              | `iconsMap` centraliza los iconos (`b06caf5`). Quedan emojis en 5 ficheros de `src/`                                                                                                                                       |
-| 12  | Estructura de la aplicación                | Pendiente            | No se detecta una barra superior global                                                                                                                                                                                   |
-| 13  | Catálogo de plantas con el nuevo diseño    | Pendiente            | No iniciada según el historial                                                                                                                                                                                            |
-| 14  | Ficha de planta con el nuevo diseño        | Pendiente            | No iniciada según el historial                                                                                                                                                                                            |
-| 15  | Familias con el nuevo diseño               | Pendiente            | No iniciada según el historial                                                                                                                                                                                            |
-| 16  | Accesibilidad base                         | Parcial              | El `Drawer` ya usa botón (`e27af5c`). Falta el resto del DoD                                                                                                                                                              |
+| 8   | Errores, rutas inválidas y vacíos          | Hecha                | Spec 010 (69/1). `appErrorScreen`, `routeErrorFallback`, error boundary por sección/página/app y pantallas _no encontrado_                                                                                                |
+| 9   | Toda la interfaz en castellano             | Hecha                | Spec 011 (36/1). Meses en castellano desde el diccionario y regla de lint `no-hardcoded-ui-text` (incl. texto en expresiones y atributos)                                                                                 |
+| 10  | Tokens de diseño                           | Hecha                | Spec 009 (61/1). Newsreader y Manrope vía `@fontsource` en `src/styles/fonts.css`, `src/styles/tokens.css` y gate `check:colors`                                                                                          |
+| 11  | Iconos en lugar de emojis                  | Hecha                | Spec 012 (71/0). **0 emojis** en `src/`, componente `Icon` y gate `check:emoji`                                                                                                                                           |
+| 12  | Estructura de la aplicación                | Parcial              | `MainLayout` tiene barra superior con marca y navegación (Plantas/Familias). Falta verificar márgenes por breakpoint, sección activa resaltada y sin scroll a 320 px                                                      |
+| 13  | Catálogo de plantas con el nuevo diseño    | Parcial              | Spec 013 (filtros/orden, cabecera de catálogo, chips aplicados, modos cuadrícula/lista). Falta verificar el DoD de grid responsive y tarjetas (imagen 4:3 diferida)                                                       |
+| 14  | Ficha de planta con el nuevo diseño        | Parcial              | Existen `PlantHero` y secciones (`QuickFacts`, `PlantCultivation`, `PlantEcology`, `PlantNotes`, `PlantResources`, `PlantCalendar`…). Sin spec dedicada ni DoD verificado                                                 |
+| 15  | Familias con el nuevo diseño               | Parcial              | Existen `FamilyHero`, `FamilyInfo`, `FamilyPlants`. Sin spec dedicada ni DoD verificado                                                                                                                                   |
+| 16  | Accesibilidad base                         | Parcial              | El `Drawer` cierra con Escape y tiene botón con `aria-label`. Faltan `role="dialog"`/`aria-modal`/focus trap, pestañas de recursos con flechas y reglas `jsx-a11y` en CI                                                  |
 
 Specs de trabajo en `specs/`: 001 (It. 1), 002 (It. 2), 003 (It. 3), 004 (edición de comestibles y
-tóxicas, y estaciones; no estaba en el DoD original), 005 (It. 5), 006 (It. 6), 007 (It. 7) y 008 (It. 7).
+tóxicas, y estaciones; no estaba en el DoD original), 005 (It. 5), 006 (It. 6), 007 y 008 (It. 7),
+009 (It. 10), 010 (It. 8), 011 (It. 9), 012 (It. 11), 013 (It. 13) y 014 (corrección de scroll del
+catálogo).
 
 ## Iteración 1: Gates de tipado y lint
 
