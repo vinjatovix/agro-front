@@ -76,7 +76,25 @@ export const dictionary = {
     meta: 'Meta',
     sso_preview: 'próximamente',
     no_account: '¿No tienes cuenta? Regístrate',
-    has_account: '¿Ya tienes cuenta? Inicia sesión'
+    has_account: '¿Ya tienes cuenta? Inicia sesión',
+    forgot_link: '¿Olvidaste la contraseña?',
+    forgot_title: 'Restablecer contraseña',
+    forgot_email: 'Correo electrónico',
+    forgot_submit: 'Enviar enlace',
+    forgot_uniform_notice:
+      'Si existe una cuenta con ese correo, te hemos enviado un enlace para restablecer la contraseña.',
+    reset_title: 'Nueva contraseña',
+    reset_password: 'Nueva contraseña',
+    reset_repeat_password: 'Repetir nueva contraseña',
+    reset_submit: 'Confirmar contraseña',
+    reset_success: 'Contraseña restablecida',
+    reset_success_text:
+      'Tu contraseña se ha restablecido con éxito. Ya puedes iniciar sesión.',
+    reset_go_to_login: 'Ir a login',
+    reset_invalid_link: 'Enlace no válido o caducado',
+    reset_invalid_link_text:
+      'El enlace de restablecimiento no es válido o ha caducado. Solicita uno nuevo.',
+    reset_request_again: 'Solicitar un enlace nuevo'
   },
   admin: {
     heading: 'Administración'

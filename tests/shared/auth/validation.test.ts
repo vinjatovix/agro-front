@@ -7,6 +7,7 @@ import {
   validateLoginPassword,
   validateRegistrationPassword,
   validateRepeatPassword,
+  validateResetPasswordForm,
   validateUsername
 } from '../../../src/shared/auth/validation';
 
@@ -191,4 +192,40 @@ describe('validateRepeatPassword', () => {
 
     expect(error).toBe('mismatch');
   });
+});
+
+describe('validateResetPasswordForm', () => {
+  it('returns empty errors object when both fields are valid and matching', () => {
+    const errors = validateResetPasswordForm('Password123!', 'Password123!');
+
+    expect(errors).toEqual({});
+  });
+
+  it.each([
+    ['too short', 'Pass1!', 'length'],
+    ['missing complexity', 'password123', 'complexity']
+  ])('reports the password rule violation (%s)', (_, password, expectedKey) => {
+    const errors = validateResetPasswordForm(password, password);
+
+    expect(errors.password).toBe(expectedKey);
+  });
+
+  it('reports the bytes rule when UTF-8 bytes exceed 72', () => {
+    const password = 'Pass1!' + 'ñ'.repeat(35);
+    const errors = validateResetPasswordForm(password, password);
+
+    expect(errors.password).toBe('bytes');
+  });
+
+  it.each([
+    ['empty repeat', 'Password123!', '', 'required'],
+    ['mismatched repeat', 'Password123!', 'Different123!', 'mismatch']
+  ])(
+    'reports the repeat password rule violation (%s)',
+    (_, password, repeatPassword, expectedKey) => {
+      const errors = validateResetPasswordForm(password, repeatPassword);
+
+      expect(errors.repeatPassword).toBe(expectedKey);
+    }
+  );
 });

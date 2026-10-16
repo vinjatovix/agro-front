@@ -147,9 +147,14 @@ export default function Login() {
         </div>
 
         <div className="auth-field">
-          <label htmlFor="login-password" className="auth-label">
-            {t('auth.password')}
-          </label>
+          <div className="auth-label-row">
+            <label htmlFor="login-password" className="auth-label">
+              {t('auth.password')}
+            </label>
+            <Link to="/forgot-password" className="auth-label-row-link">
+              {t('auth.forgot_link')}
+            </Link>
+          </div>
           <input
             id="login-password"
             name="password"

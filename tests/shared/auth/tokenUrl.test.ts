@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { extractAndSanitizeActivationToken } from '../../../src/shared/auth/tokenUrl';
+import { extractAndSanitizeToken } from '../../../src/shared/auth/tokenUrl';
 
-describe('extractAndSanitizeActivationToken', () => {
+describe('extractAndSanitizeToken', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
@@ -11,7 +11,7 @@ describe('extractAndSanitizeActivationToken', () => {
     window.history.pushState(null, '', '/activate#token=test-hash-token-value');
     const replaceStateSpy = vi.spyOn(window.history, 'replaceState');
 
-    const token = extractAndSanitizeActivationToken();
+    const token = extractAndSanitizeToken();
 
     expect(token).toBe('test-hash-token-value');
     expect(replaceStateSpy).toHaveBeenCalledWith(null, '', '/activate');
@@ -25,7 +25,7 @@ describe('extractAndSanitizeActivationToken', () => {
     );
     const replaceStateSpy = vi.spyOn(window.history, 'replaceState');
 
-    const token = extractAndSanitizeActivationToken();
+    const token = extractAndSanitizeToken();
 
     expect(token).toBe('test-query-token-value');
     expect(replaceStateSpy).toHaveBeenCalledWith(null, '', '/activate');
@@ -35,7 +35,7 @@ describe('extractAndSanitizeActivationToken', () => {
     window.history.pushState(null, '', '/activate');
     const replaceStateSpy = vi.spyOn(window.history, 'replaceState');
 
-    const token = extractAndSanitizeActivationToken();
+    const token = extractAndSanitizeToken();
 
     expect(token).toBeNull();
     expect(replaceStateSpy).not.toHaveBeenCalled();

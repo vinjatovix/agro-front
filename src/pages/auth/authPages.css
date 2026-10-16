@@ -46,6 +46,20 @@
   color: var(--color-on-surface);
 }
 
+.auth-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.auth-label-row-link {
+  color: var(--color-primary);
+  text-decoration: underline;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
 .auth-input {
   width: 100%;
   box-sizing: border-box;

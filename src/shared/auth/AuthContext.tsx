@@ -9,16 +9,20 @@ import {
 import {
   activate as serviceActivate,
   authenticateWithGoogle as serviceGoogleLogin,
+  forgotPassword as serviceForgotPassword,
   login as serviceLogin,
   refreshToken as serviceRefreshToken,
-  register as serviceRegister
+  register as serviceRegister,
+  resetPassword as serviceResetPassword
 } from '../../services/auth.service';
 import type {
   ActivateAccountData,
   AuthenticateWithGoogleData,
   AuthSession,
+  ForgotPasswordData,
   LoginCredentials,
-  RegisterData
+  RegisterData,
+  ResetPasswordData
 } from '../../types/auth';
 import { ApiError } from '../errors/ApiError';
 import { AuthContext, type AuthContextValue } from './authContextDef';
@@ -92,6 +96,24 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     }
   }, []);
 
+  const forgotPassword = useCallback(async (data: ForgotPasswordData) => {
+    setIsLoading(true);
+    try {
+      await serviceForgotPassword(data);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const resetPassword = useCallback(async (data: ResetPasswordData) => {
+    setIsLoading(true);
+    try {
+      await serviceResetPassword(data);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     return subscribeToSessionPurge(() => {
       setSession(null);
@@ -138,9 +160,21 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       register,
       activate,
       googleLogin,
+      forgotPassword,
+      resetPassword,
       logout
     }),
-    [session, isLoading, login, register, activate, googleLogin, logout]
+    [
+      session,
+      isLoading,
+      login,
+      register,
+      activate,
+      googleLogin,
+      forgotPassword,
+      resetPassword,
+      logout
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

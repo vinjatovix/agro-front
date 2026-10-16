@@ -39,6 +39,16 @@ export interface ActivateAccountData {
   readonly token: string;
 }
 
+export interface ForgotPasswordData {
+  readonly email: string;
+}
+
+export interface ResetPasswordData {
+  readonly token: string;
+  readonly password: string;
+  readonly repeatPassword: string;
+}
+
 export interface AuthenticateWithGoogleData {
   readonly idToken: string;
 }

@@ -1,4 +1,4 @@
-export function extractAndSanitizeActivationToken(): string | null {
+export function extractAndSanitizeToken(): string | null {
   let token: string | null = null;
 
   if (window.location.hash) {
