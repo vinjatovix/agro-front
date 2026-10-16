@@ -1,7 +1,7 @@
 export const dictionary = {
   app: {
-    brand: 'AgroApp',
-    welcome_message: 'Bienvenido a AgroApp, tu guía de cultivo de plantas.',
+    brand: 'MiBancal',
+    welcome_message: 'Bienvenido a MiBancal, tu guía de cultivo de plantas.',
 
     info: {
       title: 'Información del proyecto',
@@ -23,20 +23,60 @@ export const dictionary = {
         'Si falta información o encuentras errores, puedes contribuir. Se aceptan sugerencias y feedback para mejorar el contenido.',
       contact: 'Contacto',
       contact_text: 'Si quieres sugerir cambios o reportar contenido:',
-      email: 'Escríbeme a',
-      github: 'O abre un issue en',
-      github_back: 'https://github.com/vinjatovix/agro-back/issues',
-      github_front: 'https://github.com/vinjatovix/agro-front/issues'
+      email: 'Escríbeme a'
     },
     nav: {
       plants: 'Plantas',
-      families: 'Familias'
+      families: 'Familias',
+      menu: 'Menú de navegación',
+      menu_title: 'Menú',
+      close: 'Cerrar'
     }
   },
   auth: {
     heading: 'Acceso',
     login: 'Iniciar sesión',
-    register: 'Crear cuenta'
+    register: 'Crear cuenta',
+    logout: 'Cerrar sesión',
+    email: 'Correo electrónico',
+    password: 'Contraseña',
+    repeat_password: 'Repetir contraseña',
+    username: 'Nombre de usuario',
+    login_submit: 'Iniciar sesión',
+    register_submit: 'Crear cuenta',
+    activate_submit: 'Activar cuenta',
+    activate_title: 'Activación de cuenta',
+    activate_success: 'Cuenta activada',
+    activate_success_text:
+      'Tu cuenta ha sido activada con éxito. Ya puedes iniciar sesión.',
+    activate_error: 'Enlace no válido o caducado',
+    activate_error_text:
+      'El enlace de activación no es válido o ha caducado. Comprueba tu correo o solicita uno nuevo.',
+    activate_ready_text:
+      'Pulsa el botón para confirmar la activación de tu cuenta.',
+    register_success: 'Revisa tu correo para activar la cuenta',
+    register_success_text:
+      'Hemos enviado un enlace de activación a tu dirección de correo electrónico.',
+    invalid_credentials: 'Credenciales no válidas',
+    unverified_account_notice: '¿No has activado tu cuenta? Revisa tu correo',
+    rate_limit_notice: 'Demasiados intentos. Por favor, inténtalo más tarde.',
+    username_taken:
+      'El nombre de usuario ya está en uso. Por favor, elige otro.',
+    passwords_dont_match: 'Las contraseñas no coinciden',
+    invalid_email: 'Introduce una dirección de correo válida',
+    password_requirements:
+      'La contraseña debe tener entre 8 y 64 caracteres e incluir mayúscula, minúscula, número y carácter especial.',
+    password_strength_weak: 'Débil',
+    password_strength_medium: 'Media',
+    password_strength_strong: 'Fuerte',
+    required_field: 'Campo obligatorio',
+    google_login: 'Continuar con Google',
+    sso_separator: 'o',
+    github: 'GitHub',
+    meta: 'Meta',
+    sso_preview: 'próximamente',
+    no_account: '¿No tienes cuenta? Regístrate',
+    has_account: '¿Ya tienes cuenta? Inicia sesión'
   },
   admin: {
     heading: 'Administración'
@@ -44,6 +84,7 @@ export const dictionary = {
   common: {
     save: 'Guardar',
     cancel: 'Cancelar',
+    env_dev: 'development',
 
     loading: 'Cargando...',
     filters: 'Filtros',

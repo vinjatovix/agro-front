@@ -1,0 +1,194 @@
+import { describe, expect, it } from 'vitest';
+
+import {
+  calculatePasswordStrength,
+  validateEmail,
+  validateLoginForm,
+  validateLoginPassword,
+  validateRegistrationPassword,
+  validateRepeatPassword,
+  validateUsername
+} from '../../../src/shared/auth/validation';
+
+describe('validateEmail', () => {
+  it('accepts a valid standard email address', () => {
+    const error = validateEmail('hortelano@example.com');
+
+    expect(error).toBeNull();
+  });
+
+  it.each([
+    ['empty string', ''],
+    ['whitespace only', '   ']
+  ])('returns required error for %s', (_, value) => {
+    const error = validateEmail(value);
+
+    expect(error).toBe('required');
+  });
+
+  it.each([
+    ['missing domain', 'usuario@'],
+    ['missing at sign', 'usuario.example.com'],
+    ['spaces inside', 'usuario @example.com'],
+    ['no tld', 'usuario@localhost']
+  ])('returns invalid error for malformed email (%s)', (_, value) => {
+    const error = validateEmail(value);
+
+    expect(error).toBe('invalid');
+  });
+});
+
+describe('validateLoginPassword', () => {
+  it('accepts non-empty password', () => {
+    const error = validateLoginPassword('AnyPassword123');
+
+    expect(error).toBeNull();
+  });
+
+  it('returns required error for empty password', () => {
+    const error = validateLoginPassword('');
+
+    expect(error).toBe('required');
+  });
+});
+
+describe('validateLoginForm', () => {
+  it('returns empty errors object when form is valid', () => {
+    const errors = validateLoginForm('hortelano@example.com', 'Secret123!');
+
+    expect(errors).toEqual({});
+  });
+
+  it('collects errors for invalid inputs', () => {
+    const errors = validateLoginForm('', '');
+
+    expect(errors).toEqual({
+      email: 'required',
+      password: 'required'
+    });
+  });
+});
+
+describe('validateUsername', () => {
+  it('accepts valid username within 1 to 50 characters', () => {
+    const error = validateUsername('hortelano');
+
+    expect(error).toBeNull();
+  });
+
+  it.each([
+    ['empty string', ''],
+    ['whitespace only', '   ']
+  ])('returns required error for %s', (_, value) => {
+    const error = validateUsername(value);
+
+    expect(error).toBe('required');
+  });
+
+  it.each([
+    ['leading whitespace', ' hortelano'],
+    ['trailing whitespace', 'hortelano ']
+  ])(
+    'returns trimmed error when username has leading or trailing whitespace (%s)',
+    (_, value) => {
+      const error = validateUsername(value);
+
+      expect(error).toBe('trimmed');
+    }
+  );
+
+  it('returns length error when username exceeds 50 characters', () => {
+    const error = validateUsername('a'.repeat(51));
+
+    expect(error).toBe('length');
+  });
+});
+
+describe('validateRegistrationPassword', () => {
+  it('accepts password meeting all complexity and length requirements', () => {
+    const error = validateRegistrationPassword('Password123!');
+
+    expect(error).toBeNull();
+  });
+
+  it.each([
+    ['fewer than 8 chars', 'Pass1!'],
+    ['more than 64 chars', 'A1!' + 'a'.repeat(62)]
+  ])('returns length error for password length violation (%s)', (_, value) => {
+    const error = validateRegistrationPassword(value);
+
+    expect(error).toBe('length');
+  });
+
+  it.each([
+    ['missing lowercase', 'PASSWORD123!'],
+    ['missing uppercase', 'password123!'],
+    ['missing digit', 'Password!!!!'],
+    ['missing non-alphanumeric', 'Password1234']
+  ])('returns complexity error when rule is violated (%s)', (_, value) => {
+    const error = validateRegistrationPassword(value);
+
+    expect(error).toBe('complexity');
+  });
+
+  it('returns bytes error when UTF-8 bytes exceed 72', () => {
+    const error = validateRegistrationPassword('Pass1!' + 'ñ'.repeat(35));
+
+    expect(error).toBe('bytes');
+  });
+});
+
+describe('calculatePasswordStrength', () => {
+  it('returns score 0 and null label for empty password', () => {
+    const strength = calculatePasswordStrength('');
+
+    expect(strength).toEqual({ score: 0, labelKey: null });
+  });
+
+  it('returns score 1 (weak) when few criteria are met', () => {
+    const strength = calculatePasswordStrength('abc');
+
+    expect(strength).toEqual({
+      score: 1,
+      labelKey: 'auth.password_strength_weak'
+    });
+  });
+
+  it('returns score 2 (medium) when intermediate criteria are met', () => {
+    const strength = calculatePasswordStrength('Password12');
+
+    expect(strength).toEqual({
+      score: 2,
+      labelKey: 'auth.password_strength_medium'
+    });
+  });
+
+  it('returns score 3 (strong) when all criteria are met', () => {
+    const strength = calculatePasswordStrength('Password123!');
+
+    expect(strength).toEqual({
+      score: 3,
+      labelKey: 'auth.password_strength_strong'
+    });
+  });
+});
+
+describe('validateRepeatPassword', () => {
+  it('accepts matching passwords', () => {
+    const error = validateRepeatPassword('Secret123!', 'Secret123!');
+
+    expect(error).toBeNull();
+  });
+
+  it('returns required when repeat password is empty', () => {
+    const error = validateRepeatPassword('Secret123!', '');
+
+    expect(error).toBe('required');
+  });
+
+  it('returns mismatch when passwords do not match', () => {
+    const error = validateRepeatPassword('Secret123!', 'Different123!');
+
+    expect(error).toBe('mismatch');
+  });
+});

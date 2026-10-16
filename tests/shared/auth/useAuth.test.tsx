@@ -1,0 +1,268 @@
+import { act, render, renderHook, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import * as authServiceModule from '../../../src/services/auth.service';
+import { AuthProvider } from '../../../src/shared/auth/AuthContext';
+import {
+  clearStoredToken,
+  notifySessionPurged,
+  setStoredToken
+} from '../../../src/shared/auth/session';
+import { useAuth } from '../../../src/shared/auth/useAuth';
+import { ApiError } from '../../../src/shared/errors/ApiError';
+import { NetworkError } from '../../../src/shared/errors/NetworkError';
+import {
+  ADMIN_TEST_TOKEN,
+  createTestJwt,
+  VALID_TEST_TOKEN
+} from '../../fixtures/auth/authFixtures';
+
+describe('useAuth & AuthProvider', () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+    clearStoredToken();
+    vi.restoreAllMocks();
+  });
+
+  it('throws an error when used outside AuthProvider', () => {
+    expect(() => renderHook(() => useAuth())).toThrow(
+      'useAuth must be used within an AuthProvider'
+    );
+  });
+
+  it('initializes with unauthenticated state when no token is stored', () => {
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: AuthProvider
+    });
+
+    expect(result.current.session).toBeNull();
+    expect(result.current.user).toBeNull();
+    expect(result.current.isAuthenticated).toBe(false);
+    expect(result.current.isAdmin).toBe(false);
+  });
+
+  it('restores authenticated state from valid stored token', () => {
+    setStoredToken(VALID_TEST_TOKEN);
+
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: AuthProvider
+    });
+
+    expect(result.current.isAuthenticated).toBe(true);
+    expect(result.current.user?.username).toBe('hortelano');
+    expect(result.current.isAdmin).toBe(false);
+  });
+
+  it('identifies admin role correctly from token', () => {
+    setStoredToken(ADMIN_TEST_TOKEN);
+
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: AuthProvider
+    });
+
+    expect(result.current.isAdmin).toBe(true);
+  });
+
+  it('authenticates user and stores token on login', async () => {
+    const loginSpy = vi
+      .spyOn(authServiceModule, 'login')
+      .mockResolvedValueOnce({ token: VALID_TEST_TOKEN });
+
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: AuthProvider
+    });
+
+    await act(async () => {
+      await result.current.login({
+        email: 'hortelano@example.com',
+        password: 'Password1!'
+      });
+    });
+
+    expect(loginSpy).toHaveBeenCalledTimes(1);
+    expect(result.current.isAuthenticated).toBe(true);
+    expect(result.current.user?.username).toBe('hortelano');
+  });
+
+  it('authenticates user on googleLogin', async () => {
+    const googleSpy = vi
+      .spyOn(authServiceModule, 'authenticateWithGoogle')
+      .mockResolvedValueOnce({ token: VALID_TEST_TOKEN });
+
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: AuthProvider
+    });
+
+    await act(async () => {
+      await result.current.googleLogin({ idToken: 'test-google-id-token' });
+    });
+
+    expect(googleSpy).toHaveBeenCalledTimes(1);
+    expect(result.current.isAuthenticated).toBe(true);
+  });
+
+  it('clears session and storage on logout', () => {
+    setStoredToken(VALID_TEST_TOKEN);
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: AuthProvider
+    });
+
+    act(() => {
+      result.current.logout();
+    });
+
+    expect(result.current.session).toBeNull();
+    expect(result.current.isAuthenticated).toBe(false);
+  });
+
+  it('clears session when session purge is notified', () => {
+    setStoredToken(VALID_TEST_TOKEN);
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: AuthProvider
+    });
+
+    act(() => {
+      notifySessionPurged();
+    });
+
+    expect(result.current.session).toBeNull();
+    expect(result.current.isAuthenticated).toBe(false);
+  });
+
+  it('renders children passed to AuthProvider', () => {
+    render(
+      <AuthProvider>
+        <div data-testid="child-content">App content</div>
+      </AuthProvider>
+    );
+
+    expect(screen.getByTestId('child-content')).toHaveTextContent(
+      'App content'
+    );
+  });
+
+  it('refreshes token proactively before expiration', async () => {
+    vi.useFakeTimers();
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    const initialToken = createTestJwt({
+      exp: nowSeconds + 400
+    });
+    const refreshedToken = createTestJwt({
+      exp: nowSeconds + 7200
+    });
+    setStoredToken(initialToken);
+
+    const refreshSpy = vi
+      .spyOn(authServiceModule, 'refreshToken')
+      .mockResolvedValueOnce({ token: refreshedToken });
+
+    renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    await act(async () => {
+      vi.advanceTimersByTime(105000);
+    });
+
+    expect(refreshSpy).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
+  });
+
+  it('keeps session active when proactive refresh fails with a network error', async () => {
+    vi.useFakeTimers();
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    const initialToken = createTestJwt({
+      exp: nowSeconds + 400
+    });
+    setStoredToken(initialToken);
+
+    vi.spyOn(authServiceModule, 'refreshToken').mockRejectedValueOnce(
+      new NetworkError('Network unreachable')
+    );
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    await act(async () => {
+      vi.advanceTimersByTime(105000);
+    });
+
+    expect(result.current.isAuthenticated).toBe(true);
+    expect(result.current.session).not.toBeNull();
+    vi.useRealTimers();
+  });
+
+  it('logs out when proactive refresh fails with an unauthorized error', async () => {
+    vi.useFakeTimers();
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    const initialToken = createTestJwt({
+      exp: nowSeconds + 400
+    });
+    setStoredToken(initialToken);
+
+    vi.spyOn(authServiceModule, 'refreshToken').mockRejectedValueOnce(
+      new ApiError('Unauthorized', 401)
+    );
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    await act(async () => {
+      vi.advanceTimersByTime(105000);
+    });
+
+    expect(result.current.isAuthenticated).toBe(false);
+    expect(result.current.session).toBeNull();
+    vi.useRealTimers();
+  });
+
+  it('throws an error and leaves storage empty when login returns an invalid token', async () => {
+    vi.spyOn(authServiceModule, 'login').mockResolvedValueOnce({
+      token: 'corrupted.jwt.payload'
+    });
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    await expect(
+      result.current.login({
+        email: 'hortelano@example.com',
+        password: 'Password1!'
+      })
+    ).rejects.toThrow('Token de sesión no válido');
+
+    expect(result.current.isAuthenticated).toBe(false);
+    expect(sessionStorage.getItem('auth_token')).toBeNull();
+  });
+
+  it('delegates registration call to auth service', async () => {
+    const registerSpy = vi
+      .spyOn(authServiceModule, 'register')
+      .mockResolvedValueOnce(undefined);
+    const dto = {
+      id: '00000000-0000-4000-8000-000000000001',
+      email: 'hortelano@example.com',
+      username: 'hortelano',
+      password: 'Password1!',
+      repeatPassword: 'Password1!'
+    };
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    await act(async () => {
+      await result.current.register(dto);
+    });
+
+    expect(registerSpy).toHaveBeenCalledWith(dto);
+  });
+
+  it('delegates account activation call to auth service', async () => {
+    const activateSpy = vi
+      .spyOn(authServiceModule, 'activate')
+      .mockResolvedValueOnce(undefined);
+    const dto = { token: 'activation-token-string' };
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    await act(async () => {
+      await result.current.activate(dto);
+    });
+
+    expect(activateSpy).toHaveBeenCalledWith(dto);
+  });
+});

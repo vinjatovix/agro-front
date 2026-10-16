@@ -1,6 +1,6 @@
 # Contratos
 
-`openapi.yaml` es una **copia** del contrato de la AgroApp API. El original se versiona en `agro-back` (`src/apps/agroApi/openapi/openapi.yaml`) y es la fuente de verdad: cuando el front no coincide con él, el error está en el front.
+`openapi.yaml` es una **copia** del contrato de la MiBancal API. El original se versiona en `agro-back` (`src/apps/agroApi/openapi/openapi.yaml`) y es la fuente de verdad: cuando el front no coincide con él, el error está en el front.
 
 No se edita aquí. Cuando el back entregue una versión nueva, se sustituye el archivo y se actualiza esta tabla.
 

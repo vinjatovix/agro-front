@@ -1,7 +1,11 @@
+import { API_URL } from '../config/env';
+import {
+  clearStoredToken,
+  getStoredToken,
+  notifySessionPurged
+} from '../shared/auth/session';
 import { ApiError } from '../shared/errors/ApiError';
 import { NetworkError } from '../shared/errors/NetworkError';
-
-const API_URL = import.meta.env.VITE_API_URL;
 
 type ErrorBody = {
   message?: string;
@@ -56,20 +60,98 @@ async function request(url: string, init: RequestInit): Promise<Response> {
   }
 }
 
+function mergeHeaders(
+  customHeaders?: HeadersInit,
+  token?: string | null
+): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json'
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  if (customHeaders) {
+    if (customHeaders instanceof Headers) {
+      customHeaders.forEach((value, key) => {
+        headers[key] = value;
+      });
+    } else if (Array.isArray(customHeaders)) {
+      for (const [key, value] of customHeaders) {
+        headers[key] = value;
+      }
+    } else {
+      Object.assign(headers, customHeaders);
+    }
+  }
+
+  return headers;
+}
+
+function isPublicGetEndpoint(path: string, method?: string): boolean {
+  const isGet = !method || method.toUpperCase() === 'GET';
+  if (!isGet) return false;
+  return /^\/(?:api\/v1\/)?(plants|families)(\/|\?|$)/.test(path);
+}
+
+async function parseResponseBody<T>(response: Response): Promise<T> {
+  if (response.status === 204 || response.status === 202) {
+    return undefined as T;
+  }
+  if (response.headers.get('content-length') === '0') {
+    return undefined as T;
+  }
+  const contentType = response.headers.get('content-type');
+  if (!contentType?.includes('application/json')) {
+    return undefined as T;
+  }
+  return (await response.json()) as T;
+}
+
+async function handleResponseError(
+  response: Response,
+  url: string,
+  path: string,
+  options: RequestInit | undefined,
+  hadToken: boolean
+): Promise<Response> {
+  if (response.status === 401) {
+    clearStoredToken();
+    notifySessionPurged();
+
+    if (hadToken && isPublicGetEndpoint(path, options?.method)) {
+      const retryHeaders = mergeHeaders(options?.headers, null);
+      delete retryHeaders['Authorization'];
+      delete retryHeaders['authorization'];
+      return request(url, { ...options, headers: retryHeaders });
+    }
+  }
+
+  return response;
+}
+
 export async function apiFetch<T>(
   path: string,
   options?: RequestInit
 ): Promise<T> {
-  const response = await request(`${API_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    ...options
+  const token = getStoredToken();
+  const hadToken = token !== null;
+  const headers = mergeHeaders(options?.headers, token);
+  const url = `${API_URL}${path}`;
+
+  const response = await request(url, {
+    ...options,
+    headers
   });
 
-  if (!response.ok) {
-    throw await toApiError(response);
+  const finalResponse = response.ok
+    ? response
+    : await handleResponseError(response, url, path, options, hadToken);
+
+  if (!finalResponse.ok) {
+    throw await toApiError(finalResponse);
   }
 
-  return (await response.json()) as T;
+  return parseResponseBody<T>(finalResponse);
 }

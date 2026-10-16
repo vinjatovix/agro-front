@@ -4,9 +4,16 @@ import { t } from '../../../src/i18n/core/t';
 
 describe('auth and admin dictionary keys', () => {
   it.each([
+    ['app.brand', 'MiBancal'],
+    [
+      'app.welcome_message',
+      'Bienvenido a MiBancal, tu guía de cultivo de plantas.'
+    ],
+    ['app.nav.menu', 'Menú de navegación'],
     ['auth.heading', 'Acceso'],
     ['auth.login', 'Iniciar sesión'],
     ['auth.register', 'Crear cuenta'],
+    ['auth.logout', 'Cerrar sesión'],
     ['admin.heading', 'Administración']
   ] as const)('translates %s to %s', (key, expected) => {
     const result = t(key);
