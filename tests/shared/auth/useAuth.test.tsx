@@ -265,4 +265,44 @@ describe('useAuth & AuthProvider', () => {
 
     expect(activateSpy).toHaveBeenCalledWith(dto);
   });
+
+  it('delegates forgotPassword to auth service without touching the session', async () => {
+    const forgotSpy = vi
+      .spyOn(authServiceModule, 'forgotPassword')
+      .mockResolvedValueOnce(undefined);
+    const dto = { email: 'hortelano@example.com' };
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    await act(async () => {
+      await result.current.forgotPassword(dto);
+    });
+
+    expect(forgotSpy).toHaveBeenCalledWith(dto);
+    expect(result.current.session).toBeNull();
+    expect(result.current.isAuthenticated).toBe(false);
+    expect(sessionStorage.getItem('auth_token')).toBeNull();
+  });
+
+  it('delegates resetPassword to auth service without creating a session', async () => {
+    const resetSpy = vi
+      .spyOn(authServiceModule, 'resetPassword')
+      .mockResolvedValueOnce(undefined);
+    const dto = {
+      token: 'reset-token-string',
+      password: 'Password123!',
+      repeatPassword: 'Password123!'
+    };
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    await act(async () => {
+      await result.current.resetPassword(dto);
+    });
+
+    expect(resetSpy).toHaveBeenCalledWith(dto);
+    expect(result.current.session).toBeNull();
+    expect(result.current.isAuthenticated).toBe(false);
+    expect(sessionStorage.getItem('auth_token')).toBeNull();
+  });
 });

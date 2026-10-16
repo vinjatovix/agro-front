@@ -118,6 +118,21 @@ export function validateRepeatPassword(
   return null;
 }
 
+export function validateResetPasswordForm(
+  password: string,
+  repeatPassword: string
+): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  const passwordError = validateRegistrationPassword(password);
+  if (passwordError) errors.password = passwordError;
+
+  const repeatPasswordError = validateRepeatPassword(password, repeatPassword);
+  if (repeatPasswordError) errors.repeatPassword = repeatPasswordError;
+
+  return errors;
+}
+
 export function validateRegisterForm(data: {
   readonly email: string;
   readonly username: string;

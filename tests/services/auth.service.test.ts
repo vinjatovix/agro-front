@@ -5,10 +5,13 @@ import {
   activate,
   authenticateWithGoogle,
   authService,
+  forgotPassword,
   login,
   refreshToken,
-  register
+  register,
+  resetPassword
 } from '../../src/services/auth.service';
+import { ApiError } from '../../src/shared/errors/ApiError';
 
 describe('authService', () => {
   beforeEach(() => {
@@ -105,6 +108,102 @@ describe('authService', () => {
     });
   });
 
+  describe('forgotPassword', () => {
+    it('calls forgot endpoint with POST and email body, mapping 202 to undefined', async () => {
+      const apiFetchSpy = vi
+        .spyOn(apiModule, 'apiFetch')
+        .mockResolvedValueOnce(undefined);
+      const dto = { email: 'hortelano@example.com' };
+
+      const result = await forgotPassword(dto);
+
+      expect(result).toBeUndefined();
+      expect(apiFetchSpy).toHaveBeenCalledWith('/api/v1/auth/password/forgot', {
+        method: 'POST',
+        body: JSON.stringify(dto)
+      });
+    });
+
+    it.each([
+      ['validation error', 400],
+      ['rate limit', 429]
+    ])('propagates ApiError on %s', async (_, status) => {
+      vi.spyOn(apiModule, 'apiFetch').mockRejectedValueOnce(
+        new ApiError('error', status)
+      );
+
+      await expect(
+        forgotPassword({ email: 'hortelano@example.com' })
+      ).rejects.toBeInstanceOf(ApiError);
+    });
+  });
+
+  describe('resetPassword', () => {
+    it('calls reset endpoint with POST and DTO body, mapping 204 to undefined', async () => {
+      const apiFetchSpy = vi
+        .spyOn(apiModule, 'apiFetch')
+        .mockResolvedValueOnce(undefined);
+      const dto = {
+        token: 'reset-token-value',
+        password: 'Password123!',
+        repeatPassword: 'Password123!'
+      };
+
+      const result = await resetPassword(dto);
+
+      expect(result).toBeUndefined();
+      expect(apiFetchSpy).toHaveBeenCalledWith('/api/v1/auth/password/reset', {
+        method: 'POST',
+        body: JSON.stringify(dto)
+      });
+    });
+
+    it('propagates ApiError with field errors on 400 validation', async () => {
+      vi.spyOn(apiModule, 'apiFetch').mockRejectedValueOnce(
+        new ApiError('Validation', 400, { password: 'complexity' })
+      );
+
+      await expect(
+        resetPassword({
+          token: 'reset-token-value',
+          password: 'weak',
+          repeatPassword: 'weak'
+        })
+      ).rejects.toMatchObject({
+        status: 400,
+        errors: { password: 'complexity' }
+      });
+    });
+
+    it('propagates uniform ApiError without errors on invalid or expired token', async () => {
+      vi.spyOn(apiModule, 'apiFetch').mockRejectedValueOnce(
+        new ApiError('Invalid or expired token', 400)
+      );
+
+      await expect(
+        resetPassword({
+          token: 'expired-token',
+          password: 'Password123!',
+          repeatPassword: 'Password123!'
+        })
+      ).rejects.toMatchObject({ status: 400, errors: undefined });
+    });
+
+    it('propagates ApiError on 429', async () => {
+      vi.spyOn(apiModule, 'apiFetch').mockRejectedValueOnce(
+        new ApiError('Too Many Requests', 429)
+      );
+
+      await expect(
+        resetPassword({
+          token: 'reset-token-value',
+          password: 'Password123!',
+          repeatPassword: 'Password123!'
+        })
+      ).rejects.toBeInstanceOf(ApiError);
+    });
+  });
+
   describe('authService contract object', () => {
     it('exposes all contract methods', () => {
       expect(typeof authService.register).toBe('function');
@@ -112,6 +211,8 @@ describe('authService', () => {
       expect(typeof authService.login).toBe('function');
       expect(typeof authService.authenticateWithGoogle).toBe('function');
       expect(typeof authService.refreshToken).toBe('function');
+      expect(typeof authService.forgotPassword).toBe('function');
+      expect(typeof authService.resetPassword).toBe('function');
     });
   });
 });

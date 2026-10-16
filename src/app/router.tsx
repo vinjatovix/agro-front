@@ -44,6 +44,22 @@ export const routes: RouteObject[] = [
             })
           },
           {
+            path: '/forgot-password',
+            lazy: async () => ({
+              Component: (
+                await import('../pages/auth/ForgotPassword/ForgotPassword')
+              ).default
+            })
+          },
+          {
+            path: '/reset-password',
+            lazy: async () => ({
+              Component: (
+                await import('../pages/auth/ResetPassword/ResetPassword')
+              ).default
+            })
+          },
+          {
             path: '/admin',
             lazy: async () => {
               const { default: AdminDashboard } =

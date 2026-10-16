@@ -162,6 +162,18 @@ describe('Login Page', () => {
     expect(registerLink).toHaveAttribute('href', '/register');
   });
 
+  it('contains link to the forgot password page', () => {
+    renderWithProviders(<TestApp />, {
+      route: '/login'
+    });
+
+    const forgotLink = screen.getByRole('link', {
+      name: /¿Olvidaste la contraseña\?/i
+    });
+    expect(forgotLink).toBeInTheDocument();
+    expect(forgotLink).toHaveAttribute('href', '/forgot-password');
+  });
+
   it('redirects to originating location including search query and hash', () => {
     setStoredToken(VALID_TEST_TOKEN);
 

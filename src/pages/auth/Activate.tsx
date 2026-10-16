@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { t } from '../../i18n/core/t';
-import { extractAndSanitizeActivationToken } from '../../shared/auth/tokenUrl';
+import { extractAndSanitizeToken } from '../../shared/auth/tokenUrl';
 import { useAuth } from '../../shared/auth/useAuth';
 import { ApiError } from '../../shared/errors/ApiError';
 import './authPages.css';
 
 export default function Activate() {
   const { activate } = useAuth();
-  const [token] = useState<string | null>(extractAndSanitizeActivationToken);
+  const [token] = useState<string | null>(extractAndSanitizeToken);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
