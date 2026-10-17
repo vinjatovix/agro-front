@@ -1,0 +1,32 @@
+.app-shell--dev {
+  --dev-banner-height: 22px;
+  padding-bottom: var(--dev-banner-height);
+  box-sizing: border-box;
+}
+
+.app-menu-toggle {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.app-menu-toggle:hover {
+  background-color: var(--color-surface-container-high);
+}
+
+.app-menu-bar {
+  display: block;
+  width: 1.25rem;
+  height: 2px;
+  background-color: var(--color-on-surface);
+  border-radius: 1px;
+}
