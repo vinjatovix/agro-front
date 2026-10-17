@@ -264,3 +264,70 @@ describe('ResetPassword Page', () => {
     ).toBeInTheDocument();
   });
 });
+
+describe('ResetPassword Page - password visibility toggle', () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+    clearStoredToken();
+    window.history.pushState(null, '', '/reset-password');
+    vi.restoreAllMocks();
+  });
+
+  it.each([
+    ['password field', 'Nueva contraseña'],
+    ['repeat password field', 'Repetir nueva contraseña']
+  ])('renders %s initially masked with type password (C6)', (_, label) => {
+    withToken();
+    renderWithProviders(<TestApp />, { route: '/reset-password' });
+
+    const input = screen.getByLabelText(label);
+
+    expect(input).toHaveAttribute('type', 'password');
+  });
+
+  it('renders two toggle buttons with accessible name Mostrar contraseña (C6)', () => {
+    withToken();
+    renderWithProviders(<TestApp />, { route: '/reset-password' });
+
+    const toggleButtons = screen.getAllByRole('button', {
+      name: 'Mostrar contraseña'
+    });
+
+    expect(toggleButtons).toHaveLength(2);
+  });
+
+  it.each([
+    {
+      target: 'password field',
+      toggleIndex: 0,
+      expectedPasswordType: 'text',
+      expectedRepeatType: 'password'
+    },
+    {
+      target: 'repeat password field',
+      toggleIndex: 1,
+      expectedPasswordType: 'password',
+      expectedRepeatType: 'text'
+    }
+  ])(
+    'toggles $target independently without affecting sibling field (C7)',
+    async ({ toggleIndex, expectedPasswordType, expectedRepeatType }) => {
+      const user = userEvent.setup();
+      withToken();
+      renderWithProviders(<TestApp />, { route: '/reset-password' });
+      const passwordInput = screen.getByLabelText('Nueva contraseña');
+      const repeatPasswordInput = screen.getByLabelText(
+        'Repetir nueva contraseña'
+      );
+      await fillPasswords(user, 'NuevaClave123!');
+      const toggleButtons = screen.getAllByRole('button', {
+        name: 'Mostrar contraseña'
+      });
+
+      await user.click(toggleButtons[toggleIndex]);
+
+      expect(passwordInput).toHaveAttribute('type', expectedPasswordType);
+      expect(repeatPasswordInput).toHaveAttribute('type', expectedRepeatType);
+    }
+  );
+});

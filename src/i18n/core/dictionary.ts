@@ -40,6 +40,8 @@ export const dictionary = {
     logout: 'Cerrar sesión',
     email: 'Correo electrónico',
     password: 'Contraseña',
+    show_password: 'Mostrar contraseña',
+    hide_password: 'Ocultar contraseña',
     repeat_password: 'Repetir contraseña',
     username: 'Nombre de usuario',
     login_submit: 'Iniciar sesión',

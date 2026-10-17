@@ -84,6 +84,87 @@ describe('Register Page', () => {
     }
   );
 
+  it('displays static password requirements hint by default', () => {
+    renderWithProviders(<TestApp />, { route: '/register' });
+
+    const hint = screen.getByText(
+      'La contraseña debe tener entre 8 y 64 caracteres e incluir mayúscula, minúscula, número y carácter especial.'
+    );
+
+    expect(hint).toHaveClass('auth-field-hint');
+  });
+
+  it('does not display redundant red error copy when password does not meet complexity', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<TestApp />, { route: '/register' });
+    const passwordInput = screen.getByLabelText(/^Contraseña/i);
+
+    await user.type(passwordInput, 'WeakPass1');
+
+    expect(
+      screen.queryByText(
+        'La contraseña debe tener entre 8 y 64 caracteres e incluir mayúscula, minúscula, número y carácter especial.',
+        { selector: '.auth-error-text' }
+      )
+    ).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['email', /Correo electrónico/i],
+    ['username', /Nombre de usuario/i],
+    ['password', /^Contraseña/i],
+    ['repeat password', /Repetir contraseña/i]
+  ])(
+    'does not display Campo obligatorio on initial keystroke for %s',
+    async (_, label) => {
+      const user = userEvent.setup();
+      renderWithProviders(<TestApp />, { route: '/register' });
+      const input = screen.getByLabelText(label);
+
+      await user.type(input, 'a');
+
+      expect(screen.queryByText('Campo obligatorio')).not.toBeInTheDocument();
+    }
+  );
+
+  it.each([
+    ['email', /Correo electrónico/i],
+    ['username', /Nombre de usuario/i],
+    ['password', /^Contraseña/i],
+    ['repeat password', /Repetir contraseña/i]
+  ])(
+    'displays Campo obligatorio when %s field has been typed into and then cleared',
+    async (_, label) => {
+      const user = userEvent.setup();
+      renderWithProviders(<TestApp />, { route: '/register' });
+      const input = screen.getByLabelText(label);
+      await user.type(input, 'a');
+
+      await user.clear(input);
+
+      expect(await screen.findByText('Campo obligatorio')).toBeInTheDocument();
+    }
+  );
+
+  it.each([
+    ['email', /Correo electrónico/i],
+    ['username', /Nombre de usuario/i],
+    ['password', /^Contraseña/i],
+    ['repeat password', /Repetir contraseña/i]
+  ])(
+    'displays Campo obligatorio when %s field is blurred while empty',
+    async (_, label) => {
+      const user = userEvent.setup();
+      renderWithProviders(<TestApp />, { route: '/register' });
+      const input = screen.getByLabelText(label);
+
+      await user.click(input);
+      await user.tab();
+
+      expect(await screen.findByText('Campo obligatorio')).toBeInTheDocument();
+    }
+  );
+
   it('shows password mismatch error in real time when repeat password does not match', async () => {
     const user = userEvent.setup();
 
@@ -201,4 +282,66 @@ describe('Register Page', () => {
     expect(loginLink).toBeInTheDocument();
     expect(loginLink).toHaveAttribute('href', '/login');
   });
+});
+
+describe('Register Page - password visibility toggle', () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+    clearStoredToken();
+    vi.restoreAllMocks();
+  });
+
+  it.each([
+    ['password field', /^Contraseña/i],
+    ['repeat password field', /Repetir contraseña/i]
+  ])('renders %s initially masked with type password (C6)', (_, labelRegex) => {
+    renderWithProviders(<TestApp />, { route: '/register' });
+
+    const input = screen.getByLabelText(labelRegex);
+
+    expect(input).toHaveAttribute('type', 'password');
+  });
+
+  it('renders two toggle buttons with accessible name Mostrar contraseña (C6)', () => {
+    renderWithProviders(<TestApp />, { route: '/register' });
+
+    const toggleButtons = screen.getAllByRole('button', {
+      name: 'Mostrar contraseña'
+    });
+
+    expect(toggleButtons).toHaveLength(2);
+  });
+
+  it.each([
+    {
+      target: 'password field',
+      toggleIndex: 0,
+      expectedPasswordType: 'text',
+      expectedRepeatType: 'password'
+    },
+    {
+      target: 'repeat password field',
+      toggleIndex: 1,
+      expectedPasswordType: 'password',
+      expectedRepeatType: 'text'
+    }
+  ])(
+    'toggles $target independently without affecting sibling field (C7)',
+    async ({ toggleIndex, expectedPasswordType, expectedRepeatType }) => {
+      const user = userEvent.setup();
+      renderWithProviders(<TestApp />, { route: '/register' });
+      const passwordInput = screen.getByLabelText(/^Contraseña/i);
+      const repeatPasswordInput = screen.getByLabelText(/Repetir contraseña/i);
+      await user.type(passwordInput, 'Clave123!A');
+      await user.type(repeatPasswordInput, 'Clave123!A');
+      const toggleButtons = screen.getAllByRole('button', {
+        name: 'Mostrar contraseña'
+      });
+
+      await user.click(toggleButtons[toggleIndex]);
+
+      expect(passwordInput).toHaveAttribute('type', expectedPasswordType);
+      expect(repeatPasswordInput).toHaveAttribute('type', expectedRepeatType);
+    }
+  );
 });

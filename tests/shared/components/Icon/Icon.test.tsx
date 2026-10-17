@@ -72,3 +72,16 @@ describe('Icon component - semantic rendering', () => {
     expect(paths.length).toBeGreaterThan(0);
   });
 });
+
+describe('Icon component - password visibility glyphs', () => {
+  it.each([['visibility'], ['visibility_off']] as const)(
+    'renders %s glyph vector paths with currentColor stroke',
+    (iconName) => {
+      const { container } = render(<Icon name={iconName} decorative />);
+
+      const path = container.querySelector('path');
+
+      expect(path).toHaveAttribute('stroke', 'currentColor');
+    }
+  );
+});

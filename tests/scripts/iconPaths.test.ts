@@ -24,14 +24,18 @@ describe('extractSvgInner', () => {
 });
 
 describe('iconGlyphs catalog synchronisation', () => {
-  it('contains all icon names declared in the twemoji mapping', () => {
-    const mappingNames = Object.keys(TWEMOJI_MAPPING).sort();
+  it('contains all icon names declared in the twemoji mapping and custom glyphs', () => {
+    const expectedNames = [
+      ...Object.keys(TWEMOJI_MAPPING),
+      'visibility',
+      'visibility_off'
+    ].sort();
     const glyphNames = Object.keys(ICON_GLYPHS).sort();
 
-    expect(glyphNames).toEqual(mappingNames);
+    expect(glyphNames).toEqual(expectedNames);
   });
 
-  it.each(Object.keys(TWEMOJI_MAPPING))(
+  it.each(Object.keys(ICON_GLYPHS))(
     'provides a defined React element glyph for %s',
     (iconName) => {
       const glyph = ICON_GLYPHS[iconName as keyof typeof ICON_GLYPHS];
