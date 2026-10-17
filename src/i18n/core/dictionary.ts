@@ -113,7 +113,9 @@ export const dictionary = {
     repeat_new_password: 'Confirmar nueva contraseña',
     change_password_submit: 'Cambiar contraseña',
     success_message: 'Contraseña actualizada correctamente',
-    invalid_current_password: 'La contraseña actual no es válida'
+    invalid_current_password: 'La contraseña actual no es válida',
+    password_must_be_different:
+      'La nueva contraseña debe ser diferente de la anterior'
   },
   common: {
     save: 'Guardar',
