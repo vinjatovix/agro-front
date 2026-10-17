@@ -43,6 +43,9 @@ describe('NavDrawer', () => {
     expect(
       screen.getByRole('link', { name: /Crear cuenta/i })
     ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: /Configuración de la cuenta/i })
+    ).toBeNull();
     expect(screen.queryByRole('button', { name: /Cerrar sesión/i })).toBeNull();
     expect(screen.queryByRole('link', { name: /Administración/i })).toBeNull();
   });
@@ -60,6 +63,9 @@ describe('NavDrawer', () => {
     renderWithProviders(<NavDrawer isOpen={true} onClose={vi.fn()} />);
 
     expect(screen.getByText('hortelano')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: /Configuración de la cuenta/i })
+    ).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: /Cerrar sesión/i })
     ).toBeInTheDocument();
@@ -109,6 +115,20 @@ describe('NavDrawer', () => {
 
     expect(handleClose).toHaveBeenCalledTimes(1);
     expect(sessionStorage.getItem('auth_token')).toBeNull();
+  });
+
+  it('calls onClose when clicking account settings link', async () => {
+    const user = userEvent.setup();
+    setStoredToken(VALID_TEST_TOKEN);
+    const handleClose = vi.fn();
+    renderWithProviders(<NavDrawer isOpen={true} onClose={handleClose} />);
+
+    const settingsLink = screen.getByRole('link', {
+      name: /Configuración de la cuenta/i
+    });
+    await user.click(settingsLink);
+
+    expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
   it('calls onClose when clicking any navigation link', async () => {

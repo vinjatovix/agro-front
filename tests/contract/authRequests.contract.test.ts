@@ -8,7 +8,8 @@ describe('OpenAPI auth contract', () => {
     '/api/v1/auth/activate',
     '/api/v1/auth/login',
     '/api/v1/auth/google',
-    '/api/v1/auth/refresh'
+    '/api/v1/auth/refresh',
+    '/api/v1/auth/update'
   ])('validates openapi path for %s', (path) => {
     const violations = validateRequest('post', path);
 
@@ -122,6 +123,74 @@ describe('OpenAPI auth contract', () => {
         'AuthenticateWithGoogleRequest',
         payload
       );
+
+      expect(violations.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('UpdatePasswordRequest', () => {
+    it('accepts a valid update password payload', () => {
+      const payload = {
+        oldPassword: 'CurrentPassword123!',
+        password: 'NewPassword123!',
+        repeatPassword: 'NewPassword123!'
+      };
+
+      const violations = validateSchema('UpdatePasswordRequest', payload);
+
+      expect(violations).toEqual([]);
+    });
+
+    it.each([
+      [
+        'oldPassword',
+        { password: 'NewPassword123!', repeatPassword: 'NewPassword123!' }
+      ],
+      [
+        'password',
+        {
+          oldPassword: 'CurrentPassword123!',
+          repeatPassword: 'NewPassword123!'
+        }
+      ],
+      [
+        'repeatPassword',
+        { oldPassword: 'CurrentPassword123!', password: 'NewPassword123!' }
+      ]
+    ])('rejects payload missing %s', (_field, payload) => {
+      const violations = validateSchema('UpdatePasswordRequest', payload);
+
+      expect(violations.length).toBeGreaterThan(0);
+    });
+
+    it.each([
+      [
+        'password too short',
+        {
+          oldPassword: 'CurrentPassword123!',
+          password: 'Short1!',
+          repeatPassword: 'Short1!'
+        }
+      ],
+      [
+        'password too long',
+        {
+          oldPassword: 'CurrentPassword123!',
+          password: `${'A'.repeat(65)}1!`,
+          repeatPassword: `${'A'.repeat(65)}1!`
+        }
+      ],
+      [
+        'additional property',
+        {
+          oldPassword: 'CurrentPassword123!',
+          password: 'NewPassword123!',
+          repeatPassword: 'NewPassword123!',
+          extra: 'unexpected'
+        }
+      ]
+    ])('rejects payload with %s', (_desc, payload) => {
+      const violations = validateSchema('UpdatePasswordRequest', payload);
 
       expect(violations.length).toBeGreaterThan(0);
     });

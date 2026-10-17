@@ -39,6 +39,7 @@ export const TWEMOJI_PRIMARY_MAPPING: Record<string, string> = {
   schedule: '23f0',
   science: '1f9ea',
   search: '1f50d',
+  settings: '2699',
   spa: '1f33f',
   straighten: '1f4cf',
   sunny: '2600',
@@ -62,6 +63,13 @@ export const TWEMOJI_ALIASES: Record<string, string> = {
   seedling: 'potted_plant',
   sheaf_of_rice: 'grain',
   books: 'menu_book'
+};
+
+export const CUSTOM_GLYPHS: Record<string, string> = {
+  visibility:
+    '<path fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d="M4 18C7.5 11 12.5 8 18 8s10.5 3 14 10c-3.5 7-8.5 10-14 10S7.5 25 4 18Z"/><circle cx="18" cy="18" r="4.5" fill="none" stroke="currentColor" strokeWidth="2.5"/>',
+  visibility_off:
+    '<path fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d="M4 18C7.5 11 12.5 8 18 8s10.5 3 14 10c-3.5 7-8.5 10-14 10S7.5 25 4 18Z"/><circle cx="18" cy="18" r="4.5" fill="none" stroke="currentColor" strokeWidth="2.5"/><path fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" d="m6 6 24 24"/>'
 };
 
 export const TWEMOJI_MAPPING: Record<string, string> = {

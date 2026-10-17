@@ -35,3 +35,24 @@ describe('clear_range dictionary key with interpolation', () => {
     expect(result).toBe(expected);
   });
 });
+
+describe('settings dictionary keys', () => {
+  it.each([
+    ['settings.nav_link', 'Configuración de la cuenta'],
+    ['settings.title', 'Configuración de la cuenta'],
+    ['settings.profile_section', 'Perfil'],
+    ['settings.profile_username', 'Nombre de usuario'],
+    ['settings.profile_email', 'Correo electrónico'],
+    ['settings.security_section', 'Seguridad'],
+    ['settings.old_password', 'Contraseña actual'],
+    ['settings.new_password', 'Nueva contraseña'],
+    ['settings.repeat_new_password', 'Confirmar nueva contraseña'],
+    ['settings.change_password_submit', 'Cambiar contraseña'],
+    ['settings.success_message', 'Contraseña actualizada correctamente'],
+    ['settings.invalid_current_password', 'La contraseña actual no es válida']
+  ] as const)('translates %s to %s', (key, expected) => {
+    const result = t(key);
+
+    expect(result).toBe(expected);
+  });
+});

@@ -158,3 +158,25 @@ export function validateRegisterForm(data: {
 
   return errors;
 }
+
+export function validateUpdatePasswordForm(values: {
+  readonly oldPassword: string;
+  readonly password: string;
+  readonly repeatPassword: string;
+}): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  const oldPasswordError = validateLoginPassword(values.oldPassword);
+  if (oldPasswordError) errors.oldPassword = oldPasswordError;
+
+  const passwordError = validateRegistrationPassword(values.password);
+  if (passwordError) errors.password = passwordError;
+
+  const repeatPasswordError = validateRepeatPassword(
+    values.password,
+    values.repeatPassword
+  );
+  if (repeatPasswordError) errors.repeatPassword = repeatPasswordError;
+
+  return errors;
+}

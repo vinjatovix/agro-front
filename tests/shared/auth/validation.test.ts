@@ -8,6 +8,7 @@ import {
   validateRegistrationPassword,
   validateRepeatPassword,
   validateResetPasswordForm,
+  validateUpdatePasswordForm,
   validateUsername
 } from '../../../src/shared/auth/validation';
 
@@ -226,6 +227,86 @@ describe('validateResetPasswordForm', () => {
       const errors = validateResetPasswordForm(password, repeatPassword);
 
       expect(errors.repeatPassword).toBe(expectedKey);
+    }
+  );
+});
+
+describe('validateUpdatePasswordForm', () => {
+  it('returns empty errors object when all fields are valid', () => {
+    const values = {
+      oldPassword: 'CurrentPassword123!',
+      password: 'NewPassword123!',
+      repeatPassword: 'NewPassword123!'
+    };
+
+    const errors = validateUpdatePasswordForm(values);
+
+    expect(errors).toEqual({});
+  });
+
+  it.each([['empty', '', 'required']])(
+    'reports oldPassword error for %s',
+    (_desc, oldPassword, expected) => {
+      const values = {
+        oldPassword,
+        password: 'NewPassword123!',
+        repeatPassword: 'NewPassword123!'
+      };
+
+      const errors = validateUpdatePasswordForm(values);
+
+      expect(errors.oldPassword).toBe(expected);
+    }
+  );
+
+  it.each([
+    ['empty', '', 'required'],
+    ['too short', 'Short1!', 'length'],
+    ['too long', `${'A'.repeat(65)}1!`, 'length'],
+    ['missing lower', 'PASSWORD123!', 'complexity'],
+    ['missing upper', 'password123!', 'complexity'],
+    ['missing digit', 'Password!!!!', 'complexity'],
+    ['missing special', 'Password1234', 'complexity']
+  ])('reports password error for %s', (_desc, password, expected) => {
+    const values = {
+      oldPassword: 'CurrentPassword123!',
+      password,
+      repeatPassword: password
+    };
+
+    const errors = validateUpdatePasswordForm(values);
+
+    expect(errors.password).toBe(expected);
+  });
+
+  it('reports bytes error when password UTF-8 exceeds 72 bytes', () => {
+    const password = `Pass1!${'ñ'.repeat(35)}`;
+    const values = {
+      oldPassword: 'CurrentPassword123!',
+      password,
+      repeatPassword: password
+    };
+
+    const errors = validateUpdatePasswordForm(values);
+
+    expect(errors.password).toBe('bytes');
+  });
+
+  it.each([
+    ['empty', '', 'required'],
+    ['mismatch', 'Different123!', 'mismatch']
+  ])(
+    'reports repeatPassword error for %s',
+    (_desc, repeatPassword, expected) => {
+      const values = {
+        oldPassword: 'CurrentPassword123!',
+        password: 'NewPassword123!',
+        repeatPassword
+      };
+
+      const errors = validateUpdatePasswordForm(values);
+
+      expect(errors.repeatPassword).toBe(expected);
     }
   );
 });

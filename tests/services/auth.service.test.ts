@@ -9,7 +9,8 @@ import {
   login,
   refreshToken,
   register,
-  resetPassword
+  resetPassword,
+  updatePassword
 } from '../../src/services/auth.service';
 import { ApiError } from '../../src/shared/errors/ApiError';
 
@@ -204,6 +205,73 @@ describe('authService', () => {
     });
   });
 
+  describe('updatePassword', () => {
+    it('calls update endpoint with POST, DTO body, and returns response', async () => {
+      const apiFetchSpy = vi
+        .spyOn(apiModule, 'apiFetch')
+        .mockResolvedValueOnce({ message: 'Password updated' });
+      const dto = {
+        oldPassword: 'CurrentPassword123!',
+        password: 'NewPassword123!',
+        repeatPassword: 'NewPassword123!'
+      };
+
+      const result = await updatePassword(dto);
+
+      expect(result).toEqual({ message: 'Password updated' });
+      expect(apiFetchSpy).toHaveBeenCalledWith('/api/v1/auth/update', {
+        method: 'POST',
+        body: JSON.stringify(dto)
+      });
+    });
+
+    it('propagates ApiError with field errors on 400 validation error', async () => {
+      vi.spyOn(apiModule, 'apiFetch').mockRejectedValueOnce(
+        new ApiError('Validation error', 400, {
+          oldPassword: 'Invalid current password'
+        })
+      );
+      const dto = {
+        oldPassword: 'WrongPassword',
+        password: 'NewPassword123!',
+        repeatPassword: 'NewPassword123!'
+      };
+
+      await expect(updatePassword(dto)).rejects.toMatchObject({
+        status: 400,
+        errors: { oldPassword: 'Invalid current password' }
+      });
+    });
+
+    it('propagates ApiError on 401 unauthorized', async () => {
+      vi.spyOn(apiModule, 'apiFetch').mockRejectedValueOnce(
+        new ApiError('Unauthorized', 401)
+      );
+      const dto = {
+        oldPassword: 'CurrentPassword123!',
+        password: 'NewPassword123!',
+        repeatPassword: 'NewPassword123!'
+      };
+
+      await expect(updatePassword(dto)).rejects.toMatchObject({
+        status: 401
+      });
+    });
+
+    it('propagates network error', async () => {
+      vi.spyOn(apiModule, 'apiFetch').mockRejectedValueOnce(
+        new TypeError('Failed to fetch')
+      );
+      const dto = {
+        oldPassword: 'CurrentPassword123!',
+        password: 'NewPassword123!',
+        repeatPassword: 'NewPassword123!'
+      };
+
+      await expect(updatePassword(dto)).rejects.toThrow('Failed to fetch');
+    });
+  });
+
   describe('authService contract object', () => {
     it('exposes all contract methods', () => {
       expect(typeof authService.register).toBe('function');
@@ -213,6 +281,7 @@ describe('authService', () => {
       expect(typeof authService.refreshToken).toBe('function');
       expect(typeof authService.forgotPassword).toBe('function');
       expect(typeof authService.resetPassword).toBe('function');
+      expect(typeof authService.updatePassword).toBe('function');
     });
   });
 });

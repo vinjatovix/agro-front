@@ -4,7 +4,8 @@ import { dirname, join } from 'node:path';
 import {
   extractSvgInner,
   TWEMOJI_ALIASES,
-  TWEMOJI_PRIMARY_MAPPING
+  TWEMOJI_PRIMARY_MAPPING,
+  CUSTOM_GLYPHS
 } from './iconPathExtraction.ts';
 
 const ROOT = process.cwd();
@@ -25,13 +26,24 @@ export function generateIconGlyphsContent(): string {
     return `const ${name}Glyph = (\n  <>\n    ${inner}\n  </>\n);`;
   });
 
+  const customDeclarations = Object.entries(CUSTOM_GLYPHS).map(
+    ([name, inner]) => `const ${name}Glyph = (\n  <>\n    ${inner}\n  </>\n);`
+  );
+
   const primaryEntries = sortedNames.map((name) => `  ${name}: ${name}Glyph`);
   const aliasEntries = Object.entries(TWEMOJI_ALIASES).map(
     ([alias, target]) => `  ${alias}: ${target}Glyph`
   );
-  const allEntries = [...primaryEntries, ...aliasEntries].sort();
+  const customEntries = Object.keys(CUSTOM_GLYPHS).map(
+    (name) => `  ${name}: ${name}Glyph`
+  );
+  const allEntries = [
+    ...primaryEntries,
+    ...aliasEntries,
+    ...customEntries
+  ].sort();
 
-  return `${declarations.join('\n\n')}\n\nexport const ICON_GLYPHS = {\n${allEntries.join(',\n')}\n} as const;\n\nexport type IconName = keyof typeof ICON_GLYPHS;\n`;
+  return `${[...declarations, ...customDeclarations].join('\n\n')}\n\nexport const ICON_GLYPHS = {\n${allEntries.join(',\n')}\n} as const;\n\nexport type IconName = keyof typeof ICON_GLYPHS;\n`;
 }
 
 export function writeIconGlyphsFile(): void {

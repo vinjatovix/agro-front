@@ -73,6 +73,20 @@ export const routes: RouteObject[] = [
               };
             }
           },
+          {
+            path: '/settings',
+            lazy: async () => {
+              const { default: AccountSettings } =
+                await import('../pages/settings/AccountSettings');
+              return {
+                Component: () => (
+                  <ProtectedRoute requireAdmin={false}>
+                    <AccountSettings />
+                  </ProtectedRoute>
+                )
+              };
+            }
+          },
           { path: '*', element: <NotFoundPage /> }
         ]
       }

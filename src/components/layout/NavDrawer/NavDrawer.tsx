@@ -116,6 +116,14 @@ export default function NavDrawer({
                 <div className="nav-drawer-user">
                   <span>{user?.username ?? user?.email}</span>
                 </div>
+                <Link
+                  to="/settings"
+                  onClick={onClose}
+                  className="nav-drawer-link"
+                >
+                  <Icon name="settings" decorative />
+                  <span>{t('settings.nav_link')}</span>
+                </Link>
                 {isAdmin && (
                   <Link
                     to="/admin"

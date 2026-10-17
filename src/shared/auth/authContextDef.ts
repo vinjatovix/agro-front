@@ -8,7 +8,8 @@ import type {
   ForgotPasswordData,
   LoginCredentials,
   RegisterData,
-  ResetPasswordData
+  ResetPasswordData,
+  UpdatePasswordData
 } from '../../types/auth';
 
 export interface AuthContextValue {
@@ -23,6 +24,7 @@ export interface AuthContextValue {
   googleLogin(data: AuthenticateWithGoogleData): Promise<void>;
   forgotPassword(data: ForgotPasswordData): Promise<void>;
   resetPassword(data: ResetPasswordData): Promise<void>;
+  updatePassword(data: UpdatePasswordData): Promise<void>;
   logout(): void;
 }
 

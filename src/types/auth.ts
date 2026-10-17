@@ -56,3 +56,13 @@ export interface AuthenticateWithGoogleData {
 export interface AuthTokenResponse {
   readonly token: string;
 }
+
+export interface UpdatePasswordData {
+  readonly oldPassword: string;
+  readonly password: string;
+  readonly repeatPassword: string;
+}
+
+export interface UpdatePasswordResponse {
+  readonly message: string;
+}

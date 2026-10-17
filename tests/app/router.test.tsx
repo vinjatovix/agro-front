@@ -123,4 +123,27 @@ describe('router', () => {
       await screen.findByRole('heading', { name: t('auth.reset_invalid_link') })
     ).toBeInTheDocument();
   });
+
+  it('redirects unauthenticated access from /settings to /login', async () => {
+    clearStoredToken();
+
+    renderRoute('/settings');
+
+    expect(
+      await screen.findByRole('heading', { name: t('auth.login') })
+    ).toBeInTheDocument();
+  });
+
+  it('lazy-resolves /settings to the AccountSettings page when authenticated', async () => {
+    setStoredToken(VALID_TEST_TOKEN);
+
+    renderRoute('/settings');
+
+    expect(
+      await screen.findByRole('heading', {
+        level: 1,
+        name: t('settings.title')
+      })
+    ).toBeInTheDocument();
+  });
 });

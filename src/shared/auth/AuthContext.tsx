@@ -13,7 +13,8 @@ import {
   login as serviceLogin,
   refreshToken as serviceRefreshToken,
   register as serviceRegister,
-  resetPassword as serviceResetPassword
+  resetPassword as serviceResetPassword,
+  updatePassword as serviceUpdatePassword
 } from '../../services/auth.service';
 import type {
   ActivateAccountData,
@@ -22,7 +23,8 @@ import type {
   ForgotPasswordData,
   LoginCredentials,
   RegisterData,
-  ResetPasswordData
+  ResetPasswordData,
+  UpdatePasswordData
 } from '../../types/auth';
 import { ApiError } from '../errors/ApiError';
 import { AuthContext, type AuthContextValue } from './authContextDef';
@@ -114,6 +116,15 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     }
   }, []);
 
+  const updatePassword = useCallback(async (data: UpdatePasswordData) => {
+    setIsLoading(true);
+    try {
+      await serviceUpdatePassword(data);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     return subscribeToSessionPurge(() => {
       setSession(null);
@@ -162,6 +173,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       googleLogin,
       forgotPassword,
       resetPassword,
+      updatePassword,
       logout
     }),
     [
@@ -173,6 +185,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       googleLogin,
       forgotPassword,
       resetPassword,
+      updatePassword,
       logout
     ]
   );
