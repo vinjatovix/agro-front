@@ -9,6 +9,7 @@ import { validateRegisterForm } from '../../shared/auth/validation';
 import { ApiError } from '../../shared/errors/ApiError';
 import './authPages.css';
 import GoogleAuthButton from './components/GoogleAuthButton';
+import PasswordField from './components/PasswordField';
 import PasswordStrengthBar from './components/PasswordStrengthBar';
 import RegisterSuccess from './components/RegisterSuccess';
 import SsoPreviewButtons from './components/SsoPreviewButtons';
@@ -111,9 +112,20 @@ export default function Register() {
     }
   };
 
-  const renderFieldError = (field: FormField) => {
+  const getFieldErrorText = (field: FormField): string | null => {
     if (!touched[field]) return null;
-    const errorText = resolveAuthErrorText(fieldErrors[field]);
+    const errorKey = fieldErrors[field];
+    if (field === 'password' && errorKey !== 'required') {
+      return null;
+    }
+    if (errorKey === 'required' && formData[field].trim() !== '') {
+      return null;
+    }
+    return resolveAuthErrorText(errorKey);
+  };
+
+  const renderFieldError = (field: FormField) => {
+    const errorText = getFieldErrorText(field);
     return errorText ? (
       <span className="auth-error-text">{errorText}</span>
     ) : null;
@@ -152,7 +164,7 @@ export default function Register() {
             value={formData.email}
             onChange={(e) => updateField('email', e.target.value)}
             onBlur={() => markTouched('email')}
-            className={`auth-input ${touched.email && fieldErrors.email ? 'auth-input-error' : ''}`}
+            className={`auth-input ${getFieldErrorText('email') ? 'auth-input-error' : ''}`}
             autoComplete="email"
             inputMode="email"
           />
@@ -170,49 +182,38 @@ export default function Register() {
             value={formData.username}
             onChange={(e) => updateField('username', e.target.value)}
             onBlur={() => markTouched('username')}
-            className={`auth-input ${touched.username && fieldErrors.username ? 'auth-input-error' : ''}`}
+            className={`auth-input ${getFieldErrorText('username') ? 'auth-input-error' : ''}`}
             autoComplete="nickname"
           />
           {renderFieldError('username')}
         </div>
 
-        <div className="auth-field">
-          <label htmlFor="reg-password" className="auth-label">
-            {t('auth.password')}
-          </label>
-          <input
-            id="reg-password"
-            name="password"
-            type="password"
-            value={formData.password}
-            onChange={(e) => updateField('password', e.target.value)}
-            onBlur={() => markTouched('password')}
-            className={`auth-input ${touched.password && fieldErrors.password ? 'auth-input-error' : ''}`}
-            autoComplete="new-password"
-          />
+        <PasswordField
+          id="reg-password"
+          name="password"
+          label={t('auth.password')}
+          value={formData.password}
+          onChange={(value) => updateField('password', value)}
+          onBlur={() => markTouched('password')}
+          autoComplete="new-password"
+          error={getFieldErrorText('password')}
+        >
           <PasswordStrengthBar password={formData.password} />
-          {renderFieldError('password')}
           <span className="auth-field-hint">
             {t('auth.password_requirements')}
           </span>
-        </div>
+        </PasswordField>
 
-        <div className="auth-field">
-          <label htmlFor="reg-repeat-password" className="auth-label">
-            {t('auth.repeat_password')}
-          </label>
-          <input
-            id="reg-repeat-password"
-            name="repeatPassword"
-            type="password"
-            value={formData.repeatPassword}
-            onChange={(e) => updateField('repeatPassword', e.target.value)}
-            onBlur={() => markTouched('repeatPassword')}
-            className={`auth-input ${touched.repeatPassword && fieldErrors.repeatPassword ? 'auth-input-error' : ''}`}
-            autoComplete="new-password"
-          />
-          {renderFieldError('repeatPassword')}
-        </div>
+        <PasswordField
+          id="reg-repeat-password"
+          name="repeatPassword"
+          label={t('auth.repeat_password')}
+          value={formData.repeatPassword}
+          onChange={(value) => updateField('repeatPassword', value)}
+          onBlur={() => markTouched('repeatPassword')}
+          autoComplete="new-password"
+          error={getFieldErrorText('repeatPassword')}
+        />
 
         <button
           type="submit"

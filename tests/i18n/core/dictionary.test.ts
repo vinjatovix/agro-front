@@ -12,6 +12,8 @@ describe('auth and admin dictionary keys', () => {
     ['app.nav.menu', 'Menú de navegación'],
     ['auth.heading', 'Acceso'],
     ['auth.login', 'Iniciar sesión'],
+    ['auth.show_password', 'Mostrar contraseña'],
+    ['auth.hide_password', 'Ocultar contraseña'],
     ['auth.register', 'Crear cuenta'],
     ['auth.logout', 'Cerrar sesión'],
     ['admin.heading', 'Administración']

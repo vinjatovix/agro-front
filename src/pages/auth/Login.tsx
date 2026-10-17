@@ -15,6 +15,7 @@ import { validateLoginForm } from '../../shared/auth/validation';
 import { ApiError } from '../../shared/errors/ApiError';
 import './authPages.css';
 import GoogleAuthButton from './components/GoogleAuthButton';
+import PasswordField from './components/PasswordField';
 import SsoPreviewButtons from './components/SsoPreviewButtons';
 import { resolveAuthErrorText } from './utils/authErrorText';
 
@@ -146,28 +147,20 @@ export default function Login() {
           )}
         </div>
 
-        <div className="auth-field">
-          <div className="auth-label-row">
-            <label htmlFor="login-password" className="auth-label">
-              {t('auth.password')}
-            </label>
+        <PasswordField
+          id="login-password"
+          name="password"
+          label={t('auth.password')}
+          value={password}
+          onChange={setPassword}
+          autoComplete="current-password"
+          error={passwordErrorText}
+          labelRight={
             <Link to="/forgot-password" className="auth-label-row-link">
               {t('auth.forgot_link')}
             </Link>
-          </div>
-          <input
-            id="login-password"
-            name="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={`auth-input ${fieldErrors.password ? 'auth-input-error' : ''}`}
-            autoComplete="current-password"
-          />
-          {passwordErrorText && (
-            <span className="auth-error-text">{passwordErrorText}</span>
-          )}
-        </div>
+          }
+        />
 
         <button
           type="submit"

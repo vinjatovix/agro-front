@@ -6,6 +6,7 @@ import { extractAndSanitizeToken } from '../../../shared/auth/tokenUrl';
 import { useAuth } from '../../../shared/auth/useAuth';
 import { validateResetPasswordForm } from '../../../shared/auth/validation';
 import { ApiError } from '../../../shared/errors/ApiError';
+import PasswordField from '../components/PasswordField';
 import PasswordStrengthBar from '../components/PasswordStrengthBar';
 import '../authPages.css';
 import { resolveAuthErrorText } from '../utils/authErrorText';
@@ -153,42 +154,27 @@ export default function ResetPassword() {
         method="post"
         noValidate
       >
-        <div className="auth-field">
-          <label htmlFor="reset-password" className="auth-label">
-            {t('auth.reset_password')}
-          </label>
-          <input
-            id="reset-password"
-            name="password"
-            type="password"
-            value={password}
-            onChange={(e) => updateField('password', e.target.value)}
-            className={`auth-input ${passwordErrorText ? 'auth-input-error' : ''}`}
-            autoComplete="new-password"
-          />
+        <PasswordField
+          id="reset-password"
+          name="password"
+          label={t('auth.reset_password')}
+          value={password}
+          onChange={(value) => updateField('password', value)}
+          autoComplete="new-password"
+          error={passwordErrorText}
+        >
           <PasswordStrengthBar password={password} />
-          {passwordErrorText && (
-            <span className="auth-error-text">{passwordErrorText}</span>
-          )}
-        </div>
+        </PasswordField>
 
-        <div className="auth-field">
-          <label htmlFor="reset-repeat-password" className="auth-label">
-            {t('auth.reset_repeat_password')}
-          </label>
-          <input
-            id="reset-repeat-password"
-            name="repeatPassword"
-            type="password"
-            value={repeatPassword}
-            onChange={(e) => updateField('repeatPassword', e.target.value)}
-            className={`auth-input ${repeatPasswordErrorText ? 'auth-input-error' : ''}`}
-            autoComplete="new-password"
-          />
-          {repeatPasswordErrorText && (
-            <span className="auth-error-text">{repeatPasswordErrorText}</span>
-          )}
-        </div>
+        <PasswordField
+          id="reset-repeat-password"
+          name="repeatPassword"
+          label={t('auth.reset_repeat_password')}
+          value={repeatPassword}
+          onChange={(value) => updateField('repeatPassword', value)}
+          autoComplete="new-password"
+          error={repeatPasswordErrorText}
+        />
 
         <button
           type="submit"

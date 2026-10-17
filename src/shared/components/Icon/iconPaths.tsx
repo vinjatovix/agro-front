@@ -1137,6 +1137,55 @@ const yardGlyph = (
   </>
 );
 
+const visibilityGlyph = (
+  <>
+    <path
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M4 18C7.5 11 12.5 8 18 8s10.5 3 14 10c-3.5 7-8.5 10-14 10S7.5 25 4 18Z"
+    />
+    <circle
+      cx="18"
+      cy="18"
+      r="4.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+    />
+  </>
+);
+
+const visibility_offGlyph = (
+  <>
+    <path
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M4 18C7.5 11 12.5 8 18 8s10.5 3 14 10c-3.5 7-8.5 10-14 10S7.5 25 4 18Z"
+    />
+    <circle
+      cx="18"
+      cy="18"
+      r="4.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+    />
+    <path
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      d="m6 6 24 24"
+    />
+  </>
+);
+
 export const ICON_GLYPHS = {
   admin_panel_settings: admin_panel_settingsGlyph,
   arrow_forward: arrow_forwardGlyph,
@@ -1195,6 +1244,8 @@ export const ICON_GLYPHS = {
   sync_alt: sync_altGlyph,
   tag: labelGlyph,
   thermostat: thermostatGlyph,
+  visibility: visibilityGlyph,
+  visibility_off: visibility_offGlyph,
   warning: warningGlyph,
   water_drop: water_dropGlyph,
   yard: yardGlyph

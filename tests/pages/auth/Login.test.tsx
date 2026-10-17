@@ -65,7 +65,7 @@ describe('Login Page', () => {
     });
 
     const emailInput = screen.getByLabelText(/Correo electrónico/i);
-    const passwordInput = screen.getByLabelText(/Contraseña/i);
+    const passwordInput = screen.getByLabelText('Contraseña');
     const submitButton = screen.getByRole('button', { name: 'Iniciar sesión' });
 
     await user.type(emailInput, 'correo-invalido');
@@ -89,7 +89,7 @@ describe('Login Page', () => {
     });
 
     const emailInput = screen.getByLabelText(/Correo electrónico/i);
-    const passwordInput = screen.getByLabelText(/Contraseña/i);
+    const passwordInput = screen.getByLabelText('Contraseña');
     const submitButton = screen.getByRole('button', { name: 'Iniciar sesión' });
 
     await user.type(emailInput, 'hortelano@example.com');
@@ -110,7 +110,7 @@ describe('Login Page', () => {
     });
 
     const emailInput = screen.getByLabelText(/Correo electrónico/i);
-    const passwordInput = screen.getByLabelText(/Contraseña/i);
+    const passwordInput = screen.getByLabelText('Contraseña');
     const submitButton = screen.getByRole('button', { name: 'Iniciar sesión' });
 
     await user.type(emailInput, 'hortelano@example.com');
@@ -136,7 +136,7 @@ describe('Login Page', () => {
     });
 
     const emailInput = screen.getByLabelText(/Correo electrónico/i);
-    const passwordInput = screen.getByLabelText(/Contraseña/i);
+    const passwordInput = screen.getByLabelText('Contraseña');
     const submitButton = screen.getByRole('button', { name: 'Iniciar sesión' });
 
     await user.type(emailInput, 'hortelano@example.com');
@@ -225,5 +225,133 @@ describe('Login Page', () => {
     );
 
     expect(screen.getByText('Página principal')).toBeInTheDocument();
+  });
+});
+
+describe('Login Page - password visibility toggle', () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+    clearStoredToken();
+    vi.restoreAllMocks();
+  });
+
+  it('renders password input initially masked with type password (C6)', () => {
+    renderWithProviders(<TestApp />, { route: '/login' });
+
+    const passwordInput = screen.getByLabelText('Contraseña');
+
+    expect(passwordInput).toHaveAttribute('type', 'password');
+  });
+
+  it('renders toggle button with accessible name Mostrar contraseña (C1)', () => {
+    renderWithProviders(<TestApp />, { route: '/login' });
+
+    const toggleButton = screen.getByRole('button', {
+      name: 'Mostrar contraseña'
+    });
+
+    expect(toggleButton).toBeInTheDocument();
+  });
+
+  it('reveals password in plain text on toggle click (C2)', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<TestApp />, { route: '/login' });
+    const passwordInput = screen.getByLabelText('Contraseña');
+    await user.type(passwordInput, 'MiSecreto123');
+
+    await user.click(
+      screen.getByRole('button', { name: 'Mostrar contraseña' })
+    );
+
+    expect(passwordInput).toHaveAttribute('type', 'text');
+  });
+
+  it('preserves typed password value when toggling visibility (C4)', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<TestApp />, { route: '/login' });
+    const passwordInput = screen.getByLabelText('Contraseña');
+    await user.type(passwordInput, 'MiSecreto123');
+
+    await user.click(
+      screen.getByRole('button', { name: 'Mostrar contraseña' })
+    );
+
+    expect(passwordInput).toHaveValue('MiSecreto123');
+  });
+
+  it('updates accessible toggle button name to Ocultar contraseña on click (C2)', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<TestApp />, { route: '/login' });
+
+    await user.click(
+      screen.getByRole('button', { name: 'Mostrar contraseña' })
+    );
+
+    const toggleButton = screen.getByRole('button', {
+      name: 'Ocultar contraseña'
+    });
+    expect(toggleButton).toBeInTheDocument();
+  });
+
+  it('re-masks password to type password on second toggle click (C3)', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<TestApp />, { route: '/login' });
+    const passwordInput = screen.getByLabelText('Contraseña');
+    await user.type(passwordInput, 'MiSecreto123');
+    await user.click(
+      screen.getByRole('button', { name: 'Mostrar contraseña' })
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Ocultar contraseña' })
+    );
+
+    expect(passwordInput).toHaveAttribute('type', 'password');
+  });
+
+  it('restores accessible toggle button name to Mostrar contraseña on second toggle click (C3)', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<TestApp />, { route: '/login' });
+    await user.click(
+      screen.getByRole('button', { name: 'Mostrar contraseña' })
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Ocultar contraseña' })
+    );
+
+    const toggleButton = screen.getByRole('button', {
+      name: 'Mostrar contraseña'
+    });
+    expect(toggleButton).toBeInTheDocument();
+  });
+
+  it('does not trigger login submission when clicking visibility toggle (C5)', async () => {
+    const user = userEvent.setup();
+    const loginSpy = vi.spyOn(authServiceModule, 'login');
+    renderWithProviders(<TestApp />, { route: '/login' });
+    await user.type(
+      screen.getByLabelText(/Correo electrónico/i),
+      'test@example.com'
+    );
+    await user.type(screen.getByLabelText('Contraseña'), 'ValidPass123!');
+
+    await user.click(
+      screen.getByRole('button', { name: 'Mostrar contraseña' })
+    );
+
+    expect(loginSpy).not.toHaveBeenCalled();
+  });
+
+  it('toggles visibility on empty password input without errors', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<TestApp />, { route: '/login' });
+
+    await user.click(
+      screen.getByRole('button', { name: 'Mostrar contraseña' })
+    );
+
+    const passwordInput = screen.getByLabelText('Contraseña');
+    expect(passwordInput).toHaveAttribute('type', 'text');
   });
 });
