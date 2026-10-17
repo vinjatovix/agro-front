@@ -12,9 +12,11 @@ interface PasswordFieldProps {
   readonly onChange: (value: string) => void;
   readonly autoComplete: 'current-password' | 'new-password';
   readonly onBlur?: () => void;
+  readonly onFocus?: () => void;
   readonly error?: string | null;
   readonly children?: ReactNode;
   readonly labelRight?: ReactNode;
+  readonly disabled?: boolean;
 }
 
 export default function PasswordField({
@@ -25,9 +27,11 @@ export default function PasswordField({
   onChange,
   autoComplete,
   onBlur,
+  onFocus,
   error,
   children,
-  labelRight
+  labelRight,
+  disabled
 }: PasswordFieldProps) {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -64,6 +68,8 @@ export default function PasswordField({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           onBlur={onBlur}
+          onFocus={onFocus}
+          disabled={disabled}
           className={`auth-input ${error ? 'auth-input-error' : ''}`}
           autoComplete={autoComplete}
         />
@@ -73,6 +79,7 @@ export default function PasswordField({
           aria-label={toggleLabel}
           aria-controls={id}
           onClick={toggleVisibility}
+          disabled={disabled}
           onMouseDown={(event) => {
             event.preventDefault();
           }}

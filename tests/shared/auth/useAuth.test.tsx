@@ -305,4 +305,45 @@ describe('useAuth & AuthProvider', () => {
     expect(result.current.isAuthenticated).toBe(false);
     expect(sessionStorage.getItem('auth_token')).toBeNull();
   });
+
+  it('delegates updatePassword to auth service and manages loading state', async () => {
+    const updateSpy = vi
+      .spyOn(authServiceModule, 'updatePassword')
+      .mockResolvedValueOnce({ message: 'Password updated' });
+    const dto = {
+      oldPassword: 'CurrentPassword123!',
+      password: 'NewPassword123!',
+      repeatPassword: 'NewPassword123!'
+    };
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    await act(async () => {
+      await result.current.updatePassword(dto);
+    });
+
+    expect(updateSpy).toHaveBeenCalledWith(dto);
+    expect(result.current.isLoading).toBe(false);
+  });
+
+  it('propagates error from updatePassword while resetting loading state', async () => {
+    vi.spyOn(authServiceModule, 'updatePassword').mockRejectedValueOnce(
+      new Error('Update failed')
+    );
+    const dto = {
+      oldPassword: 'CurrentPassword123!',
+      password: 'NewPassword123!',
+      repeatPassword: 'NewPassword123!'
+    };
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    await act(async () => {
+      await expect(result.current.updatePassword(dto)).rejects.toThrow(
+        'Update failed'
+      );
+    });
+
+    expect(result.current.isLoading).toBe(false);
+  });
 });

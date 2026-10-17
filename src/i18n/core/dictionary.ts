@@ -101,6 +101,20 @@ export const dictionary = {
   admin: {
     heading: 'Administración'
   },
+  settings: {
+    nav_link: 'Configuración de la cuenta',
+    title: 'Configuración de la cuenta',
+    profile_section: 'Perfil',
+    profile_username: 'Nombre de usuario',
+    profile_email: 'Correo electrónico',
+    security_section: 'Seguridad',
+    old_password: 'Contraseña actual',
+    new_password: 'Nueva contraseña',
+    repeat_new_password: 'Confirmar nueva contraseña',
+    change_password_submit: 'Cambiar contraseña',
+    success_message: 'Contraseña actualizada correctamente',
+    invalid_current_password: 'La contraseña actual no es válida'
+  },
   common: {
     save: 'Guardar',
     cancel: 'Cancelar',
