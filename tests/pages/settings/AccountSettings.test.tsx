@@ -469,4 +469,79 @@ describe('AccountSettings Page', () => {
       screen.getByText('Password requirements failed')
     ).toBeInTheDocument();
   });
+
+  it.each([
+    'New password must be different from old password',
+    'Password must be different from current password',
+    'different'
+  ])(
+    'displays translated Spanish error alert when 400 error message is "%s"',
+    async (errorMessage) => {
+      const user = userEvent.setup();
+      vi.spyOn(authServiceModule, 'updatePassword').mockRejectedValueOnce(
+        new ApiError(errorMessage, 400)
+      );
+      renderWithProviders(<TestSettingsApp />, { route: '/settings' });
+
+      await user.type(
+        screen.getByLabelText(t('settings.old_password')),
+        'CurrentPass123!'
+      );
+      await user.type(
+        screen.getByLabelText(t('settings.new_password')),
+        'CurrentPass123!'
+      );
+      await user.type(
+        screen.getByLabelText(t('settings.repeat_new_password')),
+        'CurrentPass123!'
+      );
+      await user.click(
+        screen.getByRole('button', {
+          name: t('settings.change_password_submit')
+        })
+      );
+
+      const alert = await screen.findByRole('alert');
+      expect(alert).toHaveTextContent(t('settings.password_must_be_different'));
+    }
+  );
+
+  it.each([
+    'New password must be different from old password',
+    'Password must be different from current password',
+    'different'
+  ])(
+    'maps 400 password field error when backend message is "%s"',
+    async (fieldErrorMessage) => {
+      const user = userEvent.setup();
+      vi.spyOn(authServiceModule, 'updatePassword').mockRejectedValueOnce(
+        new ApiError('Validation error', 400, {
+          password: fieldErrorMessage
+        })
+      );
+      renderWithProviders(<TestSettingsApp />, { route: '/settings' });
+
+      await user.type(
+        screen.getByLabelText(t('settings.old_password')),
+        'CurrentPass123!'
+      );
+      await user.type(
+        screen.getByLabelText(t('settings.new_password')),
+        'CurrentPass123!'
+      );
+      await user.type(
+        screen.getByLabelText(t('settings.repeat_new_password')),
+        'CurrentPass123!'
+      );
+      await user.click(
+        screen.getByRole('button', {
+          name: t('settings.change_password_submit')
+        })
+      );
+
+      expect(
+        await screen.findByText(t('settings.password_must_be_different'))
+      ).toBeInTheDocument();
+    }
+  );
 });

@@ -21,10 +21,19 @@ const INITIAL_VALUES: FormValues = {
   repeatPassword: ''
 };
 
+const SAME_PASSWORD_ERROR_PATTERN =
+  /different from (?:the )?(?:old|current) password/i;
+
 function resolveError(errorKey?: string): string | null {
   if (!errorKey) return null;
   const translated = resolveAuthErrorText(errorKey);
   return translated ?? errorKey;
+}
+
+function isSamePasswordErrorMessage(message?: unknown): boolean {
+  if (typeof message !== 'string') return false;
+  const trimmed = message.trim();
+  return trimmed === 'different' || SAME_PASSWORD_ERROR_PATTERN.test(trimmed);
 }
 
 export default function AccountSettings() {
@@ -78,10 +87,19 @@ export default function AccountSettings() {
             if (mappedErrors.oldPassword) {
               mappedErrors.oldPassword = t('settings.invalid_current_password');
             }
+            if (
+              mappedErrors.password &&
+              isSamePasswordErrorMessage(mappedErrors.password)
+            ) {
+              mappedErrors.password = t('settings.password_must_be_different');
+            }
             setFieldErrors(mappedErrors);
           } else {
+            const isSamePassword = isSamePasswordErrorMessage(error.message);
             setServerError(
-              error.message || t('settings.invalid_current_password')
+              isSamePassword
+                ? t('settings.password_must_be_different')
+                : error.message || t('settings.invalid_current_password')
             );
           }
         } else if (error instanceof ApiError && error.status === 401) {

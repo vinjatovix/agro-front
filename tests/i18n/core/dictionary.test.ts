@@ -49,7 +49,11 @@ describe('settings dictionary keys', () => {
     ['settings.repeat_new_password', 'Confirmar nueva contraseña'],
     ['settings.change_password_submit', 'Cambiar contraseña'],
     ['settings.success_message', 'Contraseña actualizada correctamente'],
-    ['settings.invalid_current_password', 'La contraseña actual no es válida']
+    ['settings.invalid_current_password', 'La contraseña actual no es válida'],
+    [
+      'settings.password_must_be_different',
+      'La nueva contraseña debe ser diferente de la anterior'
+    ]
   ] as const)('translates %s to %s', (key, expected) => {
     const result = t(key);
 
